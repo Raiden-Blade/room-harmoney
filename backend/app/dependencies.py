@@ -10,11 +10,13 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Any, Optional
 
-from fastapi import Depends, Query
+from fastapi import Depends, Header, Query
 
 from recommender import RecommenderInterface
 from recommender.hybrid import HybridRecommender
 from routing import RouteGraphBuilder
+
+from dataio import DEFAULT_DATA_DIR, load_json_dict
 
 from .config import Settings, get_settings
 from .errors import ApiError
@@ -69,6 +71,15 @@ def get_store() -> Store:
     return Store(settings.database_path)
 
 
+# -- POS突合データ（フェーズ2-B1 KPI集計。任意データ・欠損時は None＝N/A） --------------
+# `lru_cache` を付けない: 実運用でPOS集計値を随時更新する運用を想定し、リクエストの都度
+# 最新の `data/pos_metrics.json` を読む（ファイルI/Oは軽量なため許容）。結合テストでは
+# `app.dependency_overrides[get_pos_metrics]` で群別の固定値/Noneに差し替えて検証する。
+def get_pos_metrics() -> Optional[dict[str, Any]]:
+    data = load_json_dict("pos_metrics.json", default={}, data_dir=DEFAULT_DATA_DIR)
+    return data or None
+
+
 # -- 実験群割付（乱数生成器を注入可能。テストはシード固定の実装に差し替える） -----------
 @lru_cache
 def get_experiment_assigner() -> ExperimentAssigner:
@@ -107,3 +118,22 @@ def require_active_session(
             message="有効な来店セッションが見つかりません。店頭のQRコードを読み取り直してください。",
         )
     return session
+
+
+# -- 管理系認証（17章「管理系（データ投入・ダッシュボード）は認証必須」） ------------------
+# 前提（未確定事項寄りの実装判断・コメントで明記）: 本要件は「認証必須」とのみ規定し、
+# 認証方式までは指定していない。管理画面へのログインUI等は本フェーズのスコープ外
+# （KPI集計APIのみ）のため、単純な共有トークン（`X-Admin-Token` ヘッダー）照合を採用する。
+# パスワード入力・セッション管理は行わない。実運用ではリバースプロキシでのIP制限等と
+# 組み合わせる想定。
+def require_admin(
+    x_admin_token: Optional[str] = Header(default=None, alias="X-Admin-Token"),
+    settings: Settings = Depends(get_settings),
+) -> None:
+    """`X-Admin-Token` ヘッダーが `Settings.admin_api_token` と一致しなければ401にする。"""
+    if not x_admin_token or x_admin_token != settings.admin_api_token:
+        raise ApiError(
+            status_code=401,
+            code="ADMIN_UNAUTHORIZED",
+            message="管理系APIの認証に失敗しました。X-Admin-Token ヘッダーを正しく指定してください。",
+        )

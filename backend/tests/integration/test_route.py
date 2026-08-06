@@ -166,3 +166,28 @@ def test_route_records_route_view_event_with_experiment_group(client, active_ses
     assert event["experiment_group"] == active_session["experiment_group"]
     assert event["payload"]["from_qr"] == "QR-ENTRANCE-001"
     assert event["payload"]["visiting_order"] == ["P001"]
+    # phase2-B1 追補: サブ通路通過率算出のため via_sub_passage を必ず含める。
+    # P001 の最短経路はサブ通路を経由しないため false。
+    assert event["payload"]["via_sub_passage"] is False
+
+
+def test_route_records_via_sub_passage_true_when_route_passes_sub_passage(
+    client, active_session, store
+):
+    """P009 はサブ通路経由（AC-3）。route_view payload の via_sub_passage が true になる
+    ことを検証する（KPI集計のサブ通路通過率で使用）。"""
+    response = client.get(
+        "/api/route",
+        params={
+            "from_qr": "QR-ENTRANCE-001",
+            "to_product": "P009",
+            "session_id": active_session["session_id"],
+        },
+    )
+    assert response.status_code == 200
+
+    events = store.list_events(session_id=active_session["session_id"])
+    route_view_events = [e for e in events if e["event_type"] == "route_view"]
+
+    assert len(route_view_events) == 1
+    assert route_view_events[0]["payload"]["via_sub_passage"] is True

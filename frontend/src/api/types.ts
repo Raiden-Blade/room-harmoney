@@ -142,3 +142,48 @@ export interface StoreMapFloor {
   edges: MapEdge[];
   sub_passages: SubPassageInfo[];
 }
+
+/**
+ * `GET /api/admin/kpi`（フェーズ2-B1/B2・10章 計測・ログ設計／12章 KPI）のレスポンス型。
+ * ここでも `backend/app/analytics.py` の `compute_kpis` を実装上の真実源として手書きする
+ * （OpenAPI上は `additionalProperties: true` の汎用オブジェクトのため）。
+ */
+export type ExperimentGroupKey = "treatment" | "control";
+
+export interface KpiFunnel {
+  scanned: number;
+  related_viewed: number;
+  related_tapped: number;
+  route_viewed: number;
+  coordinate_viewed: number;
+  chatbot_opened: number;
+}
+
+export interface KpiRates {
+  related_tap_rate: number;
+  route_reach_rate: number;
+  coordinate_view_rate: number;
+  sub_passage_rate: number;
+}
+
+export interface KpiGroupResult {
+  session_count: number;
+  funnel: KpiFunnel;
+  rates: KpiRates;
+}
+
+export type PosMetricKey = "co_purchase_rate" | "items_per_purchase" | "spend_per_customer";
+
+export type PosMetricValues = Record<PosMetricKey, number | null>;
+
+export interface PosMetricsBlock {
+  groups: Record<ExperimentGroupKey, PosMetricValues>;
+  diff: Record<PosMetricKey, number | null>;
+}
+
+export interface AdminKpiResponse {
+  groups: Record<ExperimentGroupKey, KpiGroupResult>;
+  diff: KpiRates;
+  pos_metrics: PosMetricsBlock | null;
+  note: string;
+}

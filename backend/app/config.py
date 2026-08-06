@@ -25,6 +25,11 @@ DEFAULT_EXPERIMENT_GROUP_RATIO = 0.5
 DEFAULT_CHATBOT_BASE_URL = "https://example.invalid/chatbot"
 DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173"
 
+# 管理系API（17章「管理系は認証必須」）のトークン照合用の既定値。
+# 開発用のダミー値であり、本番では必ず `.env` の `ADMIN_API_TOKEN` で上書きすること
+# （パスワード入力等は要件外のため、単純な共有トークン照合とする＝前提。コメントで明記）。
+DEFAULT_ADMIN_API_TOKEN = "dev-admin-token-change-me"
+
 # CORS許可オリジンの既定値（QA G3 G-G3-7 申し送り対応）。
 # 開発時の Vite dev サーバ（5173）に加え、`vite preview`（本番ビルド配信、既定4173）も
 # 検証できるよう既定に含める。127.0.0.1 版も含めるのは、ブラウザによって
@@ -55,6 +60,7 @@ class Settings:
     chatbot_base_url: str = DEFAULT_CHATBOT_BASE_URL
     frontend_origin: str = DEFAULT_FRONTEND_ORIGIN
     cors_allow_origins: tuple[str, ...] = _parse_origins(DEFAULT_CORS_ALLOW_ORIGINS)
+    admin_api_token: str = DEFAULT_ADMIN_API_TOKEN
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -72,6 +78,7 @@ class Settings:
             cors_allow_origins=_parse_origins(
                 os.environ.get("CORS_ALLOW_ORIGINS", DEFAULT_CORS_ALLOW_ORIGINS)
             ),
+            admin_api_token=os.environ.get("ADMIN_API_TOKEN", DEFAULT_ADMIN_API_TOKEN),
         )
 
     @property

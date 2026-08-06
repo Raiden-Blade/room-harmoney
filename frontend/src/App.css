@@ -124,3 +124,136 @@
   font-size: 0.85rem;
   color: var(--text, #6b6375);
 }
+
+/* --- A/B×KPI管理ダッシュボード（フェーズ2-B2・内部向け） --- */
+.admin-dashboard {
+  max-width: 900px;
+  gap: 1.5rem;
+}
+
+.admin-notice {
+  border: 1px solid var(--accent-border, rgba(170, 59, 255, 0.5));
+  background: var(--accent-bg, rgba(170, 59, 255, 0.1));
+  color: var(--text-h, #08060d);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.admin-token-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-token-form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-token-form-row input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.admin-auth-error {
+  border: 1px solid #f2b8b5;
+  background: #fdecea;
+  color: #611a15;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.admin-kpi-error {
+  border: 1px solid #f2b8b5;
+  background: #fdecea;
+  color: #611a15;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.admin-kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.kpi-bar-chart {
+  margin: 0.75rem 0;
+}
+
+.kpi-bar-chart-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text, #6b6375);
+}
+
+.kpi-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.kpi-table th,
+.kpi-table td {
+  border: 1px solid var(--border, #e5e4e7);
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.kpi-diff-positive {
+  color: #1b7a3d;
+  font-weight: 600;
+}
+
+.kpi-diff-negative {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.kpi-diff-neutral {
+  color: var(--text, #6b6375);
+}
+
+.sub-passage-highlight {
+  border: 1px solid var(--border, #e5e4e7);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.sub-passage-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.sub-passage-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.sub-passage-value-label {
+  font-size: 0.85rem;
+  color: var(--text, #6b6375);
+}
+
+.sub-passage-value-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-h, #08060d);
+}
+
+.causal-note {
+  border-top: 1px solid var(--border, #e5e4e7);
+  padding-top: 0.75rem;
+}

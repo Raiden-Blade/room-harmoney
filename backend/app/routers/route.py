@@ -100,6 +100,9 @@ def get_route(
     ]
 
     # 10章 計測: route_view（起点・目的地・経由サブ通路）
+    # `via_sub_passage`（bool）は phase2-B1 の追補: analytics.compute_kpis の
+    # 「サブ通路通過率」算出に必要なため、経路が1つでもサブ通路ウェイポイントを
+    # 経由していれば true にする（sub_passages は既存フィールドのまま維持し後方互換）。
     store.insert_event(
         session_id=session["session_id"],
         event_type="route_view",
@@ -108,6 +111,7 @@ def get_route(
             "to_product": to_product,
             "visiting_order": visiting_order,
             "sub_passage_count": len(sub_passages),
+            "via_sub_passage": bool(sub_passages),
             "unreachable": unreachable_product_ids,
         },
         experiment_group=session["experiment_group"],

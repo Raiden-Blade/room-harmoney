@@ -8,6 +8,7 @@
  */
 import type { components } from "./schema";
 import type {
+  AdminKpiResponse,
   CoordinateDetail,
   Product,
   QrResolution,
@@ -113,6 +114,18 @@ export function getRoute(
 
 export function getStoreMap(floor: number): Promise<StoreMapFloor> {
   return request<StoreMapFloor>(`/api/store-map/${floor}`);
+}
+
+/**
+ * `GET /api/admin/kpi`（フェーズ2-B2 A/B×KPI管理ダッシュボード・17章「管理系は認証必須」）。
+ * `X-Admin-Token` ヘッダーで管理トークンを渡す。トークン不一致/未指定時はバックエンドが
+ * 401 `ADMIN_UNAUTHORIZED` を返し、`request()` が `ApiError` として投げる
+ * （呼び出し元は `err.status === 401` で来店客向けとは別の再入力UIに分岐する）。
+ */
+export function getAdminKpi(adminToken: string): Promise<AdminKpiResponse> {
+  return request<AdminKpiResponse>("/api/admin/kpi", {
+    headers: { "X-Admin-Token": adminToken },
+  });
 }
 
 export function postEvent(

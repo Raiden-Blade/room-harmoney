@@ -1,0 +1,81 @@
+URL: http://localhost:5173/admin
+操作: 管理トークン欄に "dev-admin-token-change-me" を入力し「KPIを取得」をクリック
+取得方法: mcp__Claude_Browser__get_page_text（get_page_text）
+
+--- ページテキスト全文 ---
+A/B×KPI管理ダッシュボード
+
+この画面は店舗スタッフ・PM／効果検証担当者向けの内部管理画面です。来店されたお客様向けの画面ではありません。
+
+管理トークン
+KPIを取得
+セッション数
+利用群（treatment）: 1件
+非利用群（control）: 2件
+ファネル（QRスキャン→関連商品表示→タップ→ルート表示）
+群別ファネル（件数）
+QRスキャン
+1件
+2件
+関連商品表示
+0件
+2件
+関連商品タップ
+0件
+1件
+ルート表示
+0件
+1件
+■ 利用群（treatment）
+▨ 非利用群（control）
+主要な率（A/B差分）
+群別の主要な率
+関連タップ率
+0.0%
+50.0%
+ルート到達率
+0.0%
+50.0%
+コーディネート閲覧率
+0.0%
+50.0%
+サブ通路通過率
+0.0%
+0.0%
+■ 利用群（treatment）
+▨ 非利用群（control）
+指標	利用群（treatment）	非利用群（control）	差分（treatment − control）
+関連タップ率	0.0%	50.0%	-50.0pt
+ルート到達率	0.0%	50.0%	-50.0pt
+コーディネート閲覧率	0.0%	50.0%	-50.0pt
+サブ通路通過率	0.0%	0.0%	±0.0pt
+サブ通路通過率
+
+ルート案内を表示したセッションのうち、サブ通路（関連商品集積エリア）を経由した割合。 現状の感覚値（10.0%）との比較用に大きく表示しています。
+
+利用群（treatment）
+0.0%
+感覚値比: -10.0pt
+非利用群（control）
+0.0%
+感覚値比: -10.0pt
+A/B差分
+±0.0pt
+POS突合（併売率・買上点数・客単価）
+指標	利用群（treatment）	非利用群（control）	差分
+併売率	24.0%	16.0%	+8.0pt
+買上点数	2.30点	1.80点	+0.50点
+客単価	¥18,500	¥15,200	+¥3,300
+
+この集計は experiment_group（treatment=Room Harmony利用群 / control=非利用群）によるA/B割付を前提とした群間比較です。利用有無の単純な事後比較（相関）ではなく、割付済みの2群の差分（diff）として解釈してください。
+
+--- 突合: backend直叩き結果（curl, X-Admin-Token: dev-admin-token-change-me）と一致 ---
+{"groups":{"treatment":{"session_count":1,"funnel":{"scanned":1,"related_viewed":0,"related_tapped":0,"route_viewed":0,"coordinate_viewed":0,"chatbot_opened":0},"rates":{"related_tap_rate":0.0,"route_reach_rate":0.0,"coordinate_view_rate":0.0,"sub_passage_rate":0.0}},"control":{"session_count":2,"funnel":{"scanned":2,"related_viewed":2,"related_tapped":1,"route_viewed":1,"coordinate_viewed":1,"chatbot_opened":0},"rates":{"related_tap_rate":0.5,"route_reach_rate":0.5,"coordinate_view_rate":0.5,"sub_passage_rate":0.0}}},"diff":{"related_tap_rate":-0.5,"route_reach_rate":-0.5,"coordinate_view_rate":-0.5,"sub_passage_rate":0.0},"pos_metrics":{"groups":{"treatment":{"co_purchase_rate":0.24,"items_per_purchase":2.3,"spend_per_customer":18500},"control":{"co_purchase_rate":0.16,"items_per_purchase":1.8,"spend_per_customer":15200}},"diff":{"co_purchase_rate":0.07999999999999999,"items_per_purchase":0.4999999999999998,"spend_per_customer":3300}},"note":"この集計は experiment_group（treatment=Room Harmony利用群 / control=非利用群）によるA/B割付を前提とした群間比較です。利用有無の単純な事後比較（相関）ではなく、割付済みの2群の差分（diff）として解釈してください。"}
+
+--- read_page（アクセシビリティツリー）抜粋: SVGバー実描画確認 ---
+img "利用群（treatment） QRスキャン: 1件" [ref_19]
+img "非利用群（control） QRスキャン: 2件" [ref_20]
+img "利用群（treatment） 関連タップ率: 0.0%" [ref_37]
+img "非利用群（control） 関連タップ率: 50.0%" [ref_39]
+（各SVG rect に role=img と aria-label で群名・指標名・実測値が付与されており、
+  KpiBarChart.tsx のインラインSVGバーが実際にDOMへ描画されていることを確認）

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import "./App.css";
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { CoordinatePage } from "./pages/CoordinatePage";
 import { ProductPage } from "./pages/ProductPage";
 import { RoutePage } from "./pages/RoutePage";
@@ -15,6 +16,8 @@ import { ScanPage } from "./pages/ScanPage";
  * - `/products/:productId`: S2 商品詳細
  * - `/coordinates/:coordinateId`: S3 コーディネート詳細
  * - `/route`: S4 マップ・ルート
+ * - `/admin`: 内部向け A/B×KPI管理ダッシュボード（フェーズ2-B2・20章 PM兼効果検証）。
+ *   来店客のS1〜S5フローとは分離した導線で、顧客向け画面からはリンクしない（直リンク前提）。
  */
 function App() {
   return (
@@ -26,6 +29,7 @@ function App() {
         <Route path="/products/:productId" element={<ProductPage />} />
         <Route path="/coordinates/:coordinateId" element={<CoordinatePage />} />
         <Route path="/route" element={<RoutePage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

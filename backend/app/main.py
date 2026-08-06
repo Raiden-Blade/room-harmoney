@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import get_settings
 from .errors import register_exception_handlers
 from .routers import (
+    admin,
     coordinates,
     events,
     products,
@@ -52,6 +53,7 @@ app.include_router(coordinates.router)
 app.include_router(route.router)
 app.include_router(store_map.router)
 app.include_router(events.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")

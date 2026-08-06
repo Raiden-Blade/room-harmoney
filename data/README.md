@@ -125,6 +125,22 @@ DECISIONS.md #5：会員個票・購入履歴は扱わず、`customer_total`（�
 イベントログ（`session_id, timestamp, event_type, payload, experiment_group`）は空配列 `[]` で
 開始する。書き込み・スキーマ実装はG2（API）段階で行う。
 
+## pos_metrics.json（POS突合スロット・オプショナル／フェーズ2-B1）
+
+`GET /api/admin/kpi`（10章 計測・ログ設計／12章 KPI）のPOS突合スロットで参照する、
+experiment_group（`treatment`/`control`）別の集計値のサンプル。ファイルが無くても
+`backend/app/dependencies.py` の `get_pos_metrics` が `None` にフォールバックし、
+KPI集計API自体は500にならず `pos_metrics: null`（N/A）を返す。
+
+| キー | 型 | 説明 |
+|---|---|---|
+| treatment.co_purchase_rate / control.co_purchase_rate | float | 併売率（12章） |
+| treatment.items_per_purchase / control.items_per_purchase | float | 買上点数（12章） |
+| treatment.spend_per_customer / control.spend_per_customer | int | 客単価（12章・円） |
+
+実データ差し替え時は、POSレジ集計をA/B群（`sessions` テーブルの `experiment_group`）で
+突合したうえで同じキー構成のJSONに置き換える。
+
 ---
 
 ## 実データ差し替え手順（イメージ）

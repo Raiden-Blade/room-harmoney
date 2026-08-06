@@ -1,0 +1,51 @@
+{
+  "get": {
+    "tags": [
+      "admin"
+    ],
+    "summary": "Get Admin Kpi",
+    "operationId": "get_admin_kpi_api_admin_kpi_get",
+    "parameters": [
+      {
+        "name": "X-Admin-Token",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "X-Admin-Token"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful Response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "title": "Response Get Admin Kpi Api Admin Kpi Get"
+            }
+          }
+        }
+      },
+      "422": {
+        "description": "Validation Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/HTTPValidationError"
+            }
+          }
+        }
+      }
+    }
+  }
+}
