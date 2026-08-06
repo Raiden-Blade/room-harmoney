@@ -1,0 +1,2 @@
+=== GET /api/route single-floor (P001) - no floor transfer expected ===
+{"waypoints":[{"floor":1,"x":3,"y":50,"type":"入口"},{"floor":1,"x":10,"y":50,"type":"通路"},{"floor":1,"x":30,"y":50,"type":"通路"},{"floor":1,"x":20,"y":20,"type":"ゾーン"},{"floor":1,"x":17,"y":18,"type":"商品近傍"}],"sub_passages":[],"visiting_order":["P001"],"unreachable":[],"total_distance":62.230000000000004}

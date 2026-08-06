@@ -1,0 +1,2 @@
+=== POST /api/session ===
+{"session_id":"862f0702-ea63-48af-b4e0-c6d47e46854a","start":{"floor":1,"x":3,"y":50},"floor":1,"experiment_group":"treatment"}

@@ -1,0 +1,58 @@
+
+ RUN  v4.1.10 C:/Users/haseg/OneDrive/Documents/ニトリ制作物/room-harmony/frontend
+
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > outboundリンクのhrefに product_id/screen のディープリンクパラメータが付与される 74ms
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > outboundリンクのhrefに coordinate_id が付与される 9ms
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > outboundリンクのhrefに to_product（複数）が付与される（往復導線: inboundと同じパラメータ名） 8ms
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > 文脈が無い場合はクエリなしのベースURLになる 6ms
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > クリック時に chatbot_open イベントのpayloadへ現在の文脈（product_id/coordinate_id/screen）を含める 27ms
+ ✓ src/components/__tests__/ChatbotLink.test.tsx > ChatbotLink > to_product文脈でのクリックはpayloadのto_productに配列が入る 10ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - URL直リンク fallback > qr_id直リンクから session 作成・qr_scan送信・S2遷移まで到達する 189ms
+ ✓ src/__tests__/deeplink.test.ts > parseToProducts > 同名パラメータの繰り返しから複数値を読み取る 5ms
+ ✓ src/__tests__/deeplink.test.ts > parseToProducts > カンマ区切り単一パラメータからも複数値を読み取る 1ms
+ ✓ src/__tests__/deeplink.test.ts > parseToProducts > 両形式が混在していても正しく読み取り、重複は除去する 1ms
+ ✓ src/__tests__/deeplink.test.ts > parseToProducts > 欠損時は空配列 1ms
+ ✓ src/__tests__/deeplink.test.ts > parseToProducts > 空白・空文字の要素は除去する 1ms
+ ✓ src/__tests__/deeplink.test.ts > parseInboundDeepLink > product_id / coordinate_id / to_product をまとめて解析する 1ms
+ ✓ src/__tests__/deeplink.test.ts > parseInboundDeepLink > すべて欠損時はnull/空配列 0ms
+ ✓ src/__tests__/deeplink.test.ts > buildRoutePath > 複数のto_productを同名パラメータの繰り返しとして組み立てる（RoutePageの読み取り形式に合わせる） 1ms
+ ✓ src/__tests__/deeplink.test.ts > buildRoutePath > 単一のto_productでも同じ形式で組み立てる 1ms
+ ✓ src/__tests__/deeplink.test.ts > buildRoutePath > 空配列の場合はクエリなしのパス 0ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotDeepLinkParams / buildChatbotUrl > product_id/coordinate_id/to_product/screenをすべて含める 2ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotDeepLinkParams / buildChatbotUrl > 未指定の項目はパラメータに含めない 1ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotDeepLinkParams / buildChatbotUrl > buildChatbotUrlはベースURLにクエリを付与する（往復導線: inboundと同じパラメータ名） 0ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotDeepLinkParams / buildChatbotUrl > コンテキストが空の場合はクエリを付与しない 0ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotOpenPayload > 文脈（product_id/coordinate_id/to_product/screen）を含み、個人情報は含まない 1ms
+ ✓ src/__tests__/deeplink.test.ts > buildChatbotOpenPayload > 未指定の項目はnullで埋める 0ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > トークン未入力時はKPIを取得せず、来店客向けロック画面とは別の入力促しUIを表示する 105ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - URL直リンク fallback > 入口QRの場合は店内トップ表示に留まる 39ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - URL直リンク fallback > StrictModeでuseEffectが2回実行されても session 作成・qr_scan送信はそれぞれ1回に収束する（QA G3 G-G3-7 回帰: 二重セッション/二重イベントの再発防止） 38ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - URL直リンク fallback > 存在しないqr_idの場合はエラー表示になる（QR読取失敗のエッジケース） 28ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - チャットボットからのディープリンク受け口 > ?product_id= が来たら商品詳細（S2）へ遷移する（回帰） 22ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - チャットボットからのディープリンク受け口 > ?coordinate_id= が来たらコーディネート詳細（S3）へ遷移する（回帰） 10ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - チャットボットからのディープリンク受け口 > ?to_product= が来たらS4ルート画面へ遷移し、来店セッションがあればルートAPIが呼ばれる（複数値対応） 18ms
+ ✓ src/pages/__tests__/ScanPage.test.tsx > ScanPage (S1) - チャットボットからのディープリンク受け口 > 有効な来店セッションが無い状態で ?to_product= が来ても遷移はでき、遷移先（S4）が来店ロックを表示する 13ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > 正しいトークンでKPIを取得し、群別ファネル・率・diff（符号付き）・サブ通路通過率が描画される 128ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > インラインSVG棒グラフがファネル・率それぞれ群数×指標数ぶん描画される（外部ライブラリ不使用） 60ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > POSデータがある場合は併売率・買上点数・客単価とdiffが群別に表示される 105ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > POSの一部指標のみ欠損している場合はその指標だけN/Aになる 67ms
+ ✓ src/__tests__/routeFloorTransfers.test.ts > computeFloorTransfers > 単一フロアの経路では乗換なし（空配列） 4ms
+ ✓ src/__tests__/routeFloorTransfers.test.ts > computeFloorTransfers > 階段を経由してフロアが変わる箇所を乗換として検出する 1ms
+ ✓ src/__tests__/routeFloorTransfers.test.ts > computeFloorTransfers > 複数目的地で複数回フロアを跨ぐ場合はすべて検出する 1ms
+ ✓ src/__tests__/routeFloorTransfers.test.ts > computeFloorTransfers > ウェイポイントが0件・1件でも例外を投げない 0ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > 誤ったトークン（401）では取得失敗UIを表示し、KPIは描画されない 29ms
+ ✓ src/pages/__tests__/AdminDashboardPage.test.tsx > AdminDashboardPage（フェーズ2-B2 A/B×KPI管理ダッシュボード） > 両群とも0件（空データ）の場合は空状態を表示する 16ms
+ ✓ src/pages/__tests__/RoutePage.test.tsx > RoutePage (S4) > route の waypoint からSVGにルート線・起点・目的地・サブ通路ピンが描画される（複数目的地の巡回順） 125ms
+ ✓ src/pages/__tests__/RoutePage.test.tsx > RoutePage (S4) > 有効なセッションが無い場合は来店ロックUIになり、routeAPIは呼ばれない（AC-5） 32ms
+ ✓ src/pages/__tests__/RoutePage.test.tsx > RoutePage (S4) > 複数フロアに跨る経路ではフロア切替UI・階段/EVの乗換表示（◯階→◯階）が出て、切替で該当フロアの要素が描画される 44ms
+ ✓ src/pages/__tests__/CoordinatePage.test.tsx > CoordinatePage (S3) > 完成イメージ・構成商品・合計金額目安を表示し、揃えるタップでcoordinate_tap送信とS4遷移が行われる 307ms
+ ✓ src/pages/__tests__/CoordinatePage.test.tsx > CoordinatePage (S3) > セッションが無い場合、揃えるタップはS1（QR読取）へ促す 31ms
+ ✓ src/pages/__tests__/ProductPage.test.tsx > ProductPage (S2) > 有効なセッションがあれば関連商品がAPI順（リフト降順）のまま表示され、related_tapでルートへ遷移する 299ms
+ ✓ src/pages/__tests__/ProductPage.test.tsx > ProductPage (S2) > 有効なセッションが無い場合、関連商品セクションは来店ロックUIになる（AC-5） 34ms
+ ✓ src/pages/__tests__/ProductPage.test.tsx > ProductPage (S2) > APIが409（VISIT_LOCK_REQUIRED）を返した場合も同じ来店ロックUIにフォールバックする 15ms
+
+ Test Files  8 passed (8)
+      Tests  49 passed (49)
+   Start at  20:05:43
+   Duration  13.27s (transform 850ms, setup 15.05s, import 1.47s, tests 1.95s, environment 49.20s)
+

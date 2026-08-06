@@ -171,6 +171,77 @@ def test_route_records_route_view_event_with_experiment_group(client, active_ses
     assert event["payload"]["via_sub_passage"] is False
 
 
+def test_route_cross_floor_returns_waypoints_with_floor_and_stairs_or_ev_transfer(
+    client, active_session
+):
+    """フェーズ2-C 複数フロア仕上げ: 別フロアの商品を目的地にした場合、
+    `waypoints` の各要素に `floor` が含まれ、階段/EVウェイポイントを経由して
+    フロアが変わる経路が返る（4.3章）。P011 は実データ上 floor=2 の商品。
+    """
+    response = client.get(
+        "/api/route",
+        params={
+            "from_qr": "QR-ENTRANCE-001",  # floor=1
+            "to_product": "P011",  # floor=2
+            "session_id": active_session["session_id"],
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["visiting_order"] == ["P011"]
+    assert body["unreachable"] == []
+
+    waypoints = body["waypoints"]
+    assert len(waypoints) >= 2
+    # すべてのwaypointがfloorを持つ。
+    assert all("floor" in w for w in waypoints)
+
+    floors_in_route = {w["floor"] for w in waypoints}
+    assert floors_in_route == {1, 2}
+
+    # 起点は1階、終点は2階のP011座標に一致する。
+    assert waypoints[0]["floor"] == 1
+    assert waypoints[-1]["floor"] == 2
+    assert waypoints[-1]["x"] == pytest.approx(17)
+    assert waypoints[-1]["y"] == pytest.approx(18)
+
+    # フロアが変わる境界は階段またはEVのウェイポイントを経由する。
+    transfer_indices = [
+        i for i in range(len(waypoints) - 1) if waypoints[i]["floor"] != waypoints[i + 1]["floor"]
+    ]
+    assert len(transfer_indices) >= 1
+    for i in transfer_indices:
+        assert waypoints[i]["type"] in ("階段", "EV")
+        assert waypoints[i + 1]["type"] in ("階段", "EV")
+
+
+def test_route_multi_destination_across_floors_returns_visiting_order_with_all_floors(
+    client, active_session
+):
+    """跨フロアの複数目的地: 巡回順（最近傍法）はフロアをまたいでも計算され、
+    経由した全フロアが waypoints の floor に反映される。
+    """
+    response = client.get(
+        "/api/route",
+        params={
+            "from_qr": "QR-ENTRANCE-001",  # floor=1
+            "to_product": ["P001", "P011"],  # floor=1, floor=2
+            "session_id": active_session["session_id"],
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body["visiting_order"]) == {"P001", "P011"}
+    # 起点(floor=1)から近い同フロアのP001が先、別フロアのP011が後（最近傍法）。
+    assert body["visiting_order"] == ["P001", "P011"]
+    assert body["unreachable"] == []
+
+    floors_in_route = {w["floor"] for w in body["waypoints"]}
+    assert floors_in_route == {1, 2}
+
+
 def test_route_records_via_sub_passage_true_when_route_passes_sub_passage(
     client, active_session, store
 ):

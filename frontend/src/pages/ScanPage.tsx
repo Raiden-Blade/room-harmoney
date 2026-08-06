@@ -5,8 +5,9 @@
  * 1. カメラでQRを読み取る（`html5-qrcode`）。
  * 2. URL直リンク・フォールバック: `/s/:qrId` または `/scan?qr_id=...`（4.1章 / HARNESS.md）。
  *    カメラ非対応端末・E2Eの既定経路はこちら。
- * 3. 既存チャットボットからのディープリンク受け口: `?product_id=` / `?coordinate_id=`
- *    （4.4章）。これは来店セッションの有無に関わらず該当画面へ遷移する
+ * 3. 既存チャットボットからのディープリンク受け口: `?product_id=` / `?coordinate_id=` /
+ *    `?to_product=`（4.4章・フェーズ2-C）。詳細な仕様は `../deeplink.ts` を参照。
+ *    これは来店セッションの有無に関わらず該当画面へ遷移する
  *    （セッションが無ければ遷移先の画面が来店ロックを表示する）。
  *
  * QR解決フロー: `GET /api/qr/{qr_id}` で種別判定 → `POST /api/session` でセッション開始
@@ -19,6 +20,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ApiError, createSession, postEvent, resolveQr } from "../api/client";
 import { ChatbotLink } from "../components/ChatbotLink";
 import { QrCameraScanner } from "../components/QrCameraScanner";
+import { buildRoutePath, parseInboundDeepLink } from "../deeplink";
 import { saveSession } from "../state/session";
 
 type Status = "idle" | "resolving" | "entrance" | "error";
@@ -44,8 +46,11 @@ export function ScanPage() {
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
 
-  const deepProductId = searchParams.get("product_id");
-  const deepCoordinateId = searchParams.get("coordinate_id");
+  const inboundDeepLink = parseInboundDeepLink(searchParams);
+  const deepProductId = inboundDeepLink.productId;
+  const deepCoordinateId = inboundDeepLink.coordinateId;
+  const deepToProducts = inboundDeepLink.toProducts;
+  const deepToProductsKey = deepToProducts.join(",");
   const qrId = params.qrId ?? searchParams.get("qr_id");
 
   // URL直リンク（/s/:qrId 等）経由で解決済みの qrId を記録するガード。
@@ -118,6 +123,12 @@ export function ScanPage() {
       navigate(`/coordinates/${deepCoordinateId}`, { replace: true });
       return;
     }
+    // S4 ルート表示への受け口（フェーズ2-C・4.4章）: `?to_product=` （複数可）。
+    // URLスキームの詳細は `../deeplink.ts` を参照。
+    if (deepToProducts.length > 0) {
+      navigate(buildRoutePath(deepToProducts), { replace: true });
+      return;
+    }
     if (qrId) {
       if (resolvedQrIdRef.current !== qrId) {
         resolvedQrIdRef.current = qrId;
@@ -128,9 +139,9 @@ export function ScanPage() {
     return () => {
       cancelledRef.current = true;
     };
-    // qrId/deepProductId/deepCoordinateId が変化した時だけ再実行する。
+    // qrId/deepProductId/deepCoordinateId/deepToProductsKey が変化した時だけ再実行する。
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qrId, deepProductId, deepCoordinateId]);
+  }, [qrId, deepProductId, deepCoordinateId, deepToProductsKey]);
 
   if (status === "resolving") {
     return (
@@ -145,7 +156,7 @@ export function ScanPage() {
       <main className="app-shell" data-testid="scan-entrance">
         <h1>Room Harmony</h1>
         <p>ご来店ありがとうございます。売場の商品QRを読み取ると、関連商品やコーディネートをご案内します。</p>
-        <ChatbotLink label="チャットボットで商品を探す" />
+        <ChatbotLink label="チャットボットで商品を探す" screen="scan_entrance" />
       </main>
     );
   }

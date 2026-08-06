@@ -8,7 +8,7 @@ export function ErrorNotice({ message }: { message: string }) {
   return (
     <div className="error-notice" role="alert" data-testid="error-notice">
       <p>{message}</p>
-      <ChatbotLink label="チャットボットに問い合わせる" />
+      <ChatbotLink label="チャットボットに問い合わせる" screen="error" />
     </div>
   );
 }

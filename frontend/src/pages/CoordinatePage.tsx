@@ -119,7 +119,7 @@ export function CoordinatePage() {
         このコーデで揃える／場所を見る
       </button>
 
-      <ChatbotLink coordinateId={coordinateId} />
+      <ChatbotLink coordinateId={coordinateId} screen="coordinate_detail" />
     </main>
   );
 }

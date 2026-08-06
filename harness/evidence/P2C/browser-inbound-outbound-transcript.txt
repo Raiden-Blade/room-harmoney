@@ -1,0 +1,80 @@
+Claude_Browser MCP によるテキスト証跡（フロント dev サーバ http://localhost:5173、
+バックエンド http://localhost:8000 を実起動して検証）。日時: 2026-08-06。
+
+--- 1. QRなし・複数コンテキストが同時に付与された場合の受け口優先順位（product_id最優先） ---
+GET http://localhost:5173/scan?product_id=P001&coordinate_id=C001&to_product=P011
+get_page_text 結果（抜粋）:
+  "ナチュラル2人掛けソファ / リビング / ソファ / 2人掛けソファ・ナチュラル / ¥39,900 / 売場: 1F ゾーンA
+   この商品の場所を見る / 関連商品 ... チャットボットに相談する"
+=> S2（商品詳細）へ遷移。product_id が coordinate_id / to_product より優先されることを確認。
+
+--- 2. coordinate_id > to_product の優先順位 ---
+GET http://localhost:5173/scan?coordinate_id=C001&to_product=P011
+get_page_text 結果（抜粋）:
+  "ナチュラルリビング / テーマ: ナチュラル / ナチュラル2人掛けソファ ¥39,900 / ...
+   合計金額目安: ¥70,690 / このコーデで揃える／場所を見る / チャットボットに相談する"
+=> S3（コーディネート詳細）へ遷移。coordinate_id が to_product より優先されることを確認。
+read_page（interactive/all）で ChatbotLink のhrefを確認:
+  href="https://example.invalid/chatbot?coordinate_id=C001&screen=coordinate_detail"
+=> outboundリンクに inbound と同じ coordinate_id・screen が付与される（往復導線）。個人情報は含まれない。
+
+--- 3. to_product > QR直リンク（qr_id）の優先順位 ---
+GET http://localhost:5173/scan?qr_id=QR-PRODUCT-P001&to_product=P011
+get_page_text 結果（抜粋）:
+  "店内ルート / 1F / 2F / 1階→2階（階段） / 1. ホワイトベッドフレーム シングル / ...
+   チャットボットに相談する"
+=> S4（ルート画面）へ遷移。qr_id ではなく to_product が優先されることを確認（P011はfloor=2の商品）。
+
+--- 4. to_product 単独（セッションあり）: S4への解決 + 跨フロアUI ---
+前提: GET http://localhost:5173/s/QR-ENTRANCE-001 で来店セッションを作成済み
+      （get_page_text: "Room Harmony / ご来店ありがとうございます。... / チャットボットで商品を探す"、
+       ChatbotLinkのhref="https://example.invalid/chatbot?screen=scan_entrance"）
+GET http://localhost:5173/scan?to_product=P011
+get_page_text 結果:
+  "店内ルート
+   1F
+   2F
+   1階→2階（階段）
+   1. ホワイトベッドフレーム シングル
+   ゾーンA ゾーンB ゾーンC ゾーンD サブ通路 階段 EV
+   チャットボットに相談する"
+read_page（all）:
+  button "1F" [ref_3] / button "2F" [ref_4]
+  list: listitem "1階→2階（階段）"
+  list: listitem "1. ホワイトベッドフレーム シングル"
+  img "フロア1のマップ"
+  link "チャットボットに相談する" href="https://example.invalid/chatbot?to_product=P011&screen=route"
+=> フロア切替UI（floor-switch）・乗換表示（floor-transfers）が跨フロア時に表示されることを確認。
+   ChatbotLink のhrefに to_product=P011 と screen=route が付与される（往復導線）。
+
+2F ボタンをクリック（left_click ref_4, 座標(439,150)。1280x720ビューポート確認後）:
+read_page（all）後の結果:
+  img "フロア2のマップ"（属性 data-floor="2" は DOM上、aria-labelでは「フロア2のマップ」と表示）
+  generic "ホワイトベッドフレーム シングル"（目的地ピンのラベルテキスト、フロア2側に描画）
+=> フロア切替クリックで表示フロアが1→2に切り替わり、目的地ピンが該当フロアにのみ描画されることを確認。
+
+--- 5. to_product 単独（セッションなし）: S4遷移はできるが来店ロック表示 ---
+GET http://localhost:5173/scan?to_product=P011（セッション未作成の新規タブ）
+get_page_text 結果:
+  "この機能はご利用いただけません
+   店頭のQRコードを読み取ってください。有効な来店セッションが開始されると、関連商品や店内ルートをご案内できます。
+   QRを読み取る"
+=> 遷移自体は行われ（S4へ到達）、遷移先画面が来店ロックUIを表示する仕様どおりの挙動を確認（AC-5との整合）。
+
+--- 6. 既存 ?product_id= / ?coordinate_id= の回帰確認（実ブラウザ・単体） ---
+GET http://localhost:5173/s/QR-PRODUCT-P001 （QR直リンク、product_id経由ではなくQR解決経由）
+=> 商品詳細（S2）へ正しく遷移（既存動作の回帰なし）。
+   ChatbotLinkのhref="https://example.invalid/chatbot?product_id=P001&screen=product_detail"
+
+--- 補足: クリックによるchatbot_openイベント送信について ---
+本ブラウザMCPセッションでは、target="_blank" のChatbotLinkおよび同一タブ内Linkの
+computer.left_click操作がクリックイベントとして正しく配送されない現象を観測した
+（フロア切替ボタン（同一DOM内の<button>、ページ遷移を伴わない）のクリックは成立したが、
+<a>タグのクリック（React Router Linkおよびtarget="_blank"のChatbotLink）はDOM上の遷移や
+ネットワークリクエストの発火が確認できなかった）。screenshotツールも
+「Browser pane is not displayed」エラーを返しており、本セッションの表示合成に関する
+既知の制約と考えられる。これはハーネス（ブラウザ自動操作環境）側の制約であり、アプリ側の
+不具合の証跡ではない。
+click→chatbot_openイベントの実際の発火とpayload内容は、QAが独立に実行した
+`frontend/src/components/__tests__/ChatbotLink.test.tsx`（fireEvent.click + fetchモックで
+実際にPOST /api/eventsボディを検証、2026-08-06実行・全PASS）で確認済み。

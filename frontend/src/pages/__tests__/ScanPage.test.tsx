@@ -4,8 +4,9 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { installFetchMock, route } from "../../test/mockFetch";
-import { getSession } from "../../state/session";
+import { saveSession, getSession } from "../../state/session";
 import { ProductPage } from "../ProductPage";
+import { RoutePage } from "../RoutePage";
 import { ScanPage } from "../ScanPage";
 
 /**
@@ -20,6 +21,7 @@ function renderAt(initialPath: string) {
         <Route path="/s/:qrId" element={<ScanPage />} />
         <Route path="/scan" element={<ScanPage />} />
         <Route path="/products/:productId" element={<ProductPage />} />
+        <Route path="/route" element={<RoutePage />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -221,5 +223,137 @@ describe("ScanPage (S1) - URL直リンク fallback", () => {
     renderAt("/s/QR-BOGUS");
 
     await screen.findByTestId("scan-error");
+  });
+});
+
+/**
+ * S5 逆方向の受け口（チャットボットからのディープリンク・4.4章／フェーズ2-C）。
+ * `product_id` / `coordinate_id` の既存挙動の回帰確認と、`to_product`（S4ルートへの受け口）の
+ * 新規確認をまとめる。
+ */
+describe("ScanPage (S1) - チャットボットからのディープリンク受け口", () => {
+  it("?product_id= が来たら商品詳細（S2）へ遷移する（回帰）", async () => {
+    installFetchMock([
+      route("GET", "/api/products/P001", () => ({
+        body: {
+          product_id: "P001",
+          name: "ナチュラル2人掛けソファ",
+          cat_large: "リビング",
+          cat_mid: "ソファ",
+          cat_small: "2人掛けソファ",
+          color: "ナチュラル",
+          price: 39900,
+          image_url: "https://dummyimage.com/300x300",
+          floor: 1,
+          zone: "A",
+          x: 17,
+          y: 18,
+          sub_passage_flag: false,
+        },
+      })),
+      route("GET", "/api/recommendations", () => ({ body: { related: [], coordinates: [] } })),
+    ]);
+
+    renderAt("/scan?product_id=P001");
+
+    await screen.findByTestId("product-page");
+  });
+
+  it("?coordinate_id= が来たらコーディネート詳細（S3）へ遷移する（回帰）", async () => {
+    render(
+      <MemoryRouter initialEntries={["/scan?coordinate_id=C001"]}>
+        <Routes>
+          <Route path="/scan" element={<ScanPage />} />
+          <Route path="/coordinates/:coordinateId" element={<div data-testid="coordinate-stub" />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByTestId("coordinate-stub");
+  });
+
+  it("?to_product= が来たらS4ルート画面へ遷移し、来店セッションがあればルートAPIが呼ばれる（複数値対応）", async () => {
+    saveSession({
+      sessionId: "sess-deeplink",
+      experimentGroup: "A",
+      qrId: "QR-ENTRANCE-001",
+      start: { floor: 1, x: 3, y: 50 },
+    });
+
+    const { calls } = installFetchMock([
+      route("GET", "/api/route", () => ({
+        body: {
+          waypoints: [
+            { floor: 1, x: 3, y: 50, type: "入口" },
+            { floor: 1, x: 17, y: 18, type: "商品近傍" },
+          ],
+          sub_passages: [],
+          visiting_order: ["P001", "P002"],
+          unreachable: [],
+          total_distance: 10,
+        },
+      })),
+      route("GET", "/api/store-map/1", () => ({
+        body: {
+          floor: 1,
+          floorplan: { type: "zones_rect", width: 100, height: 100, zones_rect: [] },
+          zones: [],
+          waypoints: [],
+          edges: [],
+          sub_passages: [],
+        },
+      })),
+      route("GET", "/api/products/P001", () => ({
+        body: {
+          product_id: "P001",
+          name: "ナチュラルソファ",
+          cat_large: "リビング",
+          cat_mid: "ソファ",
+          cat_small: "2人掛けソファ",
+          color: "ナチュラル",
+          price: 39900,
+          image_url: "https://dummyimage.com/300x300",
+          floor: 1,
+          zone: "A",
+          x: 17,
+          y: 18,
+          sub_passage_flag: false,
+        },
+      })),
+      route("GET", "/api/products/P002", () => ({
+        body: {
+          product_id: "P002",
+          name: "ブラックソファ",
+          cat_large: "リビング",
+          cat_mid: "ソファ",
+          cat_small: "2人掛けソファ",
+          color: "ブラック",
+          price: 44900,
+          image_url: "https://dummyimage.com/300x300",
+          floor: 1,
+          zone: "A",
+          x: 24,
+          y: 23,
+          sub_passage_flag: false,
+        },
+      })),
+    ]);
+
+    renderAt("/scan?to_product=P001,P002");
+
+    await screen.findByTestId("route-page");
+
+    const routeCall = calls.find((c) => c.method === "GET" && c.url.includes("/api/route"));
+    expect(routeCall).toBeDefined();
+    const routeUrl = new URL(routeCall!.url);
+    expect(routeUrl.searchParams.getAll("to_product")).toEqual(["P001", "P002"]);
+  });
+
+  it("有効な来店セッションが無い状態で ?to_product= が来ても遷移はでき、遷移先（S4）が来店ロックを表示する", async () => {
+    installFetchMock([]);
+
+    renderAt("/scan?to_product=P001");
+
+    await screen.findByTestId("visit-lock");
   });
 });

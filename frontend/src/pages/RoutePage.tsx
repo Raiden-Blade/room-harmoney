@@ -13,9 +13,11 @@ import { Link, useSearchParams } from "react-router-dom";
 
 import { ApiError, getRoute, getStoreMap, getProduct } from "../api/client";
 import type { Product, RouteResponse, StoreMapFloor } from "../api/types";
+import { ChatbotLink } from "../components/ChatbotLink";
 import { ErrorNotice } from "../components/ErrorNotice";
 import { FloorMap, type RouteDestinationPin } from "../components/FloorMap";
 import { VisitLockScreen } from "../components/VisitLockScreen";
+import { computeFloorTransfers } from "../routeFloorTransfers";
 import { clearSession, getSession } from "../state/session";
 
 export function RoutePage() {
@@ -119,6 +121,9 @@ export function RoutePage() {
   }
 
   const floorsInRoute = Array.from(new Set(route.waypoints.map((w) => w.floor))).sort((a, b) => a - b);
+  // 跨フロア経路の乗換表示（4.3章・フェーズ2-C）: 「◯階→◯階（階段/EV）」。
+  // 単一フロアの経路では常に空配列になる。
+  const floorTransfers = computeFloorTransfers(route.waypoints);
 
   const routeWaypointsOnFloor = currentFloor == null ? [] : route.waypoints.filter((w) => w.floor === currentFloor);
   const subPassagesOnFloor =
@@ -154,6 +159,16 @@ export function RoutePage() {
         </div>
       )}
 
+      {floorTransfers.length > 0 && (
+        <ul className="floor-transfers" data-testid="floor-transfers">
+          {floorTransfers.map((t, index) => (
+            <li key={`${t.fromFloor}-${t.toFloor}-${index}`} data-testid={`floor-transfer-${index}`}>
+              {t.fromFloor}階→{t.toFloor}階（{t.viaType}）
+            </li>
+          ))}
+        </ul>
+      )}
+
       <ol className="visiting-order" data-testid="visiting-order">
         {route.visiting_order.map((id, index) => (
           <li key={id} data-testid={`visiting-order-item-${id}`}>
@@ -177,6 +192,8 @@ export function RoutePage() {
           destinations={destinations}
         />
       )}
+
+      <ChatbotLink toProducts={toProducts} screen="route" />
     </main>
   );
 }

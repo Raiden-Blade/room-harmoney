@@ -183,7 +183,7 @@ export function ProductPage() {
         )}
       </section>
 
-      <ChatbotLink productId={productId} />
+      <ChatbotLink productId={productId} screen="product_detail" />
     </main>
   );
 }
