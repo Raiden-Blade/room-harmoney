@@ -1,0 +1,1376 @@
+{
+  "floors": [
+    {
+      "floor": 1,
+      "floorplan": {
+        "type": "zones_rect",
+        "width": 100,
+        "height": 100,
+        "zones_rect": [
+          {
+            "zone": "A",
+            "x": 5,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "B",
+            "x": 5,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "C",
+            "x": 60,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "D",
+            "x": 60,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "SUB",
+            "x": 85,
+            "y": 70,
+            "w": 14,
+            "h": 28
+          }
+        ]
+      },
+      "zones": [
+        {
+          "zone": "A",
+          "floor": 1,
+          "x": 20,
+          "y": 20
+        },
+        {
+          "zone": "B",
+          "floor": 1,
+          "x": 20,
+          "y": 80
+        },
+        {
+          "zone": "C",
+          "floor": 1,
+          "x": 80,
+          "y": 20
+        },
+        {
+          "zone": "D",
+          "floor": 1,
+          "x": 80,
+          "y": 80
+        }
+      ],
+      "waypoints": [
+        {
+          "id": "f1_c1",
+          "floor": 1,
+          "x": 10,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f1_c2",
+          "floor": 1,
+          "x": 30,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f1_c3",
+          "floor": 1,
+          "x": 50,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f1_c4",
+          "floor": 1,
+          "x": 70,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f1_c5",
+          "floor": 1,
+          "x": 90,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f1_stairs",
+          "floor": 1,
+          "x": 50,
+          "y": 50,
+          "type": "階段"
+        },
+        {
+          "id": "f1_elevator",
+          "floor": 1,
+          "x": 58,
+          "y": 50,
+          "type": "EV"
+        },
+        {
+          "id": "f1_entrance",
+          "floor": 1,
+          "x": 3,
+          "y": 50,
+          "type": "入口"
+        },
+        {
+          "id": "f1_zoneA",
+          "floor": 1,
+          "x": 20,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f1_zoneB",
+          "floor": 1,
+          "x": 20,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f1_zoneC",
+          "floor": 1,
+          "x": 80,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f1_zoneD",
+          "floor": 1,
+          "x": 80,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f1_subpassage",
+          "floor": 1,
+          "x": 95,
+          "y": 88,
+          "type": "サブ通路"
+        },
+        {
+          "id": "f1_wp_P001",
+          "floor": 1,
+          "x": 17,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P002",
+          "floor": 1,
+          "x": 24,
+          "y": 23,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P003",
+          "floor": 1,
+          "x": 18,
+          "y": 24,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P004",
+          "floor": 1,
+          "x": 23,
+          "y": 77,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P005",
+          "floor": 1,
+          "x": 16,
+          "y": 82,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P006",
+          "floor": 1,
+          "x": 22,
+          "y": 85,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P007",
+          "floor": 1,
+          "x": 77,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P008",
+          "floor": 1,
+          "x": 83,
+          "y": 22,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P009",
+          "floor": 1,
+          "x": 93,
+          "y": 86,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f1_wp_P010",
+          "floor": 1,
+          "x": 97,
+          "y": 90,
+          "type": "商品近傍"
+        }
+      ],
+      "edges": [
+        {
+          "from": "f1_c1",
+          "to": "f1_c2",
+          "distance": 20.0
+        },
+        {
+          "from": "f1_c2",
+          "to": "f1_c3",
+          "distance": 20.0
+        },
+        {
+          "from": "f1_c3",
+          "to": "f1_c4",
+          "distance": 20.0
+        },
+        {
+          "from": "f1_c4",
+          "to": "f1_c5",
+          "distance": 20.0
+        },
+        {
+          "from": "f1_c3",
+          "to": "f1_stairs",
+          "distance": 0.0
+        },
+        {
+          "from": "f1_c3",
+          "to": "f1_elevator",
+          "distance": 8.0
+        },
+        {
+          "from": "f1_entrance",
+          "to": "f1_c1",
+          "distance": 7.0
+        },
+        {
+          "from": "f1_zoneA",
+          "to": "f1_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f1_zoneB",
+          "to": "f1_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f1_zoneC",
+          "to": "f1_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f1_zoneD",
+          "to": "f1_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f1_subpassage",
+          "to": "f1_c5",
+          "distance": 38.33
+        },
+        {
+          "from": "f1_wp_P001",
+          "to": "f1_zoneA",
+          "distance": 3.61
+        },
+        {
+          "from": "f1_wp_P002",
+          "to": "f1_zoneA",
+          "distance": 5.0
+        },
+        {
+          "from": "f1_wp_P003",
+          "to": "f1_zoneA",
+          "distance": 4.47
+        },
+        {
+          "from": "f1_wp_P004",
+          "to": "f1_zoneB",
+          "distance": 4.24
+        },
+        {
+          "from": "f1_wp_P005",
+          "to": "f1_zoneB",
+          "distance": 4.47
+        },
+        {
+          "from": "f1_wp_P006",
+          "to": "f1_zoneB",
+          "distance": 5.39
+        },
+        {
+          "from": "f1_wp_P007",
+          "to": "f1_zoneC",
+          "distance": 3.61
+        },
+        {
+          "from": "f1_wp_P008",
+          "to": "f1_zoneC",
+          "distance": 3.61
+        },
+        {
+          "from": "f1_wp_P009",
+          "to": "f1_subpassage",
+          "distance": 2.83
+        },
+        {
+          "from": "f1_wp_P010",
+          "to": "f1_subpassage",
+          "distance": 2.83
+        }
+      ],
+      "sub_passages": [
+        {
+          "waypoint_id": "f1_subpassage",
+          "floor": 1,
+          "note": "関連商品集積・低通過率のサブ通路"
+        }
+      ]
+    },
+    {
+      "floor": 2,
+      "floorplan": {
+        "type": "zones_rect",
+        "width": 100,
+        "height": 100,
+        "zones_rect": [
+          {
+            "zone": "A",
+            "x": 5,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "B",
+            "x": 5,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "C",
+            "x": 60,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "D",
+            "x": 60,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "SUB",
+            "x": 85,
+            "y": 70,
+            "w": 14,
+            "h": 28
+          }
+        ]
+      },
+      "zones": [
+        {
+          "zone": "A",
+          "floor": 2,
+          "x": 20,
+          "y": 20
+        },
+        {
+          "zone": "B",
+          "floor": 2,
+          "x": 20,
+          "y": 80
+        },
+        {
+          "zone": "C",
+          "floor": 2,
+          "x": 80,
+          "y": 20
+        },
+        {
+          "zone": "D",
+          "floor": 2,
+          "x": 80,
+          "y": 80
+        }
+      ],
+      "waypoints": [
+        {
+          "id": "f2_c1",
+          "floor": 2,
+          "x": 10,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f2_c2",
+          "floor": 2,
+          "x": 30,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f2_c3",
+          "floor": 2,
+          "x": 50,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f2_c4",
+          "floor": 2,
+          "x": 70,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f2_c5",
+          "floor": 2,
+          "x": 90,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f2_stairs",
+          "floor": 2,
+          "x": 50,
+          "y": 50,
+          "type": "階段"
+        },
+        {
+          "id": "f2_elevator",
+          "floor": 2,
+          "x": 58,
+          "y": 50,
+          "type": "EV"
+        },
+        {
+          "id": "f2_zoneA",
+          "floor": 2,
+          "x": 20,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f2_zoneB",
+          "floor": 2,
+          "x": 20,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f2_zoneC",
+          "floor": 2,
+          "x": 80,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f2_zoneD",
+          "floor": 2,
+          "x": 80,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f2_subpassage",
+          "floor": 2,
+          "x": 95,
+          "y": 88,
+          "type": "サブ通路"
+        },
+        {
+          "id": "f2_wp_P011",
+          "floor": 2,
+          "x": 17,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P012",
+          "floor": 2,
+          "x": 24,
+          "y": 22,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P013",
+          "floor": 2,
+          "x": 17,
+          "y": 77,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P014",
+          "floor": 2,
+          "x": 23,
+          "y": 79,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P015",
+          "floor": 2,
+          "x": 93,
+          "y": 89,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P016",
+          "floor": 2,
+          "x": 78,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P017",
+          "floor": 2,
+          "x": 83,
+          "y": 23,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P018",
+          "floor": 2,
+          "x": 77,
+          "y": 78,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f2_wp_P019",
+          "floor": 2,
+          "x": 83,
+          "y": 82,
+          "type": "商品近傍"
+        }
+      ],
+      "edges": [
+        {
+          "from": "f2_c1",
+          "to": "f2_c2",
+          "distance": 20.0
+        },
+        {
+          "from": "f2_c2",
+          "to": "f2_c3",
+          "distance": 20.0
+        },
+        {
+          "from": "f2_c3",
+          "to": "f2_c4",
+          "distance": 20.0
+        },
+        {
+          "from": "f2_c4",
+          "to": "f2_c5",
+          "distance": 20.0
+        },
+        {
+          "from": "f2_c3",
+          "to": "f2_stairs",
+          "distance": 0.0
+        },
+        {
+          "from": "f2_c3",
+          "to": "f2_elevator",
+          "distance": 8.0
+        },
+        {
+          "from": "f2_zoneA",
+          "to": "f2_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f2_zoneB",
+          "to": "f2_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f2_zoneC",
+          "to": "f2_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f2_zoneD",
+          "to": "f2_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f2_subpassage",
+          "to": "f2_c5",
+          "distance": 38.33
+        },
+        {
+          "from": "f2_wp_P011",
+          "to": "f2_zoneA",
+          "distance": 3.61
+        },
+        {
+          "from": "f2_wp_P012",
+          "to": "f2_zoneA",
+          "distance": 4.47
+        },
+        {
+          "from": "f2_wp_P013",
+          "to": "f2_zoneB",
+          "distance": 4.24
+        },
+        {
+          "from": "f2_wp_P014",
+          "to": "f2_zoneB",
+          "distance": 3.16
+        },
+        {
+          "from": "f2_wp_P015",
+          "to": "f2_subpassage",
+          "distance": 2.24
+        },
+        {
+          "from": "f2_wp_P016",
+          "to": "f2_zoneC",
+          "distance": 2.83
+        },
+        {
+          "from": "f2_wp_P017",
+          "to": "f2_zoneC",
+          "distance": 4.24
+        },
+        {
+          "from": "f2_wp_P018",
+          "to": "f2_zoneD",
+          "distance": 3.61
+        },
+        {
+          "from": "f2_wp_P019",
+          "to": "f2_zoneD",
+          "distance": 3.61
+        }
+      ],
+      "sub_passages": [
+        {
+          "waypoint_id": "f2_subpassage",
+          "floor": 2,
+          "note": "関連商品集積・低通過率のサブ通路"
+        }
+      ]
+    },
+    {
+      "floor": 3,
+      "floorplan": {
+        "type": "zones_rect",
+        "width": 100,
+        "height": 100,
+        "zones_rect": [
+          {
+            "zone": "A",
+            "x": 5,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "B",
+            "x": 5,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "C",
+            "x": 60,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "D",
+            "x": 60,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "SUB",
+            "x": 85,
+            "y": 70,
+            "w": 14,
+            "h": 28
+          }
+        ]
+      },
+      "zones": [
+        {
+          "zone": "A",
+          "floor": 3,
+          "x": 20,
+          "y": 20
+        },
+        {
+          "zone": "B",
+          "floor": 3,
+          "x": 20,
+          "y": 80
+        },
+        {
+          "zone": "C",
+          "floor": 3,
+          "x": 80,
+          "y": 20
+        },
+        {
+          "zone": "D",
+          "floor": 3,
+          "x": 80,
+          "y": 80
+        }
+      ],
+      "waypoints": [
+        {
+          "id": "f3_c1",
+          "floor": 3,
+          "x": 10,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f3_c2",
+          "floor": 3,
+          "x": 30,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f3_c3",
+          "floor": 3,
+          "x": 50,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f3_c4",
+          "floor": 3,
+          "x": 70,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f3_c5",
+          "floor": 3,
+          "x": 90,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f3_stairs",
+          "floor": 3,
+          "x": 50,
+          "y": 50,
+          "type": "階段"
+        },
+        {
+          "id": "f3_elevator",
+          "floor": 3,
+          "x": 58,
+          "y": 50,
+          "type": "EV"
+        },
+        {
+          "id": "f3_zoneA",
+          "floor": 3,
+          "x": 20,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f3_zoneB",
+          "floor": 3,
+          "x": 20,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f3_zoneC",
+          "floor": 3,
+          "x": 80,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f3_zoneD",
+          "floor": 3,
+          "x": 80,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f3_subpassage",
+          "floor": 3,
+          "x": 95,
+          "y": 88,
+          "type": "サブ通路"
+        },
+        {
+          "id": "f3_wp_P020",
+          "floor": 3,
+          "x": 17,
+          "y": 19,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P021",
+          "floor": 3,
+          "x": 24,
+          "y": 23,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P022",
+          "floor": 3,
+          "x": 17,
+          "y": 77,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P023",
+          "floor": 3,
+          "x": 23,
+          "y": 79,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P024",
+          "floor": 3,
+          "x": 77,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P025",
+          "floor": 3,
+          "x": 82,
+          "y": 22,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P026",
+          "floor": 3,
+          "x": 93,
+          "y": 86,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P027",
+          "floor": 3,
+          "x": 77,
+          "y": 78,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f3_wp_P028",
+          "floor": 3,
+          "x": 83,
+          "y": 82,
+          "type": "商品近傍"
+        }
+      ],
+      "edges": [
+        {
+          "from": "f3_c1",
+          "to": "f3_c2",
+          "distance": 20.0
+        },
+        {
+          "from": "f3_c2",
+          "to": "f3_c3",
+          "distance": 20.0
+        },
+        {
+          "from": "f3_c3",
+          "to": "f3_c4",
+          "distance": 20.0
+        },
+        {
+          "from": "f3_c4",
+          "to": "f3_c5",
+          "distance": 20.0
+        },
+        {
+          "from": "f3_c3",
+          "to": "f3_stairs",
+          "distance": 0.0
+        },
+        {
+          "from": "f3_c3",
+          "to": "f3_elevator",
+          "distance": 8.0
+        },
+        {
+          "from": "f3_zoneA",
+          "to": "f3_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f3_zoneB",
+          "to": "f3_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f3_zoneC",
+          "to": "f3_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f3_zoneD",
+          "to": "f3_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f3_subpassage",
+          "to": "f3_c5",
+          "distance": 38.33
+        },
+        {
+          "from": "f3_wp_P020",
+          "to": "f3_zoneA",
+          "distance": 3.16
+        },
+        {
+          "from": "f3_wp_P021",
+          "to": "f3_zoneA",
+          "distance": 5.0
+        },
+        {
+          "from": "f3_wp_P022",
+          "to": "f3_zoneB",
+          "distance": 4.24
+        },
+        {
+          "from": "f3_wp_P023",
+          "to": "f3_zoneB",
+          "distance": 3.16
+        },
+        {
+          "from": "f3_wp_P024",
+          "to": "f3_zoneC",
+          "distance": 3.61
+        },
+        {
+          "from": "f3_wp_P025",
+          "to": "f3_zoneC",
+          "distance": 2.83
+        },
+        {
+          "from": "f3_wp_P026",
+          "to": "f3_subpassage",
+          "distance": 2.83
+        },
+        {
+          "from": "f3_wp_P027",
+          "to": "f3_zoneD",
+          "distance": 3.61
+        },
+        {
+          "from": "f3_wp_P028",
+          "to": "f3_zoneD",
+          "distance": 3.61
+        }
+      ],
+      "sub_passages": [
+        {
+          "waypoint_id": "f3_subpassage",
+          "floor": 3,
+          "note": "関連商品集積・低通過率のサブ通路"
+        }
+      ]
+    },
+    {
+      "floor": 4,
+      "floorplan": {
+        "type": "zones_rect",
+        "width": 100,
+        "height": 100,
+        "zones_rect": [
+          {
+            "zone": "A",
+            "x": 5,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "B",
+            "x": 5,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "C",
+            "x": 60,
+            "y": 5,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "D",
+            "x": 60,
+            "y": 60,
+            "w": 35,
+            "h": 35
+          },
+          {
+            "zone": "SUB",
+            "x": 85,
+            "y": 70,
+            "w": 14,
+            "h": 28
+          }
+        ]
+      },
+      "zones": [
+        {
+          "zone": "A",
+          "floor": 4,
+          "x": 20,
+          "y": 20
+        },
+        {
+          "zone": "B",
+          "floor": 4,
+          "x": 20,
+          "y": 80
+        },
+        {
+          "zone": "C",
+          "floor": 4,
+          "x": 80,
+          "y": 20
+        },
+        {
+          "zone": "D",
+          "floor": 4,
+          "x": 80,
+          "y": 80
+        }
+      ],
+      "waypoints": [
+        {
+          "id": "f4_c1",
+          "floor": 4,
+          "x": 10,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f4_c2",
+          "floor": 4,
+          "x": 30,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f4_c3",
+          "floor": 4,
+          "x": 50,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f4_c4",
+          "floor": 4,
+          "x": 70,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f4_c5",
+          "floor": 4,
+          "x": 90,
+          "y": 50,
+          "type": "通路"
+        },
+        {
+          "id": "f4_stairs",
+          "floor": 4,
+          "x": 50,
+          "y": 50,
+          "type": "階段"
+        },
+        {
+          "id": "f4_elevator",
+          "floor": 4,
+          "x": 58,
+          "y": 50,
+          "type": "EV"
+        },
+        {
+          "id": "f4_zoneA",
+          "floor": 4,
+          "x": 20,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f4_zoneB",
+          "floor": 4,
+          "x": 20,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f4_zoneC",
+          "floor": 4,
+          "x": 80,
+          "y": 20,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f4_zoneD",
+          "floor": 4,
+          "x": 80,
+          "y": 80,
+          "type": "ゾーン"
+        },
+        {
+          "id": "f4_subpassage",
+          "floor": 4,
+          "x": 95,
+          "y": 88,
+          "type": "サブ通路"
+        },
+        {
+          "id": "f4_wp_P029",
+          "floor": 4,
+          "x": 17,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P030",
+          "floor": 4,
+          "x": 24,
+          "y": 22,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P031",
+          "floor": 4,
+          "x": 17,
+          "y": 78,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P032",
+          "floor": 4,
+          "x": 23,
+          "y": 81,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P033",
+          "floor": 4,
+          "x": 77,
+          "y": 18,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P034",
+          "floor": 4,
+          "x": 83,
+          "y": 20,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P035",
+          "floor": 4,
+          "x": 93,
+          "y": 87,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P036",
+          "floor": 4,
+          "x": 77,
+          "y": 78,
+          "type": "商品近傍"
+        },
+        {
+          "id": "f4_wp_P037",
+          "floor": 4,
+          "x": 83,
+          "y": 82,
+          "type": "商品近傍"
+        }
+      ],
+      "edges": [
+        {
+          "from": "f4_c1",
+          "to": "f4_c2",
+          "distance": 20.0
+        },
+        {
+          "from": "f4_c2",
+          "to": "f4_c3",
+          "distance": 20.0
+        },
+        {
+          "from": "f4_c3",
+          "to": "f4_c4",
+          "distance": 20.0
+        },
+        {
+          "from": "f4_c4",
+          "to": "f4_c5",
+          "distance": 20.0
+        },
+        {
+          "from": "f4_c3",
+          "to": "f4_stairs",
+          "distance": 0.0
+        },
+        {
+          "from": "f4_c3",
+          "to": "f4_elevator",
+          "distance": 8.0
+        },
+        {
+          "from": "f4_zoneA",
+          "to": "f4_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f4_zoneB",
+          "to": "f4_c2",
+          "distance": 31.62
+        },
+        {
+          "from": "f4_zoneC",
+          "to": "f4_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f4_zoneD",
+          "to": "f4_c4",
+          "distance": 31.62
+        },
+        {
+          "from": "f4_subpassage",
+          "to": "f4_c5",
+          "distance": 38.33
+        },
+        {
+          "from": "f4_wp_P029",
+          "to": "f4_zoneA",
+          "distance": 3.61
+        },
+        {
+          "from": "f4_wp_P030",
+          "to": "f4_zoneA",
+          "distance": 4.47
+        },
+        {
+          "from": "f4_wp_P031",
+          "to": "f4_zoneB",
+          "distance": 3.61
+        },
+        {
+          "from": "f4_wp_P032",
+          "to": "f4_zoneB",
+          "distance": 3.16
+        },
+        {
+          "from": "f4_wp_P033",
+          "to": "f4_zoneC",
+          "distance": 3.61
+        },
+        {
+          "from": "f4_wp_P034",
+          "to": "f4_zoneC",
+          "distance": 3.0
+        },
+        {
+          "from": "f4_wp_P035",
+          "to": "f4_subpassage",
+          "distance": 2.24
+        },
+        {
+          "from": "f4_wp_P036",
+          "to": "f4_zoneD",
+          "distance": 3.61
+        },
+        {
+          "from": "f4_wp_P037",
+          "to": "f4_zoneD",
+          "distance": 3.61
+        }
+      ],
+      "sub_passages": [
+        {
+          "waypoint_id": "f4_subpassage",
+          "floor": 4,
+          "note": "関連商品集積・低通過率のサブ通路"
+        }
+      ]
+    }
+  ],
+  "inter_floor_edges": [
+    {
+      "from": "f1_stairs",
+      "to": "f2_stairs",
+      "distance": 15.0
+    },
+    {
+      "from": "f1_elevator",
+      "to": "f2_elevator",
+      "distance": 12.0
+    },
+    {
+      "from": "f2_stairs",
+      "to": "f3_stairs",
+      "distance": 15.0
+    },
+    {
+      "from": "f2_elevator",
+      "to": "f3_elevator",
+      "distance": 12.0
+    },
+    {
+      "from": "f3_stairs",
+      "to": "f4_stairs",
+      "distance": 15.0
+    },
+    {
+      "from": "f3_elevator",
+      "to": "f4_elevator",
+      "distance": 12.0
+    }
+  ]
+}

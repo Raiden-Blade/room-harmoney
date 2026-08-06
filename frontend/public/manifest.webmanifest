@@ -1,0 +1,17 @@
+{
+  "name": "Room Harmony",
+  "short_name": "RoomHarmony",
+  "description": "来店客向けアプリ Room Harmony（QRスキャンで起動し、関連商品・コーディネート・店内ルートを案内）",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#aa3bff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

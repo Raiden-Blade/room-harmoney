@@ -1,0 +1,11 @@
+Testing: P033 グレー収納ボックス Lサイズ 収納ボックス
+related count: 8
+  P031 cat_mid=書棚・シェルフ lift=1.6 high_flag=False score=1.6000
+  P032 cat_mid=書棚・シェルフ lift=1.6 high_flag=False score=1.6000
+  P018 cat_mid=チェスト・収納家具 lift=1.4 high_flag=False score=1.4000
+  P019 cat_mid=チェスト・収納家具 lift=1.4 high_flag=False score=1.4000
+  P016 cat_mid=カーテン lift=1.2 high_flag=False score=1.2000
+  P017 cat_mid=カーテン lift=1.2 high_flag=False score=1.2000
+  P027 cat_mid=食器 lift=1.2 high_flag=False score=1.2000
+  P028 cat_mid=食器 lift=1.2 high_flag=False score=1.2000
+Is lift non-increasing overall (expected since no high_lift flags here unless coordinate affinity differs): True

@@ -1,0 +1,12 @@
+=== curl -i http://127.0.0.1:8000/health ===
+HTTP/1.1 200 OK
+date: Wed, 05 Aug 2026 11:43:47 GMT
+server: uvicorn
+content-length: 15
+content-type: application/json
+
+{"status":"ok"}
+=== Browser MCP navigate to http://127.0.0.1:8000/health ===
+Title: 
+URL: http://127.0.0.1:8000
+Body: {"status":"ok"}

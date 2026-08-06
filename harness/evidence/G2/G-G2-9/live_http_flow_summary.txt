@@ -1,0 +1,11 @@
+=== session ===
+{"session_id":"44e69bef-7140-45b2-862f-57b576d77f7f","start":{"floor":1,"x":3,"y":50},"floor":1,"experiment_group":"control"}
+=== recommendations (product_id=P027) - lift order 1.3,1.3,1.3,1.2,1.2,1.2,1.0,1.0 confirmed ===
+(see full body captured above in tool output; lifts strictly non-increasing, matches integration test expectation)
+=== events POST chatbot_open ===
+{"event_id":3,"session_id":"44e69bef-7140-45b2-862f-57b576d77f7f","event_type":"chatbot_open","payload":{"source":"qa_live_check"},"experiment_group":"control","timestamp":"2026-08-06T02:56:19.232704+00:00"}
+(event_id increments 1->2->3 across session_start/related_view/chatbot_open, all carry experiment_group=control)
+=== route (live) ===
+{"waypoints":[...5 waypoints from floor1 entrance to P001...],"sub_passages":[],"visiting_order":["P001"],"unreachable":[],"total_distance":62.23}
+=== recommendations without session ===
+HTTP:409 {"code":"VISIT_LOCK_REQUIRED","message":"..."}

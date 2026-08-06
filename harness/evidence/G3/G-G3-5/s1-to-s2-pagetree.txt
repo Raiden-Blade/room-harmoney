@@ -1,0 +1,70 @@
+URL navigated: http://localhost:5173/s/QR-PRODUCT-P001
+Resolved URL after navigation: http://localhost:5173/products/P001 (S2 product detail)
+
+--- get_page_text ---
+Title: Room Harmony
+URL: http://localhost:5173
+Source element: <main>
+---
+ナチュラル2人掛けソファ
+
+リビング / ソファ / 2人掛けソファ・ナチュラル
+
+¥39,900
+
+売場: 1F ゾーンA
+
+この商品の場所を見る
+関連商品
+
+ブラックデスクライト
+
+¥3,980伸びしろ
+
+場所を見る
+
+ホワイトデスクライト
+
+¥3,480伸びしろ
+
+場所を見る
+この商品を使ったコーディネート
+
+ナチュラルリビング（ナチュラル）
+
+チャットボットに相談する
+
+--- read_page (all) ---
+main [ref_3]
+ region [ref_4]
+  image "ナチュラル2人掛けソファ" [ref_5]
+  heading "ナチュラル2人掛けソファ" [ref_6]
+  generic "リビング / ソファ / 2人掛けソファ・ナチュラル" [ref_7]
+  generic "¥39,900" [ref_8]
+  generic "売場: 1F ゾーンA" [ref_9]
+  link "この商品の場所を見る" [ref_1] href="/route?to_product=P001"
+ region [ref_10]
+  heading "関連商品" [ref_11]
+  list [ref_12]
+   listitem [ref_13]
+    image "ブラックデスクライト" [ref_14]
+    generic "ブラックデスクライト" [ref_15]
+    generic "¥3,980" [ref_16]
+     generic "伸びしろ" [ref_17]
+    button "場所を見る" [ref_2] type="button"
+   listitem [ref_18]
+    image "ホワイトデスクライト" [ref_19]
+    generic "ホワイトデスクライト" [ref_20]
+    generic "¥3,480" [ref_21]
+     generic "伸びしろ" [ref_22]
+    button "場所を見る" [ref_23] type="button"
+ region [ref_24]
+  heading "この商品を使ったコーディネート" [ref_25]
+  list [ref_26]
+   listitem [ref_27]
+    link [ref_28] href="/coordinates/C001"
+     image "ナチュラルリビング" [ref_29]
+     generic "ナチュラルリビング（ナチュラル）" [ref_30]
+ link "チャットボットに相談する" [ref_31] href="https://example.invalid/chatbot?product_id=P001"
+
+NOTE: screenshot action failed with "Screenshot timed out after 5s: the Browser pane is not displayed, so the page is not compositing frames." This appears to be an environment limitation (headless/pane not visible), not an application defect. Evidence captured via read_page/get_page_text instead per HARNESS.md allowance.

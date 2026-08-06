@@ -1,0 +1,17 @@
+再現コマンド:
+curl -s "http://localhost:8000/api/recommendations?product_id=P001&session_id=<session>"
+
+レスポンス（抜粋、related配列）:
+[
+  {"product": {"product_id": "P036", "name": "ブラックデスクライト", ...}, "lift": 2.8, "score": 3.22, "high_lift_low_corate": true},
+  {"product": {"product_id": "P037", "name": "ホワイトデスクライト", ...}, "lift": 2.8, "score": 3.22, "high_lift_low_corate": true}
+]
+
+ブラウザ表示（get_page_text, S2 /products/P001）:
+関連商品
+ブラックデスクライト ¥3,980 伸びしろ
+ホワイトデスクライト ¥3,480 伸びしろ
+
+結論: バックエンドAPIが返す順（リフト降順）とフロントの表示順が一致している（並び替えを独自に
+行っていない）。high_lift_low_corate=true の商品には「伸びしろ」バッジが表示されている
+（ProductPage.tsx の high-lift-low-corate-badge、AC-1関連）。

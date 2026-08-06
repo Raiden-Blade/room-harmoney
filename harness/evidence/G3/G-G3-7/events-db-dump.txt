@@ -1,0 +1,50 @@
+再現コマンド:
+cd backend
+.venv\Scripts\python.exe -c "
+import sqlite3
+conn = sqlite3.connect('../data/room_harmony.db')
+conn.row_factory = sqlite3.Row
+cur = conn.execute('SELECT id, session_id, event_type, payload, experiment_group, timestamp FROM events ORDER BY id DESC LIMIT 20')
+for row in cur:
+    print(dict(row))
+"
+
+出力（E2E操作: /s/QR-PRODUCT-P001 → S2 → related_tap(P036) → S4 → /coordinates/C001 → 直接 /route?to_product=P001）:
+
+{'id': 16, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'route_view', 'payload': '{"from_qr": "QR-PRODUCT-P001", "to_product": ["P001"], "visiting_order": ["P001"], "sub_passage_count": 0, "unreachable": []}', 'experiment_group': 'control', 'timestamp': '2026-08-06T03:31:11.344468+00:00'}
+{'id': 15, ... route_view (duplicate, 下記「観察事項」参照) ...}
+{'id': 14, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'coordinate_view', 'payload': '{"coordinate_id": "C001"}', 'experiment_group': 'control', ...}
+{'id': 13, ... coordinate_view (duplicate) ...}
+{'id': 12, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'route_view', 'payload': '{"from_qr": "QR-PRODUCT-P001", "to_product": ["P036"], "visiting_order": ["P036"], "sub_passage_count": 0, "unreachable": []}', 'experiment_group': 'control', ...}
+{'id': 11, ... route_view (duplicate) ...}
+{'id': 10, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'related_tap', 'payload': '{"from_product_id": "P001", "to_product_id": "P036", "lift": 2.8, "score": 3.22}', 'experiment_group': 'control', ...}
+{'id': 9, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'related_view', 'payload': '{"product_id": "P001", "related_product_ids": ["P036", "P037"], "coordinate_ids": ["C001"]}', 'experiment_group': 'control', ...}
+{'id': 8, ... related_view (duplicate) ...}
+{'id': 7, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'qr_scan', 'payload': '{"qr_id": "QR-PRODUCT-P001", "qr_type": "product", "product_id": "P001"}', 'experiment_group': 'control', ...}
+{'id': 6, 'session_id': '3748deaf-03d9-48b5-ae0e-3748148f53cc', 'event_type': 'qr_scan', 'payload': '{"qr_id": "QR-PRODUCT-P001", "qr_type": "product", "product_id": "P001"}', 'experiment_group': 'treatment', ...}
+{'id': 5, 'session_id': 'cce0ac98-9f3a-4a1b-82d9-789abfe4209e', 'event_type': 'session_start', 'payload': '{..., "experiment_group": "control"}', ...}
+{'id': 4, 'session_id': '3748deaf-03d9-48b5-ae0e-3748148f53cc', 'event_type': 'session_start', 'payload': '{..., "experiment_group": "treatment"}', ...}
+
+結論: qr_scan / session_start / related_view / related_tap / coordinate_view / route_view の全イベント種別が
+POST /api/events もしくはバックエンド側自動記録により events テーブルに記録され、各行に experiment_group
+（A/Bどちらかの割付値）が付与されている。AC-4（全操作がログ記録され experiment_group が付与される）を確認。
+
+観察事項（FAILにはしないが実装者への申し送り事項）:
+- id=4/5 と id=6/7 のように、S1（ScanPage）で同一のQR直リンク到達に対し「2つの異なるsession_id」
+  （3748deaf.../treatment と cce0ac98.../control）が作成され、qr_scan イベントも2件（experiment_group が
+  treatment と control で異なる）記録された。
+- 原因: `frontend/src/main.tsx` は React `<StrictMode>` を使用しており、開発ビルド（`npm run dev`）では
+  effect が意図的に2回実行される。`ScanPage.tsx` の `useEffect` 内 `resolveAndEnter` 呼び出しは
+  `ProductPage.tsx`/`RoutePage.tsx`/`CoordinatePage.tsx` と異なり cancelled ガードが無いため、
+  2回の実行がどちらも `createSession` を最後まで実行し、2つの独立したセッション行・qr_scanイベント行を
+  作成してしまう（ProductPage等はcancelledガードがあるためsetStateこそ1回に抑えられるが、
+  GETリクエスト自体は2回飛び、related_view/route_view/coordinate_view等のサーバ側自動記録イベントは
+  やはり重複する）。
+- 影響範囲: `npm run dev`（StrictMode有効な開発ビルド）でのみ発生。`vite build` の本番バンドルでは
+  StrictModeのeffect二重実行はReactの仕様上発生しない想定（未検証: `vite preview` はバックエンドCORSが
+  `http://localhost:5173` のみ許可のため `http://localhost:4173` からは検証不可だった。
+  `backend/app/main.py` のCORS許可オリジンをコメントで「本番のオリジンは環境変数化して後続ステップで
+  絞り込む」としており、既知の未確定事項）。
+- 本観測はG3ゲート自体（build/test/E2E到達）のPASS/FAILを左右するものではないが、AC-4の「正確な」ログ
+  という観点、および開発時のセッション整合性（同一QRスキャンで複数セッションが割り当てられうる）の
+  データ品質上の懸念として記録する。

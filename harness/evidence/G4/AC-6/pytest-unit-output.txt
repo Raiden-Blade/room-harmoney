@@ -1,0 +1,37 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.3, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\haseg\OneDrive\Documents\ニトリ制作物\room-harmony\backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\haseg\OneDrive\Documents\ニトリ制作物\room-harmony\backend
+configfile: pytest.ini
+plugins: anyio-4.14.2
+collecting ... collected 27 items
+
+tests/unit/test_config.py::test_default_cors_allow_origins_include_dev_and_preview_ports PASSED [  3%]
+tests/unit/test_config.py::test_cors_allow_origins_read_from_env_comma_separated PASSED [  7%]
+tests/unit/test_config.py::test_cors_allow_origins_ignores_empty_segments PASSED [ 11%]
+tests/unit/test_recommender.py::test_related_sorted_by_lift_descending PASSED [ 14%]
+tests/unit/test_recommender.py::test_high_lift_low_corate_is_prioritized_over_equal_lift PASSED [ 18%]
+tests/unit/test_recommender.py::test_hybrid_weight_changes_ranking_order PASSED [ 22%]
+tests/unit/test_recommender.py::test_unknown_product_id_returns_empty_result_safely PASSED [ 25%]
+tests/unit/test_recommender.py::test_no_related_co_purchase_returns_empty_related_list PASSED [ 29%]
+tests/unit/test_recommender.py::test_no_matching_coordinates_returns_empty_coordinates_list PASSED [ 33%]
+tests/unit/test_recommender.py::test_coordinates_only_include_ones_containing_origin_product PASSED [ 37%]
+tests/unit/test_routing.py::test_shortest_path_picks_the_actual_shortest_route PASSED [ 40%]
+tests/unit/test_routing.py::test_same_start_and_end_returns_zero_distance_single_point PASSED [ 44%]
+tests/unit/test_routing.py::test_multi_destination_route_proposes_nearest_neighbor_order PASSED [ 48%]
+tests/unit/test_routing.py::test_different_floor_is_solved_via_stairs_connection PASSED [ 51%]
+tests/unit/test_routing.py::test_no_route_raises_route_not_found_error PASSED [ 55%]
+tests/unit/test_routing.py::test_unknown_node_id_raises_route_not_found_error PASSED [ 59%]
+tests/unit/test_routing.py::test_multi_destination_route_reports_unreachable_destinations PASSED [ 62%]
+tests/unit/test_routing.py::test_route_can_include_sub_passage_waypoint PASSED [ 66%]
+tests/unit/test_routing.py::test_nearest_node_resolves_qr_or_product_coordinate_to_waypoint PASSED [ 70%]
+tests/unit/test_routing.py::test_nearest_node_raises_when_no_candidate_on_floor PASSED [ 74%]
+tests/unit/test_sample_data_integrity.py::test_products_count_and_sub_passage_flag_within_spec PASSED [ 77%]
+tests/unit/test_sample_data_integrity.py::test_coordinates_product_ids_reference_existing_products PASSED [ 81%]
+tests/unit/test_sample_data_integrity.py::test_co_purchase_cat_mids_reference_existing_product_categories PASSED [ 85%]
+tests/unit/test_sample_data_integrity.py::test_co_purchase_has_intentional_high_lift_low_corate_pairs PASSED [ 88%]
+tests/unit/test_sample_data_integrity.py::test_store_map_all_waypoints_are_connected_across_four_floors PASSED [ 92%]
+tests/unit/test_sample_data_integrity.py::test_real_sample_data_route_from_entrance_to_floor4_product_resolves PASSED [ 96%]
+tests/unit/test_sample_data_integrity.py::test_real_sample_data_recommender_smoke PASSED [100%]
+
+============================= 27 passed in 0.82s ==============================

@@ -1,0 +1,89 @@
+G4 検証環境における PNG スクリーンショット取得の制約について（最終結論）
+
+要件（本タスク指示）: Playwright（実ブラウザ・ヘッドレスでPNGをファイル保存）を導入して
+証跡を残す。以下、実施内容と結論を記録する。
+
+--- 実施したこと ---
+1. frontend に `@playwright/test` を devDependency として追加
+   （`npm i -D @playwright/test --legacy-peer-deps`。既存の openapi-typescript と
+   typescript のバージョン peer 依存衝突は本追加と無関係の既存事象のため
+   --legacy-peer-deps で回避。実装コードには一切手を入れていない）。
+2. `npx playwright install chromium` で Chromium 本体をダウンロード・展開
+   （`%LOCALAPPDATA%\ms-playwright\chromium-1234\` に `INSTALLATION_COMPLETE`
+   マーカーまで生成され、展開自体は正常に完了）。
+3. `frontend/playwright.config.ts` と `frontend/e2e/happy-path.e2e.ts`
+   （本ゲート専用の新規ファイル。既存実装コードは変更していない）を作成し、
+   S1→S2→S4→S3→S4のハッピーパス＋AC-5のロック確認を行うテストを実装、
+   `page.screenshot({ path: ... })` でPNG保存するステップを含めた。
+4. `npx playwright test` を実行 → **全テストが `browserType.launch: spawn UNKNOWN`
+   で失敗**（3件とも起動失敗、テスト内容の実行に到達せず）。
+
+--- 根本原因の切り分け（このマシン固有のOS環境問題であることを確認） ---
+Node の `child_process.spawn()` で直接 chrome.exe を起動しても同じ結果になることを確認:
+  `spawn('...\\chrome-win64\\chrome.exe', ['--version'])` → `Error: spawn UNKNOWN
+  (errno: -4094, code: 'UNKNOWN')`
+一方、`cmd.exe` や `notepad.exe` は同じ Node の child_process.spawn から正常に起動できる
+ことを確認済み（Node/spawn機構そのものが壊れているわけではない）。
+
+PowerShell の `Start-Process` で chrome.exe を直接起動すると、より具体的なエラーメッセージが
+得られた:
+  "Start-Process : This command cannot be run due to the error: The application has
+   failed to start because its side-by-side configuration is incorrect. Please see the
+   application event log or use the command-line sxstrace.exe tool for more detail."
+
+Windows イベントログ（Application, ProviderName=SideBySide, EventID=33）で裏付け:
+  "Activation context generation failed for
+   'C:\Users\haseg\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe'.
+   Dependent Assembly 151.0.7922.34,language='*',type='win32',version='151.0.7922.34'
+   could not be found."
+これは chrome.exe と同ディレクトリに存在する `151.0.7922.34.manifest`
+（chrome_elf.dll を指す private side-by-side assembly マニフェスト。ファイル自体は
+正しいサイズで存在することを確認済み）を Windows の SxS サブシステムが
+アクティベーションコンテキスト生成時に解決できていない状態を示す。
+これは Playwright/Chromium のダウンロード内容やアプリ実装の問題ではなく、
+**このWindowsマシンのSxS/OS側の状態に起因する既知種の環境問題**である
+（Windows の破損したSxSキャッシュ・セキュリティソフトによるDLL検証妨害・
+VC++ランタイム関連コンポーネントの不整合等が典型的な原因として知られる）。
+
+このQAはセキュリティ/システム設定の変更を行う権限を持たない
+（本ロール規則: 「Modifying system or security settings」は禁止行為）ため、
+`sxstrace.exe` によるトレース詳細化やレジストリ/SxSキャッシュの修復、
+アンチウイルス除外設定の追加などの是正措置は実施していない。
+
+--- Claude_Browser MCP 側のフォールバック（G3で既知の制約） ---
+Playwright が使えないため、G3同様に Claude_Browser MCP
+（`preview_start`/`navigate`/`computer`/`read_page`/`get_page_text`/
+`read_network_requests`）で実ブラウザ操作によるE2E検証を実施した。
+`computer{action:"screenshot"}` は本タスクでも複数回・複数タイミング（ページ遷移直後・
+`scroll_to` 後・別タブ等）で試行したが、全て
+  "Screenshot timed out after 5s: the Browser pane is not displayed, so the page is
+   not compositing frames. Display the pane and retry."
+のエラーで失敗し、PNGを取得できなかった（`computer{action:"zoom"}` も同様に失敗）。
+一方、`read_page`（アクセシビリティツリー）・`get_page_text`・`read_network_requests`
+は正常に機能し、実際のDOM状態・実際に発行されたAPIリクエスト/レスポンス本文を
+取得できた。また、要素参照（ref）に対する `left_click` は多くの場合正常に機能したが
+（S2の「場所を見る」ボタン、S3の「揃える」ボタンなど）、一部の要素
+（画像を内包するカード型 `<Link>`）ではクリックが実際のDOM操作として反映されない
+事象が再現した（詳細: AC-2証跡ファイル参照）。このケースでは href が正しいことを
+DOM上で確認した上で直接URLナビゲートに切り替えて到達確認した。
+
+--- 最終結論（本タスクで求められた「環境制約の最終結論」） ---
+**この環境では Playwright によるヘッドレスPNGスクリーンショット取得はできなかった。**
+原因は実装コードの不具合ではなく、このWindowsマシンのSxS（side-by-side assembly）
+解決に関する環境固有の問題（chrome.exe起動そのものがOSレベルで失敗する）であり、
+QAの権限では是正できない（システム設定変更の禁止）。
+Claude_Browser MCP の画面合成ベースのスクリーンショット機能も同一環境で失敗した
+（G3から継続する既知の制約）。
+そのため本ゲートの証跡は、実ブラウザでの実操作結果（read_page/get_page_text/
+read_network_requests によるDOM状態・実APIレスポンスのテキストダンプ）と、
+バックエンドDBの直接クエリ結果を主な証跡として採用した。これはG3で採用した方法と
+同じ方針であり、独立したQA検証として十分な実効性を持つ（実際のブラウザでのAPI呼び出し・
+画面遷移・DOM状態を一つ一つ確認しており、モックやスタブではない）。
+
+再現手順（第三者が本結論を再現する場合）:
+  cd frontend
+  npm i -D @playwright/test --legacy-peer-deps
+  npx playwright install chromium
+  npx playwright test
+  → 同一の "spawn UNKNOWN" / SxS エラーが発生することを Windows イベントビューア
+    （アプリケーションログ、ProviderName=SideBySide）で確認できる。

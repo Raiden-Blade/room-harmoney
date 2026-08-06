@@ -1,0 +1,9 @@
+POST /api/session
+GET /api/qr/{qr_id}
+GET /api/products/{product_id}
+GET /api/recommendations
+GET /api/coordinates/{coordinate_id}
+GET /api/route
+GET /api/store-map/{floor}
+POST /api/events
+GET /health

@@ -1,0 +1,30 @@
+G-G1-4 要件との一致（軽い独立確認） — 実行結果メモ
+
+## 1. 中分類レベルで扱っているか（DECISIONS #2）／色スコア不使用
+
+- data/products.json（37件）の実フィールド:
+  ['product_id', 'name', 'cat_large', 'cat_mid', 'cat_small', 'color', 'price', 'image_url',
+   'floor', 'zone', 'x', 'y', 'sub_passage_flag']
+  -> cat_mid（中分類）フィールドが存在。color フィールドも商品マスタには存在するが、
+     推薦スコア計算（backend/recommender/hybrid.py）内では一切参照されていないことを確認済み
+     （`Grep pattern="color" path=backend/recommender` → No files found）。
+
+- data/co_purchase.json（6件フラグ付き / 全15件）の実フィールド:
+  ['cat_mid_a', 'cat_mid_b', 'co_purchase_rate', 'support', 'confidence', 'lift', 'high_lift_low_corate']
+  -> cat_mid_a / cat_mid_b（中分類同士のペア）でリフトを持つ。色の併売率スコアは存在しない。
+  -> HybridRecommender._co_purchase_lift_map() は products の cat_mid をキーに co_purchase を突合しており、
+     中分類レベルの併売率からリフトを近似する DECISIONS #2 の方針と一致。
+
+## 2. co_purchase に「リフト高×併売率低」ペアが実在し high_lift_low_corate=true が立っているか
+
+- flagged (high_lift_low_corate=true) count: 6件（範囲2〜10件の期待に整合）
+- flagged lifts:    [2.8, 3.0, 2.8, 2.6, 2.6, 3.5]
+- flagged supports: [0.0364, 0.0351, 0.037, 0.0338, 0.0343, 0.0315]
+- non-flagged 群: max lift = 1.8 / min support = 0.0458
+- 確認: 全 flagged 行で lift(2.6〜3.5) > non-flagged max lift(1.8)、
+        support(0.0315〜0.0364) < non-flagged min support(0.0458)
+  -> 「リフトは高いが現状の併売率（伸びしろ）は低い」という意図が実データに正しく反映されている。
+
+## 結論
+中分類粒度・色スコア不使用・high_lift_low_corateペアの実在は、いずれも実装コード＋実データを
+直接読んで独立に確認済み。DECISIONS.md #2 と5章の要件に一致。PASS。

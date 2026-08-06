@@ -1,0 +1,12 @@
+検証: data/*.json ハッシュ比較（テスト実行/pytest 前後で無改変）
+before(=after, 一致):
+74ce14abb37142fc3cc9d21a23127183 *aggregates.json
+945c09fc9afbf378d2b1061b5c8a0901 *co_purchase.json
+3aba6ae06b6be96cb9172015f527d03f *coordinates.json
+d751713988987e9331980363e24189ce *events.empty.json
+a044f63f98fef966a89a5fee712ee708 *products.json
+16e944b14792b47f2673031af08b31cc *qr_codes.json
+394b70625ca2b51d96b35f2e22e38ef1 *store_map.json
+
+pytest (tests/unit, tests/integration) 実行後: .db ファイルはリポジトリに一切生成されなかった（isolated_store fixture がtmp_path配下の隔離DBを使うため）。
+G-G2-9 (uvicorn 実サーバ起動での独立確認)後にのみ data/room_harmony.db が生成されたが、これはQAが自ら起動したライブ検証の副産物であり、検証後に削除し repo をクリーンな状態に戻した。

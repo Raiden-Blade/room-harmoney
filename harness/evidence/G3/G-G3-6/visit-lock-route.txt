@@ -1,0 +1,23 @@
+操作: 新規タブ（tabId=tab-1、sessionStorageなし＝来店セッション未確立）で
+http://localhost:5173/route?to_product=P001 に直接navigate。
+
+--- get_page_text ---
+この機能はご利用いただけません
+
+店頭のQRコードを読み取ってください。有効な来店セッションが開始されると、関連商品や店内ルートをご案内できます。
+
+QRを読み取る
+
+--- read_page (all) ---
+alert [ref_1]
+ heading "この機能はご利用いただけません" [ref_2]
+ generic "店頭のQRコードを読み取ってください。有効な来店セッションが開始されると、関連商品や店内ルートをご案内できます。" [ref_3]
+ link "QRを読み取る" [ref_4] href="/scan"
+
+--- network (urlPattern=route) ---
+[5880.14] GET http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=055a1d9f → 200 OK
+（バックエンド GET /api/route の呼び出しは無し。RoutePage.test.tsx の
+ 「有効なセッションが無い場合は来店ロックUIになり、routeAPIは呼ばれない（AC-5）」と一致）
+
+結果: 来店セッション未確立の状態で中核画面(/route)に直接アクセスすると、role="alert" のロックUIが
+表示され、QR読取(/scan)へ誘導するリンクが提示された。バックエンドAPIは呼ばれていない。AC-5 該当。

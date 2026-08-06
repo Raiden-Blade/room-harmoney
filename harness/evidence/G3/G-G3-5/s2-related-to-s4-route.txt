@@ -1,0 +1,39 @@
+操作: S2（/products/P001）の関連商品「ブラックデスクライト」の「場所を見る」ボタン(ref_2)をクリック。
+
+--- get_page_text (遷移後) ---
+店内ルート
+1F
+2F
+3F
+4F
+1. ブラックデスクライト
+ゾーンA
+ゾーンB
+ゾーンC
+ゾーンD
+サブ通路
+階段
+EV
+
+--- read_page (interactive/all, 遷移後) ---
+main [ref_32]
+ heading "店内ルート" [ref_33]
+ button "1F" [ref_34] type="button"
+ button "2F" [ref_35] type="button"
+ button "3F" [ref_36] type="button"
+ button "4F" [ref_37] type="button"
+ list [ref_38]
+  listitem "1. ブラックデスクライト" [ref_39]
+ img "フロア1のマップ" [ref_40]
+  generic "ゾーンA" [ref_41]
+  generic "ゾーンB" [ref_42]
+  generic "ゾーンC" [ref_43]
+  generic "ゾーンD" [ref_44]
+  generic "サブ通路" [ref_45]
+
+--- network: GET /api/route response body (P001->P036、フロア1から4への複数階ルート) ---
+{"waypoints":[{"floor":1,"x":17,"y":18,"type":"商品近傍"},{"floor":1,"x":20,"y":20,"type":"ゾーン"},{"floor":1,"x":30,"y":50,"type":"通路"},{"floor":1,"x":50,"y":50,"type":"通路"},{"floor":1,"x":50,"y":50,"type":"階段"},{"floor":2,"x":50,"y":50,"type":"階段"},{"floor":3,"x":50,"y":50,"type":"階段"},{"floor":4,"x":50,"y":50,"type":"階段"},{"floor":4,"x":50,"y":50,"type":"通路"},{"floor":4,"x":70,"y":50,"type":"通路"},{"floor":4,"x":80,"y":80,"type":"ゾーン"},{"floor":4,"x":77,"y":78,"type":"商品近傍"}],"sub_passages":[],"visiting_order":["P036"],"unreachable":[],"total_distance":155.46}
+
+結果: S2の関連商品「場所を見る」タップからS4（/route）へ正しく遷移し、フロア切替(1F〜4F)・巡回順(1.)が表示された。
+（SVGの内部要素はアクセシビリティツリーでは img "フロア1のマップ" に集約され個々のpath/line要素は展開されないため、
+ SVG描画の詳細アサーションはG3コンポーネントテスト（RoutePage.test.tsx: route-line/route-start/route-destination-*/route-subpassage testid）で担保。）

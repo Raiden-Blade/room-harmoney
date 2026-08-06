@@ -1,0 +1,13 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v4.1.10 C:/Users/haseg/OneDrive/Documents/ニトリ制作物/room-harmony/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  10 passed (10)
+   Start at  12:28:23
+   Duration  6.61s (transform 859ms, setup 4.34s, import 1.20s, tests 905ms, environment 13.17s)
+

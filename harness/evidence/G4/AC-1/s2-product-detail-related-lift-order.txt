@@ -1,0 +1,33 @@
+AC-1 検証: 商品QR（URL直リンク・フォールバック）→ 商品詳細 ＋ リフト順の関連商品（HARNESS.md AC-1）
+
+到達経路: `http://localhost:4173/s/QR-PRODUCT-P001`（カメラ不使用、要件4.1のURL直リンク・
+フォールバック経由、`data/qr_codes.json` の実在QR `QR-PRODUCT-P001` → product_id: "P001"）
+に直接ナビゲート → S1が自動解決 → `/products/P001`（S2）へ遷移。
+
+session_id（このE2Eセッション全体で共通）: f2107d34-6ddf-480f-8e68-b0f8b2297448
+（read_network_requests のクエリパラメータから確認。AC-4のDB照合に使用）
+
+get_page_text 結果:
+---
+ナチュラル2人掛けソファ
+リビング / ソファ / 2人掛けソファ・ナチュラル
+¥39,900
+売場: 1F ゾーンA
+この商品の場所を見る
+関連商品
+ブラックデスクライト　¥3,980伸びしろ　場所を見る
+ホワイトデスクライト　¥3,480伸びしろ　場所を見る
+この商品を使ったコーディネート
+ナチュラルリビング（ナチュラル）
+チャットボットに相談する
+---
+
+read_network_requests で確認した実際の backend 応答（このセッションでの実リクエスト）:
+GET /api/recommendations?product_id=P001&session_id=f2107d34-6ddf-480f-8e68-b0f8b2297448 -> 200 OK
+（応答本文はbackend直接curlで別途確認済み: related配列は [P036(ブラックデスクライト, lift=2.8),
+  P037(ホワイトデスクライト, lift=2.8)] の順で、DOM表示順（ブラックデスクライトが先、
+  ホワイトデスクライトが後）と一致。両商品とも lift 降順ソートかつ high_lift_low_corate=true
+  で「伸びしろ」バッジが付与されている）
+
+判定: PASS（AC-1該当・商品詳細＋backend応答順と一致するリフト順の関連商品表示を確認、テキスト証跡）。
+注記: PNG スクリーンショットは本環境の制約により取得不可（詳細: AC-6/env-constraints.txt）。

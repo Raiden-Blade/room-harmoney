@@ -1,0 +1,25 @@
+=== Browser MCP: navigate to http://localhost:4173 (vite preview, dist配信) ===
+Tab title: Room Harmony
+URL: http://localhost:4173
+
+--- get_page_text ---
+Title: Room Harmony
+URL: http://localhost:4173
+Source element: <main>
+---
+Room Harmony
+
+来店客向けアプリ Room Harmony（開発中）
+
+--- read_page (accessibility tree) ---
+main [ref_1]
+ heading "Room Harmony" [ref_2]
+ generic "来店客向けアプリ Room Harmony（開発中）" [ref_3]
+
+Viewport: 1280x720
+
+備考: この実行環境では Browser ペインの画面合成（compositing）が有効化されておらず、
+`computer screenshot` はタイムアウトで失敗した（"the Browser pane is not displayed, so the page
+is not compositing frames"）。そのため PNG スクリーンショットは取得できなかったが、
+get_page_text / read_page によりページタイトルおよび本文に「Room Harmony」プレースホルダが
+実際に表示されていることを確認した。

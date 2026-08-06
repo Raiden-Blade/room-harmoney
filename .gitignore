@@ -1,0 +1,36 @@
+# --- Python (backend) ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# --- Node (frontend) ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# --- DB ---
+*.sqlite
+*.sqlite3
+*.db
+
+# --- 環境変数（秘匿値） ---
+.env
+
+# --- OS / エディタ ---
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- ログ ---
+logs
+*.log
+npm-debug.log*

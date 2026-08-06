@@ -1,0 +1,26 @@
+AC-5 検証: 有効QRセッション無しで /route に直接遷移した場合のロックUI（HARNESS.md AC-5）
+
+検証方法: Claude_Browser MCP `preview_start` で新規タブ（tab-5、sessionStorage空・
+一度もQRを解決していない真にフレッシュなブラウジングコンテキスト）を開き、
+`http://localhost:4173/route?to_product=P001` に直接ナビゲート。
+
+get_page_text 結果:
+---
+Title: Room Harmony
+URL: http://localhost:4173
+Source element: <body>
+---
+この機能はご利用いただけません
+
+店頭のQRコードを読み取ってください。有効な来店セッションが開始されると、関連商品や店内ルートをご案内できます。
+
+QRを読み取る
+---
+
+read_network_requests（urlPattern: "route"）結果: "No network requests recorded."
+→ GET /api/route はクライアント側の来店ロック判定（RoutePage.tsx: `if (!session) setLocked(true)`）
+  により一切呼び出されていない（RoutePage.test.tsx の `expect(fetchMock).not.toHaveBeenCalled()`
+  と整合する挙動）。
+
+判定: PASS（AC-5該当・中核機能ロック確認、テキスト証跡）。
+注記: PNG スクリーンショットは本環境の制約により取得不可（後述、AC-6/env-constraints 参照）。

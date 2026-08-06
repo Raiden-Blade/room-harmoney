@@ -1,0 +1,32 @@
+AC-2 検証: スキャン商品(P001)を含むコーディネート(C001)の詳細（HARNESS.md AC-2）
+
+到達経路: S2 商品詳細（P001）の「この商品を使ったコーディネート」セクションから
+coordinate-link-C001（href="/coordinates/C001"）を辿り S3 到達（本文は
+`http://localhost:4173/coordinates/C001` に直接ナビゲートして到達を確認。
+リンクのhref自体は S2 の read_page で `link [ref_28] href="/coordinates/C001"` と
+確認済み。クリック自体は本環境の自動化ツール制約でこのカード型リンクに対して
+不安定だったため直接ナビゲートで到達確認した。詳細は harness/evidence/G4/AC-6/
+env-constraints.txt 参照）。
+
+get_page_text 結果:
+---
+ナチュラルリビング
+テーマ: ナチュラル
+ナチュラル2人掛けソファ　¥39,900
+ホワイトリビングテーブル　¥12,900
+ベージュラグ 200x250　¥15,900
+ナチュラルクッションカバー　¥1,990
+合計金額目安: ¥70,690
+このコーデで揃える／場所を見る
+チャットボットに相談する
+---
+
+read_page（アクセシビリティツリー）から:
+- coordinate-products に相当する4件のlistitem（P001, P003相当のホワイトリビングテーブル,
+  P007相当のベージュラグ, P009相当のナチュラルクッションカバー）
+- coordinate-total-price 相当のテキスト「合計金額目安: ¥70,690」（backend
+  `data/coordinates.json` の C001.total_price_estimate と一致）
+- coordinate-gather-button「このコーデで揃える／場所を見る」ボタン
+
+判定: PASS（AC-2該当・コーディネート1件以上、構成商品、合計金額目安すべて表示確認、テキスト証跡）。
+注記: PNG スクリーンショットは本環境の制約により取得不可。

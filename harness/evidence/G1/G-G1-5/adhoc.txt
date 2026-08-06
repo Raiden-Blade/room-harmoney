@@ -1,0 +1,10 @@
+cat_mids appearing in co_purchase: {'ダイニングチェア', '収納ボックス', 'キッチン雑貨', 'クッション', '寝具・布団', '食器', 'デスク', 'ソファ', 'リビングテーブル', 'ラグ・カーペット', 'デスクライト', 'ベッドフレーム', '照明', 'カーテン', '書棚・シェルフ', 'チェスト・収納家具', 'ダイニングテーブル'}
+Testing with product: P001 ナチュラル2人掛けソファ cat_mid= ソファ
+product_found: True
+num related: 2
+  product_id='P036' cat_mid='デスクライト' lift=2.8 high_flag=True score=3.2200
+  product_id='P037' cat_mid='デスクライト' lift=2.8 high_flag=True score=3.2200
+scores strictly non-increasing (score-sorted): True
+lifts in returned order: [2.8, 2.8]
+num coordinates for this product: 1
+  coord: C001 ['P001', 'P003', 'P007', 'P009']

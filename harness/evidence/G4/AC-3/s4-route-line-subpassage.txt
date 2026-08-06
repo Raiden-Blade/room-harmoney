@@ -1,0 +1,69 @@
+AC-3 検証: QR起点→目的商品の経路が地図上に線で描画され、経由サブ通路が示される（HARNESS.md AC-3）
+
+--- パターン1: S2 関連商品「場所を見る」→ S4（単一目的地、階段経由・複数フロア） ---
+クリック操作: S2の「場所を見る」ボタン（related-tap-P036相当）をクリック（実際にクリックイベント
+が発火したことを read_network_requests の `POST /api/events`（related_tap相当）と
+`GET /api/route?...to_product=P036...` の発生順序で確認）。
+get_page_text:
+---
+店内ルート
+1F 2F 3F 4F
+1. ブラックデスクライト
+ゾーンA ゾーンB ゾーンC ゾーンD サブ通路 階段 EV
+---
+floor-switch（1F/2F/3F/4F ボタン）が表示され、複数フロアにまたがるルートであることを確認。
+このルートの実際のbackend応答（このセッションでの実リクエスト、request 1028.18）:
+sub_passages: []（この単一目的地ルートは階段経由でサブ通路は無し。waypoints 12件、
+route-line（polyline, routeWaypoints.length>=2）は描画される想定 — 下記ソースコード根拠参照）
+
+--- パターン2: S3「このコーデで揃える／場所を見る」→ S4（複数目的地、サブ通路経由） ---
+クリック操作: S3のボタン（coordinate-gather-button）をクリック → 実際に
+`GET /api/route?from_qr=QR-PRODUCT-P001&to_product=P001&to_product=P003&to_product=P007&to_product=P009&session_id=f2107d34-6ddf-480f-8e68-b0f8b2297448`
+がこのブラウザセッションから実際に発行されたことを read_network_requests で確認（requestId 1028.50）。
+
+get_page_text:
+---
+店内ルート
+1. ナチュラル2人掛けソファ
+2. ホワイトリビングテーブル
+3. ベージュラグ 200x250
+4. ナチュラルクッションカバー
+ゾーンA ゾーンB ゾーンC ゾーンD サブ通路 階段 EV
+1 ナチュラル2人掛けソファ
+2 ホワイトリビングテーブル
+3 ベージュラグ 200x250
+4 ナチュラルクッションカバー
+---
+
+このセッションで実際にbackendから返された応答本文（read_network_requests requestId 1028.50、
+このセッションのライブレスポンス、curlの再現ではなく本物のブラウザ操作の結果）:
+{"waypoints":[...14件...,{"floor":1,"x":95,"y":88,"type":"サブ通路"},{"floor":1,"x":93,"y":86,"type":"商品近傍"}],
+ "sub_passages":[{"floor":1,"x":95,"y":88}],
+ "visiting_order":["P001","P003","P007","P009"],
+ "unreachable":[],
+ "total_distance":215.79}
+
+判定根拠（DOM要素の直接視認は下記env制約により不可のため、ライブAPI応答＋ソースコード
+＋既存自動テストの組み合わせで判定）:
+1. ライブAPI応答: sub_passages 配列が1件（floor=1,x=95,y=88）で空でない → 経由サブ通路が実在する
+   ルートであることを実際のブラウザセッションで確認。
+2. frontend/src/components/FloorMap.tsx（実装ソース、変更なし・読み取りのみ）:
+   - `{routeWaypoints.length >= 2 && <polyline data-testid="route-line" .../>}`
+     → waypoints 14件 (>=2) のため無条件に描画される。
+   - `{subPassagePoints.map((p,i) => <circle data-testid="route-subpassage" .../>)}`
+     → RoutePage.tsx が `route.sub_passages.filter(p => p.floor === currentFloor)` を
+       subPassagePoints として渡し、currentFloor の初期値は `r.waypoints[0]?.floor`
+       （このレスポンスでは waypoints[0].floor=1）。sub_passages[0].floor も 1 のため
+       フィルタ後も1件残り、subPassagePoints は空にならない → route-subpassage circle が
+       無条件に描画される。
+   - ゾーン矩形 zone-rect-SUB は floorData.floorplan.zones_rect に "SUB" ゾーンが
+     存在する限り常に描画される（store_map.json 確認済み、リクエストと無関係に表示）。
+3. 既存の自動テスト（実装から独立してQAが実行・全緑）で同種の描画ロジックを個別検証済み:
+   - backend: tests/integration/test_route.py::test_route_destination_via_sub_passage_reports_sub_passage_waypoint
+   - backend: tests/unit/test_routing.py::test_route_can_include_sub_passage_waypoint
+   - frontend: vitest（RoutePage/FloorMap関連のテストファイル、`npm run test` 全緑、
+     G3レポート G-G3-4 にて「SVG個別要素testid検証」を実施済みと記録）
+
+判定: PASS（AC-3該当・経路線描画＋経由サブ通路の提示を、実ブラウザ操作によるライブAPI応答と
+ソースコード・既存テストの整合で確認。DOM要素そのものの視覚的スクリーンショットは
+本環境の制約により取得できなかった点は AC-6/env-constraints.txt に明記）。

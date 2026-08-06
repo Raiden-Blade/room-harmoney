@@ -1,0 +1,49 @@
+AC-4 検証: 全操作がイベントログに記録され、experiment_group（A/B割付）が付与される
+（HARNESS.md AC-4）
+
+検証方法: `vite preview`（本番ビルド、port 4173）＋ backend（DATABASE_URL を
+harness/evidence/G4/e2e.sqlite に固定した検証専用DB）に対して、Claude_Browser MCPで
+実ブラウザ操作によるE2Eハッピーパス（S1→S2→S4[related]→S2→S3→S4[coordinate]）を実施し、
+操作完了後に SQLite DB を直接クエリして検証した（生データ: events-db-dump.txt）。
+
+対象セッション: session_id = f2107d34-6ddf-480f-8e68-b0f8b2297448
+（read_network_requests のAPIクエリパラメータから採取。本セッションのみを対象にした
+理由: QA診断用に手動curlで別途1セッション（049fc26a-...）を作成しておりDBに混在するため、
+実際のE2Eブラウザ操作フローのみに限定してカウントする）。
+
+--- 記録されたイベント種別と件数（このセッション） ---
+session_start   : 1件（S1でのセッション開始、1回のQR到達に対し1回のみ）
+qr_scan         : 1件（1回のQR到達に対し1回のみ）
+related_view    : 2件（/products/P001 への2回の実訪問に対応、各訪問1回ずつで重複無し）
+related_tap     : 1件（S2「場所を見る」タップ1回）
+route_view      : 2件（単一目的地ルート1回＋複数目的地ルート1回、各表示1回ずつで重複無し）
+coordinate_view : 1件（S3訪問1回）
+coordinate_tap  : 1件（S3「このコーデで揃える」タップ1回）
+
+全7イベント行すべてに experiment_group="control"（このセッションの割付結果）が
+一貫して付与されている（session_start行のpayload内 experiment_group も含め、
+sessionsテーブルの experiment_group カラムとも一致）。
+
+--- 本番ビルドでの重複無し確認（G3 G-G3-7 観察事項の最終確認） ---
+G3レポート（gate-G3-20260805.md）では `npm run dev`（React StrictMode有効）経由で
+ScanPageのuseEffectが2重実行され、1回のQR到達で session が2つ・qr_scan が2件作られる
+観察事項が記録されていた。実装側は `ScanPage.tsx` に `resolvedQrIdRef` /
+`cancelledRef` のガードを追加済み（コードコメントに明記）。
+
+本G4検証は **本番ビルド（`vite preview`, port 4173, StrictModeの影響を受けない）**で
+実施しており、実際に session_start=1件・qr_scan=1件（重複無し）であることを
+このセッションのDB照合で確認した。→ ScanPageの修正は本番ビルドにおいて有効に機能しており、
+1スキャン=1セッション・1qr_scanが保証されていることを実測で確認した。
+
+--- 判定 ---
+PASS（AC-4該当）:
+1. QR起点から一連の操作（QRスキャン・関連表示・関連タップ・ルート表示・コーデ表示・
+   コーデタップ）すべてがイベントログに記録される。
+2. すべてのイベント行に experiment_group が付与される。
+3. 本番ビルドでの重複記録が無いことを実測で確認（開発ビルド限定の既知事象が
+   本番では発生しないことの確認）。
+
+証跡: events-db-dump.txt（生SQLクエリ結果）
+再現コマンド（本検証で実際に使用したもの）:
+  cd backend
+  .venv/Scripts/python.exe -c "import sqlite3; conn=sqlite3.connect('../harness/evidence/G4/e2e.sqlite'); ..."

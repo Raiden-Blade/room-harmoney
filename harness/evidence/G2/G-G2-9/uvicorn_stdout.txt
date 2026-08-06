@@ -1,0 +1,10 @@
+INFO:     Started server process [12636]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8811 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54908 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54913 - "POST /api/session HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54918 - "GET /api/recommendations?product_id=P027&session_id=44e69bef-7140-45b2-862f-57b576d77f7f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54924 - "POST /api/events HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54925 - "GET /api/route?from_qr=QR-ENTRANCE-001&to_product=P001&session_id=44e69bef-7140-45b2-862f-57b576d77f7f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54926 - "GET /api/recommendations?product_id=P001 HTTP/1.1" 409 Conflict

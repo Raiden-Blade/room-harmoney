@@ -1,0 +1,44 @@
+=== session row (sessions table) ===
+{
+  "session_id": "f2107d34-6ddf-480f-8e68-b0f8b2297448",
+  "qr_id": "QR-PRODUCT-P001",
+  "floor": 1,
+  "x": 17.0,
+  "y": 18.0,
+  "store_id": "meguro-dori",
+  "experiment_group": "control",
+  "created_at": "2026-08-06T04:37:03.925988+00:00"
+}
+
+=== events for this session, chronological (events table) ===
+id=1 type=session_start experiment_group=control ts=2026-08-06T04:37:03.942867+00:00
+  payload={"qr_id": "QR-PRODUCT-P001", "qr_type": "product", "product_id": "P001", "floor": 1, "x": 17, "y": 18, "store_id": "meguro-dori", "experiment_group": "control"}
+id=2 type=qr_scan experiment_group=control ts=2026-08-06T04:37:04.030270+00:00
+  payload={"qr_id": "QR-PRODUCT-P001", "qr_type": "product", "product_id": "P001"}
+id=3 type=related_view experiment_group=control ts=2026-08-06T04:37:04.125344+00:00
+  payload={"product_id": "P001", "related_product_ids": ["P036", "P037"], "coordinate_ids": ["C001"]}
+id=5 type=related_tap experiment_group=control ts=2026-08-06T04:38:46.241298+00:00
+  payload={"from_product_id": "P001", "to_product_id": "P036", "lift": 2.8, "score": 3.2199999999999998}
+id=6 type=route_view experiment_group=control ts=2026-08-06T04:38:46.274333+00:00
+  payload={"from_qr": "QR-PRODUCT-P001", "to_product": ["P036"], "visiting_order": ["P036"], "sub_passage_count": 0, "unreachable": []}
+id=7 type=related_view experiment_group=control ts=2026-08-06T04:40:11.447412+00:00
+  payload={"product_id": "P001", "related_product_ids": ["P036", "P037"], "coordinate_ids": ["C001"]}
+id=8 type=coordinate_view experiment_group=control ts=2026-08-06T04:42:29.243295+00:00
+  payload={"coordinate_id": "C001"}
+id=9 type=coordinate_tap experiment_group=control ts=2026-08-06T04:43:06.410227+00:00
+  payload={"coordinate_id": "C001", "product_ids": ["P001", "P003", "P007", "P009"]}
+id=10 type=route_view experiment_group=control ts=2026-08-06T04:43:06.472420+00:00
+  payload={"from_qr": "QR-PRODUCT-P001", "to_product": ["P001", "P003", "P007", "P009"], "visiting_order": ["P001", "P003", "P007", "P009"], "sub_passage_count": 1, "unreachable": []}
+
+=== event_type counts for this session (duplication check) ===
+{"event_type": "coordinate_tap", "c": 1}
+{"event_type": "coordinate_view", "c": 1}
+{"event_type": "qr_scan", "c": 1}
+{"event_type": "related_tap", "c": 1}
+{"event_type": "related_view", "c": 2}
+{"event_type": "route_view", "c": 2}
+{"event_type": "session_start", "c": 1}
+
+=== ALL sessions in this fresh e2e.sqlite DB (for reference/pollution check) ===
+{"session_id": "f2107d34-6ddf-480f-8e68-b0f8b2297448", "qr_id": "QR-PRODUCT-P001", "experiment_group": "control", "created_at": "2026-08-06T04:37:03.925988+00:00"}
+{"session_id": "049fc26a-be07-4823-8c7a-f51f29b45474", "qr_id": "QR-PRODUCT-P001", "experiment_group": "treatment", "created_at": "2026-08-06T04:37:19.891786+00:00"}
