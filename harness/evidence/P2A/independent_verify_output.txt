@@ -1,0 +1,39 @@
+=== G-P2A-3: independent recompute of ALL pairs (support/confidence/lift) ===
+OK  リビングテーブル -> 照明: support=0.0518 confidence=0.288 lift=1.8 corate=0.0518 flag=False  (file: support=0.0518 confidence=0.288 lift=1.8 corate=0.0518 flag=False)
+OK  キッチン雑貨 -> 食器: support=0.0845 confidence=0.325 lift=1.3 corate=0.0845 flag=False  (file: support=0.0845 confidence=0.325 lift=1.3 corate=0.0845 flag=False)
+OK  寝具・布団 -> カーテン: support=0.0792 confidence=0.33 lift=1.5 corate=0.0792 flag=False  (file: support=0.0792 confidence=0.33 lift=1.5 corate=0.0792 flag=False)
+OK  クッション -> ラグ・カーペット: support=0.0672 confidence=0.224 lift=1.6 corate=0.0672 flag=False  (file: support=0.0672 confidence=0.224 lift=1.6 corate=0.0672 flag=False)
+OK  収納ボックス -> チェスト・収納家具: support=0.0588 confidence=0.28 lift=1.4 corate=0.0588 flag=False  (file: support=0.0588 confidence=0.28 lift=1.4 corate=0.0588 flag=False)
+OK  食器 -> 収納ボックス: support=0.063 confidence=0.252 lift=1.2 corate=0.063 flag=False  (file: support=0.063 confidence=0.252 lift=1.2 corate=0.063 flag=False)
+OK  書棚・シェルフ -> 収納ボックス: support=0.0437 confidence=0.336 lift=1.6 corate=0.0437 flag=False  (file: support=0.0437 confidence=0.336 lift=1.6 corate=0.0437 flag=False)
+OK  食器 -> カーテン: support=0.055 confidence=0.22 lift=1.0 corate=0.055 flag=False  (file: support=0.055 confidence=0.22 lift=1.0 corate=0.055 flag=False)
+OK  クッション -> カーテン: support=0.0594 confidence=0.198 lift=0.9 corate=0.0594 flag=False  (file: support=0.0594 confidence=0.198 lift=0.9 corate=0.0594 flag=False)
+OK  カーテン -> 収納ボックス: support=0.0554 confidence=0.252 lift=1.2 corate=0.0554 flag=False  (file: support=0.0554 confidence=0.252 lift=1.2 corate=0.0554 flag=False)
+OK  ダイニングテーブル -> ラグ・カーペット: support=0.0392 confidence=0.392 lift=2.8 corate=0.0392 flag=True  (file: support=0.0392 confidence=0.392 lift=2.8 corate=0.0392 flag=True)
+OK  デスク -> ラグ・カーペット: support=0.0378 confidence=0.42 lift=3.0 corate=0.0378 flag=True  (file: support=0.0378 confidence=0.42 lift=3.0 corate=0.0378 flag=True)
+OK  ソファ -> デスクライト: support=0.037 confidence=0.308 lift=2.8 corate=0.037 flag=True  (file: support=0.037 confidence=0.308 lift=2.8 corate=0.037 flag=True)
+OK  ベッドフレーム -> 書棚・シェルフ: support=0.0338 confidence=0.338 lift=2.6 corate=0.0338 flag=True  (file: support=0.0338 confidence=0.338 lift=2.6 corate=0.0338 flag=True)
+OK  ダイニングチェア -> デスクライト: support=0.0343 confidence=0.286 lift=2.6 corate=0.0343 flag=True  (file: support=0.0343 confidence=0.286 lift=2.6 corate=0.0343 flag=True)
+OK  ベッドフレーム -> デスク: support=0.0315 confidence=0.315 lift=3.5 corate=0.0315 flag=True  (file: support=0.0315 confidence=0.315 lift=3.5 corate=0.0315 flag=True)
+
+Total pairs checked: 16
+Mismatches: 0
+
+=== G-P2A-7: cat_mid reference integrity against products.json ===
+distinct cat_mid in products.json: 17
+missing cat_mid refs: NONE
+
+=== Manual hand-calc spot check (3 pairs, independently by hand) ===
+リビングテーブル->照明: support_A=0.18, support_B=0.16, co_support=0.0518
+  support = 0.0518 = 0.0518
+  confidence = 0.0518/0.18 = 0.2877777777777778 = 0.288
+  lift = 0.0518/(0.18*0.16) = 1.7986111111111112 = 1.8
+デスク->ラグ・カーペット: support_A=0.09, support_B=0.14, co_support=0.0378
+  support = 0.0378
+  confidence = 0.0378/0.09 = 0.42
+  lift = 0.0378/(0.09*0.14) = 3.0
+  co_purchase_rate=0.0378 <= 0.045? True; lift>= 2.0? True
+食器->カーテン: support_A=0.25, support_B=0.22, co_support=0.055
+  support = 0.055
+  confidence = 0.055/0.25 = 0.22
+  lift = 0.055/(0.25*0.22) = 1.0 = 1.0

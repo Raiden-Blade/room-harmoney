@@ -31,22 +31,34 @@
 
 37点、うち6点が `sub_passage_flag: true`。
 
-## co_purchase.json（併売/リフトテーブル・中分類ペア単位）
+## co_purchase.json（併売/リフトテーブル・中分類ペア単位）／co_purchase_source.json（上流入力）
 
-DECISIONS.md #2 により、実データはトランザクション生データが無く中分類レベルの集計併売率が
-基本となる前提。そのため各中分類ごとに「想定購買確率（期待値・marginal）」を仮定し、以下の
-近似式でサンプル値を算出している（`scratchpad/gen_data.py` の `MARGINAL` 辞書参照）。
+**フェーズ2-A：`co_purchase.json` は手書きではなく、`backend/batch/lift_batch.py`
+（リフト算出バッチ）による生成物**。DECISIONS.md #2 により、実データはトランザクション生データが
+無く中分類レベルの集計併売率が基本となる前提。そのため、上流の「素の集計」を
+`co_purchase_source.json`（中分類ごとの単体支持度 `support` と、中分類ペアごとの共起支持度
+`co_support`）として保持し、以下の明示式で `co_purchase.json` を再現可能に算出する。
 
 ```
-support(A,B)    ≈ co_purchase_rate  … 観測された併売の実測値の近似（P(A∩B)近似）
-confidence(A,B) = support / marginal(A)                … P(B|A) の近似
-lift(A,B)       = confidence / marginal(B)
-                = support / (marginal(A) * marginal(B))
+support(A,B)      = co_support                         … P(A∩B) そのもの
+confidence(A,B)   = co_support / support(A)             … P(B|A)（方向は cat_mid_a → cat_mid_b）
+lift(A,B)         = co_support / (support(A) * support(B))
+co_purchase_rate  = co_support                          … 併売率の基本値（support と同値）
+high_lift_low_corate = (lift >= LIFT_THRESHOLD=2.0) and (co_purchase_rate <= CORATE_THRESHOLD=0.045)
 ```
 
-実データ差し替え時は、トランザクション生データから support/confidence を実測し直せばよい
-（`RecommenderInterface` 実装は co_purchase テーブルの形（cat_mid_a/b, lift, high_lift_low_corate）
-にのみ依存するため、算出方法を差し替えても実装への影響はない）。
+再生成コマンド（cwd=`backend`）:
+
+```powershell
+.venv\Scripts\python.exe -m batch.lift_batch
+```
+
+実データ差し替え時は、`co_purchase_source.json` の `support`（中分類の周辺確率）・`co_support`
+（ペアの共起確率）をトランザクション生データからの実測値に置き換え、上記コマンドを再実行すれば
+`co_purchase.json` が更新される（`RecommenderInterface` 実装は co_purchase テーブルの形
+（cat_mid_a/b, lift, high_lift_low_corate）にのみ依存するため、算出方法を差し替えても実装への
+影響はない）。単体テストは `backend/tests/unit/test_lift_batch.py`（手計算・境界値・再現性・
+参照整合を検証）。
 
 | 列 | 型 | 説明 |
 |---|---|---|

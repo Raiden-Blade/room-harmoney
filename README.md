@@ -85,6 +85,15 @@ cd backend
 .venv\Scripts\python scripts\export_openapi.py   # docs/openapi.json を出力
 ```
 
+**リフト算出バッチ（フェーズ2-A）**：`data/co_purchase.json` は手書きではなく、
+`data/co_purchase_source.json`（中分類の単体支持度・共起支持度という「素の集計」。実データ差し替え口）
+から以下のコマンドで再現可能に生成する（詳細・算出式は `data/README.md`）:
+
+```powershell
+cd backend
+.venv\Scripts\python -m batch.lift_batch
+```
+
 ### 4.2 フロントエンド（TypeScript + React / Vite）
 
 ```powershell
@@ -173,5 +182,6 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 - [x] frontend: S1〜S5画面、QR読取（カメラ＋URL直リンクfallback）、SVGフロアマップ/ルート、PWA、計測
 - [x] サンプルデータ一式（`data/`、実データ差し替え可能な構造）
 - [x] テスト: 単体（G1）・結合（G2）・コンポーネント（G3）・E2E（G4）
-- [ ] フェーズ2（本番強化）: リフト算出バッチ本実装、A/B×KPI突合ダッシュボード、チャットボット双方向ディープリンクの拡張 ほか（`docs/DESIGN.md`・要件13章参照）
+- [x] フェーズ2-A: リフト算出バッチ本実装（`backend/batch/lift_batch.py`。`data/co_purchase_source.json` → `data/co_purchase.json` を再現可能に生成、単体テスト `backend/tests/unit/test_lift_batch.py`）
+- [ ] フェーズ2（本番強化・残り）: A/B×KPI突合ダッシュボード、チャットボット双方向ディープリンクの拡張 ほか（`docs/DESIGN.md`・要件13章参照）
 </content>

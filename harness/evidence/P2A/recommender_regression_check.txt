@@ -1,0 +1,8 @@
+origin product_id: P011 ホワイトベッドフレーム シングル
+product_found: True
+  cat_mid=デスク                  lift=3.50 score=4.0250 product_id=P029
+  cat_mid=デスク                  lift=3.50 score=4.0250 product_id=P030
+  cat_mid=書棚・シェルフ              lift=2.60 score=2.9900 product_id=P031
+  cat_mid=書棚・シェルフ              lift=2.60 score=2.9900 product_id=P032
+
+scores non-increasing: True
