@@ -75,8 +75,17 @@ class HybridRecommender(RecommenderInterface):
         return result
 
     def recommend(
-        self, product_id: str, weights: Optional[dict[str, float]] = None
+        self,
+        product_id: str,
+        weights: Optional[dict[str, float]] = None,
+        member_id: Optional[str] = None,
     ) -> RecommendationResult:
+        # member_id はフェーズ3-A（DECISIONS.md 改訂#5-A）の後方互換引数。
+        # HybridRecommender はデータドリブン＋キュレーションの「base」実装であり、
+        # 会員個人最適化は `recommender.personalized.PersonalizedRecommender` が
+        # このクラスを合成（コンポジション）して上乗せする。ここでは無視してよい
+        # （常に今までどおりの結果を返す＝呼び出し側の後方互換を担保する）。
+        del member_id
         w = {**self._default_weights, **(weights or {})}
 
         origin = self._products_by_id.get(product_id)

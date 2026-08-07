@@ -155,6 +155,24 @@
             }
           },
           {
+            "name": "member_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "会員ID（任意・フェーズ3-A個人最適化）。未指定/不明会員/購入履歴が空の場合は従来どおりベース推薦と完全に同一の結果を返す（DECISIONS.md 改訂#5-A）。",
+              "title": "Member Id"
+            },
+            "description": "会員ID（任意・フェーズ3-A個人最適化）。未指定/不明会員/購入履歴が空の場合は従来どおりベース推薦と完全に同一の結果を返す（DECISIONS.md 改訂#5-A）。"
+          },
+          {
             "name": "session_id",
             "in": "query",
             "required": false,

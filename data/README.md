@@ -143,6 +143,39 @@ KPI集計API自体は500にならず `pos_metrics: null`（N/A）を返す。
 
 ---
 
+## member_history.json（会員購入履歴・任意スロット／フェーズ3-A）
+
+DECISIONS.md 改訂#5-A（承認日2026-08-07）：会員購入履歴を格納する**任意スロット**。
+`_meta` に明記の通り、ファイルが無い/空/壊れたJSON/`members`が空でも
+`PersonalizedRecommender`（`backend/recommender/personalized.py`）は
+`HybridRecommender`（base）と完全に同一の結果を返し、全機能が動作する（後方互換）。
+
+置くのは**匿名の会員購入履歴のみ**。`member_id` は不透明トークンでPII（氏名・連絡先等）は
+一切含まない。9章のプライバシー方針に従い、`member_id` は `events`（効果ログ）には保存しない。
+
+```json
+{
+  "_meta": "...",
+  "members": [
+    {
+      "member_id": "M001",
+      "purchased": [
+        {"cat_mid": "ラグ・カーペット", "count": 3},
+        {"product_id": "P020", "count": 1}
+      ]
+    }
+  ]
+}
+```
+
+| 列 | 型 | 説明 |
+|---|---|---|
+| member_id | string | 不透明トークン（PIIなし） |
+| purchased | object[] | 購入履歴。各要素は `cat_mid`（`products.json`の中分類に直接一致）または `product_id`（`products.json`の実在IDを参照し、`PersonalizedRecommender`側で対応する`cat_mid`に解決する）のいずれかと `count`（購入回数）を持つ |
+
+実データ差し替え時は、会員個票から抽出した匿名・不透明トークン化済みの購入履歴
+（中分類集計、または商品ID単位）をこの形式に変換して配置する。
+
 ## 実データ差し替え手順（イメージ）
 
 1. ニトリECの商品JSON（手動取得分）を `backend/ingest/` の変換アダプタに入力する。

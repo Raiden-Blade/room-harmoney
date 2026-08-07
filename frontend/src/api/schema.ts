@@ -335,6 +335,8 @@ export interface operations {
         parameters: {
             query: {
                 product_id: string;
+                /** @description 会員ID（任意・フェーズ3-A個人最適化）。未指定/不明会員/購入履歴が空の場合は従来どおりベース推薦と完全に同一の結果を返す（DECISIONS.md 改訂#5-A）。 */
+                member_id?: string | null;
                 /** @description 来店セッションID（POST /api/session で発行） */
                 session_id?: string | null;
             };

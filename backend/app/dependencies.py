@@ -13,7 +13,7 @@ from typing import Any, Optional
 from fastapi import Depends, Header, Query
 
 from recommender import RecommenderInterface
-from recommender.hybrid import HybridRecommender
+from recommender.personalized import PersonalizedRecommender
 from routing import RouteGraphBuilder
 
 from dataio import DEFAULT_DATA_DIR, load_json_dict
@@ -52,9 +52,13 @@ def get_store_map_repo() -> StoreMapRepository:
 
 
 # -- ロジック層（B1推薦／B2経路。RecommenderInterface として差し替え可能） -------------
+# フェーズ3-A（DECISIONS.md 改訂#5-A）: `PersonalizedRecommender` は内部で
+# `HybridRecommender`（base）を合成しているだけで、`member_id` 未指定の呼び出しは
+# base と完全に同一の結果を返す後方互換実装。よって既存の呼び出し（member_id無し）は
+# 挙動を一切変えないまま、任意で会員パーソナライズが使えるようになる。
 @lru_cache
 def get_recommender() -> RecommenderInterface:
-    return HybridRecommender.from_data_dir()
+    return PersonalizedRecommender.from_data_dir()
 
 
 @lru_cache

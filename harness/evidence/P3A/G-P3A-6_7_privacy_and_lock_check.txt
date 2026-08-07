@@ -1,0 +1,34 @@
+﻿.\.venv\Scripts\python.exe : C:\Users\haseg\OneDrive\Documents\ニトリ制作物\room-harmony\backend\.venv\Lib\site-packages\fast
+api\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `htt
+px2` instead.
+At line:1 char:698
++ ... check.txt"; .\.venv\Scripts\python.exe "C:\Users\haseg\AppData\Local\ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\haseg\...ttpx2` instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  from starlette.testclient import TestClient as TestClient  # noqa
+[PASS] G-P3A-7 no active session + member_id -> 409 actual status=409 body={"code":"VISIT_LOCK_REQUIRED","message":"この機能を利用するには、店頭のQRコードを読み取って来店セッションを開始してください。"}
+[PASS] G-P3A-7 error code == VISIT_LOCK_REQUIRED {'code': 'VISIT_LOCK_REQUIRED', 'message': 'この機能を利用するには、店頭のQRコードを読み取って来店セッションを開始してください。'}
+[PASS] G-P3A-7 bogus session_id + member_id -> 409 actual status=409
+[PASS] session created 200 {"session_id":"2df84e6c-adb2-4421-a6fe-195dcc7cab40","start":{"floor":1,"x":3,"y":50},"floor":1,"experiment_group":"treatment"}
+[PASS] recommendations with member_id 200 {"related":[{"product":{"product_id":"P016","name":"ネイビー遮光カーテン","cat_large":"ベッドルーム","cat_mid":"カーテン","cat_small":"遮光カーテン","color":"ネイビー","price":7900,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P016","floor":2,"zone":"C","x":78,"y":18,"sub_passage_flag":false},"cat_mid":"カーテン","lift":1.0,"high_lift_low_corate":false,"score":1.45},{"product":{"product_id":"P017","name":"ナチュラルレースカーテン","cat_large":"ベッドルーム","cat_mid":"カーテン","cat_small":"レースカーテン","color":"ナチュラル","price":3900,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P017","floor":2,"zone":"C","x":83,"y":23,"sub_passage_flag":false},"cat_mid":"カーテン","lift":1.0,"high_lift_low_corate":false,"score":1.45},{"product":{"product_id":"P024","name":"ホワイト food container セット","cat_large":"ダイニング・キッチン","cat_mid":"キッチン雑貨","cat_small":"保存容器","color":"ホワイト","price":2480,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P024","floor":3,"zone":"C","x":77,"y":18,"sub_passage_flag":false},"cat_mid":"キッチン雑貨","lift":1.3,"high_lift_low_corate":false,"score":1.3},{"product":{"product_id":"P025","name":"ブラックまな板・包丁セット","cat_large":"ダイニング・キッチン","cat_mid":"キッチン雑貨","cat_small":"調理器具","color":"ブラック","price":3480,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P025","floor":3,"zone":"C","x":82,"y":22,"sub_passage_flag":false},"cat_mid":"キッチン雑貨","lift":1.3,"high_lift_low_corate":false,"score":1.3},{"product":{"product_id":"P026","name":"グレー鍋・フライパンセット","cat_large":"ダイニング・キッチン","cat_mid":"キッチン雑貨","cat_small":"調理器具","color":"グレー","price":8980,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P026","floor":3,"zone":"SUB","x":93,"y":86,"sub_passage_flag":true},"cat_mid":"キッチン雑貨","lift":1.3,"high_lift_low_corate":false,"score":1.3},{"product":{"product_id":"P033","name":"グレー収納ボックス Lサイズ","cat_large":"収納・ワークスペース","cat_mid":"収納ボックス","cat_small":"衣装収納","color":"グレー","price":2980,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P033","floor":4,"zone":"C","x":77,"y":18,"sub_passage_flag":false},"cat_mid":"収納ボックス","lift":1.2,"high_lift_low_corate":false,"score":1.2},{"product":{"product_id":"P034","name":"ホワイト収納ボックス Mサイズ","cat_large":"収納・ワークスペース","cat_mid":"収納ボックス","cat_small":"衣装収納","color":"ホワイト","price":1980,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P034","floor":4,"zone":"C","x":83,"y":20,"sub_passage_flag":false},"cat_mid":"収納ボックス","lift":1.2,"high_lift_low_corate":false,"score":1.2},{"product":{"product_id":"P035","name":"ベージュ収納ボックス フタ付き","cat_large":"収納・ワークスペース","cat_mid":"収納ボックス","cat_small":"フタ付き収納","color":"ベージュ","price":2480,"image_url":"https://dummyimage.com/300x300/eeeeee/333333&text=P035","floor":4,"zone":"SUB","x":93,"y":87,"sub_passage_flag":true},"cat_mid":"収納ボックス","lift":1.2,"high_lift_low_corate":false,"score":1.2}],"coordinates":[{"coordinate_id":"C003","name":"北欧ダイニング","theme":"北欧","product_ids":["P020","P022","P027"],"image_url":"https://dummyimage.com/600x400/dddddd/333333&text=C003","total_price_estimate":41780}],"personalized":true}
+[PASS] response personalized == True True
+[PASS] GET /api/recommendations レスポンスJSONに'M004'文字列が出現しない 
+DB tables: ['sessions', 'events', 'sqlite_sequence']
+[sessions] {'session_id': '2df84e6c-adb2-4421-a6fe-195dcc7cab40', 'qr_id': 'QR-ENTRANCE-001', 'floor': 1, 'x': 3.0, 'y': 50.0, 'store_id': 'meguro-dori', 'experiment_group': 'treatment', 'created_at': '2026-08-07T00:44:27.247244+00:00'}
+[events] {'id': 1, 'session_id': '2df84e6c-adb2-4421-a6fe-195dcc7cab40', 'event_type': 'session_start', 'payload': '{"qr_id": "QR-ENTRANCE-001", "qr_type": "entrance", "product_id": null, "floor": 1, "x": 3, "y": 50, "store_id": "meguro-dori", "experiment_group": "treatment"}', 'experiment_group': 'treatment', 'timestamp': '2026-08-07T00:44:27.251767+00:00'}
+[events] {'id': 2, 'session_id': '2df84e6c-adb2-4421-a6fe-195dcc7cab40', 'event_type': 'related_view', 'payload': '{"product_id": "P027", "related_product_ids": ["P016", "P017", "P024", "P025", "P026", "P033", "P034", "P035"], "coordinate_ids": ["C003"], "personalized": true}', 'experiment_group': 'treatment', 'timestamp': '2026-08-07T00:44:27.267635+00:00'}
+[sqlite_sequence] {'name': 'events', 'seq': 2}
+[PASS] G-P3A-6 DB全体(sessions+events, 全カラム, sqlite3直読み)に'M004'という文字列が一切出現しない 
+[PASS] events table has exactly 2 rows (session_start + related_view) 2
+[PASS] exactly 1 related_view event 1
+event payload (raw column): {'product_id': 'P027', 'related_product_ids': ['P016', 'P017', 'P024', 'P025', 'P026', 'P033', 'P034', 'P035'], 'coordinate_ids': ['C003'], 'personalized': True}
+[PASS] event_type == related_view related_view
+[PASS] payload has personalized=True {'product_id': 'P027', 'related_product_ids': ['P016', 'P017', 'P024', 'P025', 'P026', 'P033', 'P034', 'P035'], 'coordinate_ids': ['C003'], 'personalized': True}
+[PASS] payload has no 'member_id' key ['product_id', 'related_product_ids', 'coordinate_ids', 'personalized']
+[PASS] payload keys are exactly the expected set (no extra member fields) {'coordinate_ids', 'personalized', 'product_id', 'related_product_ids'}
+
+=== SUMMARY ===
+PASS: 14
+FAIL: 0

@@ -48,7 +48,10 @@ class RecommenderInterface(ABC):
 
     @abstractmethod
     def recommend(
-        self, product_id: str, weights: Optional[dict[str, float]] = None
+        self,
+        product_id: str,
+        weights: Optional[dict[str, float]] = None,
+        member_id: Optional[str] = None,
     ) -> RecommendationResult:
         """指定商品に対する関連商品・コーディネートの推薦結果を返す。
 
@@ -56,6 +59,11 @@ class RecommenderInterface(ABC):
             product_id: 起点となる商品ID。
             weights: ハイブリッド合成の重み設定（省略時はデフォルト重みを使用）。
                 A/Bテスト等での重み調整のため引数で上書き可能にする。
+            member_id: 会員ID（任意・フェーズ3-A / DECISIONS.md 改訂#5-A）。
+                会員購入履歴に基づく個人最適化（`PersonalizedRecommender`）に対応する
+                実装で使用する。**後方互換のため任意引数として追加**しており、
+                `None`（未指定）の場合や、これを解釈しない実装（例: `HybridRecommender`
+                そのもの）では無視され、常にベース推薦（今までどおりの挙動）を返す。
 
         Returns:
             RecommendationResult（related はスコア降順。未知の product_id や
