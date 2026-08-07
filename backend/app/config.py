@@ -30,6 +30,22 @@ DEFAULT_FRONTEND_ORIGIN = "http://localhost:5173"
 # （パスワード入力等は要件外のため、単純な共有トークン照合とする＝前提。コメントで明記）。
 DEFAULT_ADMIN_API_TOKEN = "dev-admin-token-change-me"
 
+# 来店判定（フェーズ3-B / DECISIONS.md #7「QRスキャン起動を基本、Wi-Fi/ジオフェンスは
+# 拡張余地として設計」）。既定は "qr"（QRのみ＝従来と完全に同一挙動）。
+# "qr+geofence" / "qr+wifi" / "qr+geofence+wifi" のように "+" 区切りで追加検証を
+# 合成できる（`app/visit.py` の `resolve_verifier` 参照）。
+DEFAULT_VISIT_VERIFICATION_MODE = "qr"
+
+# ジオフェンス既定値: 目黒通り店（DECISIONS.md #4 のベース店舗）付近の妥当なダミー座標。
+# 実測値ではなく開発用の代表値（東京都目黒区、目黒通り沿いの店舗を想定した座標）。
+# 本番導入時は実店舗の測量値に `.env` で置き換えること。
+DEFAULT_STORE_GEOFENCE_LAT = 35.6203
+DEFAULT_STORE_GEOFENCE_LNG = 139.6883
+DEFAULT_STORE_GEOFENCE_RADIUS_M = 150.0
+
+# Wi-Fi既定値: 開発用のダミーSSID（カンマ区切りで複数指定可）。
+DEFAULT_STORE_WIFI_SSIDS = "Nitori-Free-Wifi,Nitori-Guest-Wifi"
+
 # CORS許可オリジンの既定値（QA G3 G-G3-7 申し送り対応）。
 # 開発時の Vite dev サーバ（5173）に加え、`vite preview`（本番ビルド配信、既定4173）も
 # 検証できるよう既定に含める。127.0.0.1 版も含めるのは、ブラウザによって
@@ -61,6 +77,11 @@ class Settings:
     frontend_origin: str = DEFAULT_FRONTEND_ORIGIN
     cors_allow_origins: tuple[str, ...] = _parse_origins(DEFAULT_CORS_ALLOW_ORIGINS)
     admin_api_token: str = DEFAULT_ADMIN_API_TOKEN
+    visit_verification_mode: str = DEFAULT_VISIT_VERIFICATION_MODE
+    store_geofence_lat: float = DEFAULT_STORE_GEOFENCE_LAT
+    store_geofence_lng: float = DEFAULT_STORE_GEOFENCE_LNG
+    store_geofence_radius_m: float = DEFAULT_STORE_GEOFENCE_RADIUS_M
+    store_wifi_ssids: tuple[str, ...] = _parse_origins(DEFAULT_STORE_WIFI_SSIDS)
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -79,6 +100,21 @@ class Settings:
                 os.environ.get("CORS_ALLOW_ORIGINS", DEFAULT_CORS_ALLOW_ORIGINS)
             ),
             admin_api_token=os.environ.get("ADMIN_API_TOKEN", DEFAULT_ADMIN_API_TOKEN),
+            visit_verification_mode=os.environ.get(
+                "VISIT_VERIFICATION_MODE", DEFAULT_VISIT_VERIFICATION_MODE
+            ),
+            store_geofence_lat=float(
+                os.environ.get("STORE_GEOFENCE_LAT", DEFAULT_STORE_GEOFENCE_LAT)
+            ),
+            store_geofence_lng=float(
+                os.environ.get("STORE_GEOFENCE_LNG", DEFAULT_STORE_GEOFENCE_LNG)
+            ),
+            store_geofence_radius_m=float(
+                os.environ.get("STORE_GEOFENCE_RADIUS_M", DEFAULT_STORE_GEOFENCE_RADIUS_M)
+            ),
+            store_wifi_ssids=_parse_origins(
+                os.environ.get("STORE_WIFI_SSIDS", DEFAULT_STORE_WIFI_SSIDS)
+            ),
         )
 
     @property

@@ -184,10 +184,20 @@ export interface components {
         /**
          * CreateSessionRequest
          * @description `POST /api/session` リクエストボディ。
+         *
+         *     `location`/`wifi_ssid` はフェーズ3-B（Wi-Fi/ジオフェンスによる来店判定の高度化・
+         *     DECISIONS.md #7）で追加した**任意**フィールド。既定の来店検証モード(`qr`)では
+         *     無視され、指定してもしなくても挙動は変わらない（後方互換）。`VISIT_VERIFICATION_MODE`
+         *     が `geofence`/`wifi` を含む場合のみ、来店ロック判定（`require_active_session`）で
+         *     参照される。9章プライバシー: これらは来店判定にのみ使用し、`events`（効果ログ）には
+         *     保存しない。
          */
         CreateSessionRequest: {
             /** Qr Id */
             qr_id: string;
+            location?: components["schemas"]["LocationSignal"] | null;
+            /** Wifi Ssid */
+            wifi_ssid?: string | null;
         };
         /**
          * EventRequest
@@ -207,6 +217,16 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * LocationSignal
+         * @description 来店判定用の任意の位置シグナル（フェーズ3-B）。緯度経度のみ・精密測位は行わない。
+         */
+        LocationSignal: {
+            /** Lat */
+            lat: number;
+            /** Lng */
+            lng: number;
         };
         /** ValidationError */
         ValidationError: {

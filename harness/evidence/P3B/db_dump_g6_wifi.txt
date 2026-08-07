@@ -1,0 +1,11 @@
+# DB dump: g6_wifi (C:\Users\haseg\OneDrive\Documents\ニトリ制作物\room-harmony\harness\evidence\P3B\qa_check_g6.db)
+## sessions
+{'session_id': '36a8293e-bbcb-4d97-aa64-d149e042e544', 'qr_id': 'QR-ENTRANCE-001', 'floor': 1, 'x': 3.0, 'y': 50.0, 'store_id': 'meguro-dori', 'experiment_group': 'control', 'created_at': '2026-08-07T01:02:19.960099+00:00', 'location_lat': None, 'location_lng': None, 'wifi_ssid': 'Nitori-Free-Wifi'}
+{'session_id': '4c5e9d89-0d96-4522-88ad-41d189cf4238', 'qr_id': 'QR-ENTRANCE-001', 'floor': 1, 'x': 3.0, 'y': 50.0, 'store_id': 'meguro-dori', 'experiment_group': 'control', 'created_at': '2026-08-07T01:02:20.024670+00:00', 'location_lat': None, 'location_lng': None, 'wifi_ssid': 'Some-Random-Wifi'}
+{'session_id': 'f383190b-c8c7-454e-b0dc-c4e5df1f7d60', 'qr_id': 'QR-ENTRANCE-001', 'floor': 1, 'x': 3.0, 'y': 50.0, 'store_id': 'meguro-dori', 'experiment_group': 'control', 'created_at': '2026-08-07T01:02:20.084599+00:00', 'location_lat': None, 'location_lng': None, 'wifi_ssid': None}
+
+## events
+{'id': 1, 'session_id': '36a8293e-bbcb-4d97-aa64-d149e042e544', 'event_type': 'session_start', 'payload': '{"qr_id": "QR-ENTRANCE-001", "qr_type": "entrance", "product_id": null, "floor": 1, "x": 3, "y": 50, "store_id": "meguro-dori", "experiment_group": "control"}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:19.982585+00:00'}
+{'id': 2, 'session_id': '36a8293e-bbcb-4d97-aa64-d149e042e544', 'event_type': 'related_view', 'payload': '{"product_id": "P001", "related_product_ids": ["P036", "P037"], "coordinate_ids": ["C001"], "personalized": false}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.015228+00:00'}
+{'id': 3, 'session_id': '4c5e9d89-0d96-4522-88ad-41d189cf4238', 'event_type': 'session_start', 'payload': '{"qr_id": "QR-ENTRANCE-001", "qr_type": "entrance", "product_id": null, "floor": 1, "x": 3, "y": 50, "store_id": "meguro-dori", "experiment_group": "control"}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.043102+00:00'}
+{'id': 4, 'session_id': 'f383190b-c8c7-454e-b0dc-c4e5df1f7d60', 'event_type': 'session_start', 'payload': '{"qr_id": "QR-ENTRANCE-001", "qr_type": "entrance", "product_id": null, "floor": 1, "x": 3, "y": 50, "store_id": "meguro-dori", "experiment_group": "control"}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.099402+00:00'}

@@ -31,9 +31,23 @@ CREATE TABLE IF NOT EXISTS sessions (
     y REAL NOT NULL,
     store_id TEXT,
     experiment_group TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    location_lat REAL,
+    location_lng REAL,
+    wifi_ssid TEXT
 )
 """
+
+# フェーズ3-B（来店判定の高度化）で追加した任意カラム。既存のDBファイル（旧スキーマで
+# 作成済み）に対しても `ALTER TABLE ... ADD COLUMN` で後方互換に拡張する
+# （`CREATE TABLE IF NOT EXISTS` は既存テーブルのカラムを追加してくれないため）。
+# いずれも判定用の一時的な位置シグナルであり、`events`（効果ログ）には保存しない
+# （9章プライバシー「ログはセッション単位で匿名」）。
+_SESSIONS_MIGRATION_COLUMNS = {
+    "location_lat": "REAL",
+    "location_lng": "REAL",
+    "wifi_ssid": "TEXT",
+}
 
 _EVENTS_SCHEMA = """
 CREATE TABLE IF NOT EXISTS events (
@@ -66,6 +80,14 @@ class Store:
         with self._connect() as conn:
             conn.execute(_SESSIONS_SCHEMA)
             conn.execute(_EVENTS_SCHEMA)
+            self._migrate_sessions_columns(conn)
+
+    def _migrate_sessions_columns(self, conn: sqlite3.Connection) -> None:
+        """旧スキーマの `sessions` テーブルに、フェーズ3-B追加カラムが無ければ足す。"""
+        existing = {row["name"] for row in conn.execute("PRAGMA table_info(sessions)")}
+        for column, sql_type in _SESSIONS_MIGRATION_COLUMNS.items():
+            if column not in existing:
+                conn.execute(f"ALTER TABLE sessions ADD COLUMN {column} {sql_type}")
 
     # -- sessions ---------------------------------------------------------
     def create_session(
@@ -78,16 +100,39 @@ class Store:
         y: float,
         store_id: Optional[str],
         experiment_group: str,
+        location_lat: Optional[float] = None,
+        location_lng: Optional[float] = None,
+        wifi_ssid: Optional[str] = None,
     ) -> dict[str, Any]:
+        """来店セッションを作成する。
+
+        `location_lat`/`location_lng`/`wifi_ssid` はフェーズ3-B（来店判定の高度化）で
+        追加した**任意**の来店判定シグナル。QR起点のみの既定モード(`qr`)では未指定でも
+        従来どおり動作する（後方互換）。9章プライバシーのため、これらは `sessions`
+        （判定用）にのみ保持し、`events`（効果ログ）には一切書き込まない。
+        """
         created_at = datetime.now(timezone.utc).isoformat()
         with self._connect() as conn:
             conn.execute(
                 """
                 INSERT INTO sessions
-                    (session_id, qr_id, floor, x, y, store_id, experiment_group, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    (session_id, qr_id, floor, x, y, store_id, experiment_group, created_at,
+                     location_lat, location_lng, wifi_ssid)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (session_id, qr_id, floor, x, y, store_id, experiment_group, created_at),
+                (
+                    session_id,
+                    qr_id,
+                    floor,
+                    x,
+                    y,
+                    store_id,
+                    experiment_group,
+                    created_at,
+                    location_lat,
+                    location_lng,
+                    wifi_ssid,
+                ),
             )
         return {
             "session_id": session_id,
@@ -98,6 +143,9 @@ class Store:
             "store_id": store_id,
             "experiment_group": experiment_group,
             "created_at": created_at,
+            "location_lat": location_lat,
+            "location_lng": location_lng,
+            "wifi_ssid": wifi_ssid,
         }
 
     def get_session(self, session_id: str) -> Optional[dict[str, Any]]:

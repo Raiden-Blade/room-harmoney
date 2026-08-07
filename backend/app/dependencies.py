@@ -28,6 +28,7 @@ from .repositories import (
     StoreMapRepository,
 )
 from .store import Store
+from .visit import VisitVerifier, resolve_verifier
 
 
 # -- データ参照層（読み取り専用。data/ の実データから構築するシングルトン） -----------
@@ -94,19 +95,32 @@ def get_experiment_assigner() -> ExperimentAssigner:
 
 
 # -- 来店ロック（9章 非機能要件 / DECISIONS.md #7） -------------------------------------
-# 判定ロジックを Depends にすることで差し替え可能にする（将来 Wi-Fi/ジオフェンス判定を
-# 追加する場合も、この関数を別実装に差し替えるだけでよい設計。テストは
-# `app.dependency_overrides[require_active_session]` で丸ごと差し替えることもできる）。
+# 判定ロジックを Depends にすることで差し替え可能にする（フェーズ3-B: Wi-Fi/ジオフェンス
+# 判定を追加する場合も、`VisitVerifier` の実装を差し替えるだけでよい設計。テストは
+# `app.dependency_overrides[require_active_session]`（丸ごと差し替え）や
+# `app.dependency_overrides[get_visit_verifier]`（判定ロジックのみ差し替え）、
+# `app.dependency_overrides[get_settings]`（`VISIT_VERIFICATION_MODE` 差し替え）で
+# 検証できる）。
+def get_visit_verifier(settings: Settings = Depends(get_settings)) -> VisitVerifier:
+    """`VISIT_VERIFICATION_MODE`（既定 "qr"）から来店検証ストラテジを合成する。"""
+    return resolve_verifier(settings)
+
+
 def require_active_session(
     session_id: Optional[str] = Query(
         default=None, description="来店セッションID（POST /api/session で発行）"
     ),
     store: Store = Depends(get_store),
+    verifier: VisitVerifier = Depends(get_visit_verifier),
 ) -> dict[str, Any]:
     """有効な来店セッション（QR起点で開始済み）が無ければ 409 で中核機能をロックする。
 
     9章「来店時のみ作動の担保」/ AC-5: 有効な店内QR起点セッションが無い場合は
     中核機能（関連表示・ルート）をロックし、店頭QRの読取を促す。
+
+    フェーズ3-B: 既定モード（"qr"）では `verifier` は常に合格するため挙動は従来と
+    完全に同一。拡張モード（"qr+geofence"/"qr+wifi"等）では、セッションに紐づく
+    位置/SSIDシグナルの検証にも失敗した場合、`VISIT_NOT_VERIFIED` で409を返す。
     """
     if not session_id:
         raise ApiError(
@@ -120,6 +134,16 @@ def require_active_session(
             status_code=409,
             code="VISIT_LOCK_REQUIRED",
             message="有効な来店セッションが見つかりません。店頭のQRコードを読み取り直してください。",
+        )
+    result = verifier.verify(session)
+    if not result.ok:
+        raise ApiError(
+            status_code=409,
+            code="VISIT_NOT_VERIFIED",
+            message=(
+                "来店確認ができませんでした。店舗内でWi-Fi/位置情報を有効にするか、"
+                "店頭のQRコードを読み取り直してください。"
+            ),
         )
     return session
 

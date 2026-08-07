@@ -1,0 +1,18 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+[33m[PLUGIN_TIMINGS] [0mYour build spent 51% of 16.2s inside plugin hooks (8.3s).
+Measured inside the callback, so queue time is excluded and time the callback itself awaited is not:
+  - vite:native-config-compat-check transform (51%, 8.2s, 1 call)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+
+ RUN  v4.1.10 C:/Users/haseg/OneDrive/Documents/ニトリ制作物/room-harmony/frontend
+
+
+ Test Files  8 passed (8)
+      Tests  49 passed (49)
+   Start at  10:00:44
+   Duration  12.08s (transform 2.10s, setup 14.43s, import 2.77s, tests 1.69s, environment 50.65s)
+

@@ -520,6 +520,27 @@
           "qr_id": {
             "type": "string",
             "title": "Qr Id"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationSignal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "wifi_ssid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wifi Ssid"
           }
         },
         "type": "object",
@@ -527,7 +548,7 @@
           "qr_id"
         ],
         "title": "CreateSessionRequest",
-        "description": "`POST /api/session` リクエストボディ。"
+        "description": "`POST /api/session` リクエストボディ。\n\n`location`/`wifi_ssid` はフェーズ3-B（Wi-Fi/ジオフェンスによる来店判定の高度化・\nDECISIONS.md #7）で追加した**任意**フィールド。既定の来店検証モード(`qr`)では\n無視され、指定してもしなくても挙動は変わらない（後方互換）。`VISIT_VERIFICATION_MODE`\nが `geofence`/`wifi` を含む場合のみ、来店ロック判定（`require_active_session`）で\n参照される。9章プライバシー: これらは来店判定にのみ使用し、`events`（効果ログ）には\n保存しない。"
       },
       "EventRequest": {
         "properties": {
@@ -565,6 +586,25 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "LocationSignal": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lng": {
+            "type": "number",
+            "title": "Lng"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lng"
+        ],
+        "title": "LocationSignal",
+        "description": "来店判定用の任意の位置シグナル（フェーズ3-B）。緯度経度のみ・精密測位は行わない。"
       },
       "ValidationError": {
         "properties": {

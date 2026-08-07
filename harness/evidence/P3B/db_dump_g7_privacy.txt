@@ -1,0 +1,8 @@
+# DB dump: g7_privacy (C:\Users\haseg\OneDrive\Documents\ニトリ制作物\room-harmony\harness\evidence\P3B\qa_check_g7.db)
+## sessions
+{'session_id': 'f3edc721-8b92-43a5-b616-1aa0edc2e011', 'qr_id': 'QR-ENTRANCE-001', 'floor': 1, 'x': 3.0, 'y': 50.0, 'store_id': 'meguro-dori', 'experiment_group': 'control', 'created_at': '2026-08-07T01:02:20.194332+00:00', 'location_lat': 35.6203, 'location_lng': 139.6883, 'wifi_ssid': 'Nitori-Free-Wifi'}
+
+## events
+{'id': 1, 'session_id': 'f3edc721-8b92-43a5-b616-1aa0edc2e011', 'event_type': 'session_start', 'payload': '{"qr_id": "QR-ENTRANCE-001", "qr_type": "entrance", "product_id": null, "floor": 1, "x": 3, "y": 50, "store_id": "meguro-dori", "experiment_group": "control"}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.210992+00:00'}
+{'id': 2, 'session_id': 'f3edc721-8b92-43a5-b616-1aa0edc2e011', 'event_type': 'related_view', 'payload': '{"product_id": "P001", "related_product_ids": ["P036", "P037"], "coordinate_ids": ["C001"], "personalized": false}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.241727+00:00'}
+{'id': 3, 'session_id': 'f3edc721-8b92-43a5-b616-1aa0edc2e011', 'event_type': 'route_view', 'payload': '{"from_qr": "QR-ENTRANCE-001", "to_product": ["P001"], "visiting_order": ["P001"], "sub_passage_count": 0, "via_sub_passage": false, "unreachable": []}', 'experiment_group': 'control', 'timestamp': '2026-08-07T01:02:20.275164+00:00'}

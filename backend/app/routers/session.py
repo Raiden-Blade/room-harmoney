@@ -36,6 +36,9 @@ def create_session(
     session_id = str(uuid4())
     experiment_group = assigner.assign()
 
+    # フェーズ3-B（来店判定の高度化）: location/wifi_ssid は任意の来店判定シグナル。
+    # `sessions`（判定用）にのみ保持し、下記の `session_start` イベント（events＝効果ログ）
+    # には一切含めない（9章プライバシー「ログはセッション単位で匿名」）。
     store.create_session(
         session_id=session_id,
         qr_id=qr["qr_id"],
@@ -44,9 +47,13 @@ def create_session(
         y=qr["y"],
         store_id=settings.store_id,
         experiment_group=experiment_group,
+        location_lat=body.location.lat if body.location else None,
+        location_lng=body.location.lng if body.location else None,
+        wifi_ssid=body.wifi_ssid,
     )
 
     # 10章 計測・ログ設計: session_start（起点QRの種別・座標・店舗・実験群を記録）
+    # 9章プライバシー: location/wifi_ssid はここに含めない（events未保存を徹底）。
     store.insert_event(
         session_id=session_id,
         event_type="session_start",
