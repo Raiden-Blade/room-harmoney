@@ -1,0 +1,8 @@
+=== frontend/android exists? ===
+NO
+=== frontend/ios exists? ===
+NO
+=== .gitignore relevant lines ===
+15:#     `npx cap add android/ios` を実行する別環境向けに事前に除外しておく） ---
+16:frontend/android/
+17:frontend/ios/
