@@ -8,7 +8,7 @@ QRを読み取れない来店客が、QRの下に併記された商品番号（`
 既存のQR解決フロー（`qr_id` を渡す）にそのまま合流させることで、「商品QRをスキャンした
 のと等価」を担保する（実装を分岐させない）。
 
-入力は数字9桁・ハイフン有無どちらも許容（`ProductRepository.get_by_code` 側で正規化して
+入力は数字10桁・ハイフン有無どちらも許容（`ProductRepository.get_by_code` 側で正規化して
 突合する）。未知のコードは404で明確な code/message を返す（19章 エラーハンドリング）。
 """
 from __future__ import annotations

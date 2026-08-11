@@ -16,7 +16,7 @@
     "x": 17,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P001",
-    "product_code": "03-02-01-001"
+    "product_code": "03-02-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P002",
@@ -26,7 +26,7 @@
     "x": 24,
     "y": 23,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P002",
-    "product_code": "03-02-02-001"
+    "product_code": "03-02-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P003",
@@ -36,7 +36,7 @@
     "x": 18,
     "y": 24,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P003",
-    "product_code": "03-04-01-001"
+    "product_code": "03-04-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P004",
@@ -46,7 +46,7 @@
     "x": 23,
     "y": 77,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P004",
-    "product_code": "03-04-02-001"
+    "product_code": "03-04-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P005",
@@ -56,7 +56,7 @@
     "x": 16,
     "y": 82,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P005",
-    "product_code": "03-05-01-001"
+    "product_code": "03-05-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P006",
@@ -66,7 +66,7 @@
     "x": 22,
     "y": 85,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P006",
-    "product_code": "03-05-02-001"
+    "product_code": "03-05-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P007",
@@ -76,7 +76,7 @@
     "x": 77,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P007",
-    "product_code": "03-03-02-001"
+    "product_code": "03-03-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P008",
@@ -86,7 +86,7 @@
     "x": 83,
     "y": 22,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P008",
-    "product_code": "03-03-01-001"
+    "product_code": "03-03-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P009",
@@ -96,7 +96,7 @@
     "x": 93,
     "y": 86,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P009",
-    "product_code": "03-01-01-001"
+    "product_code": "03-01-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P010",
@@ -106,7 +106,7 @@
     "x": 97,
     "y": 90,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P010",
-    "product_code": "03-01-02-001"
+    "product_code": "03-01-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P011",
@@ -116,7 +116,7 @@
     "x": 17,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P011",
-    "product_code": "02-03-01-001"
+    "product_code": "02-03-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P012",
@@ -126,7 +126,7 @@
     "x": 24,
     "y": 22,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P012",
-    "product_code": "02-03-02-001"
+    "product_code": "02-03-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P013",
@@ -136,7 +136,7 @@
     "x": 17,
     "y": 77,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P013",
-    "product_code": "02-04-01-001"
+    "product_code": "02-04-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P014",
@@ -146,7 +146,7 @@
     "x": 23,
     "y": 79,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P014",
-    "product_code": "02-04-02-001"
+    "product_code": "02-04-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P015",
@@ -156,7 +156,7 @@
     "x": 93,
     "y": 89,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P015",
-    "product_code": "02-04-03-001"
+    "product_code": "02-04-03-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P016",
@@ -166,7 +166,7 @@
     "x": 78,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P016",
-    "product_code": "02-01-02-001"
+    "product_code": "02-01-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P017",
@@ -176,7 +176,7 @@
     "x": 83,
     "y": 23,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P017",
-    "product_code": "02-01-01-001"
+    "product_code": "02-01-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P018",
@@ -186,7 +186,7 @@
     "x": 77,
     "y": 78,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P018",
-    "product_code": "02-02-01-001"
+    "product_code": "02-02-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P019",
@@ -196,7 +196,7 @@
     "x": 83,
     "y": 82,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P019",
-    "product_code": "02-02-01-002"
+    "product_code": "02-02-01-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P020",
@@ -206,7 +206,7 @@
     "x": 17,
     "y": 19,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P020",
-    "product_code": "01-03-01-001"
+    "product_code": "01-03-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P021",
@@ -216,7 +216,7 @@
     "x": 24,
     "y": 23,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P021",
-    "product_code": "01-03-02-001"
+    "product_code": "01-03-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P022",
@@ -226,7 +226,7 @@
     "x": 17,
     "y": 77,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P022",
-    "product_code": "01-02-01-001"
+    "product_code": "01-02-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P023",
@@ -236,7 +236,7 @@
     "x": 23,
     "y": 79,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P023",
-    "product_code": "01-02-01-002"
+    "product_code": "01-02-01-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P024",
@@ -246,7 +246,7 @@
     "x": 77,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P024",
-    "product_code": "01-01-01-001"
+    "product_code": "01-01-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P025",
@@ -256,7 +256,7 @@
     "x": 82,
     "y": 22,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P025",
-    "product_code": "01-01-02-001"
+    "product_code": "01-01-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P026",
@@ -266,7 +266,7 @@
     "x": 93,
     "y": 86,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P026",
-    "product_code": "01-01-02-002"
+    "product_code": "01-01-02-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P027",
@@ -276,7 +276,7 @@
     "x": 77,
     "y": 78,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P027",
-    "product_code": "01-04-01-001"
+    "product_code": "01-04-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P028",
@@ -286,7 +286,7 @@
     "x": 83,
     "y": 82,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P028",
-    "product_code": "01-04-01-002"
+    "product_code": "01-04-01-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P029",
@@ -296,7 +296,7 @@
     "x": 17,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P029",
-    "product_code": "04-01-01-001"
+    "product_code": "04-01-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P030",
@@ -306,7 +306,7 @@
     "x": 24,
     "y": 22,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P030",
-    "product_code": "04-01-02-001"
+    "product_code": "04-01-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P031",
@@ -316,7 +316,7 @@
     "x": 17,
     "y": 78,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P031",
-    "product_code": "04-04-01-001"
+    "product_code": "04-04-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P032",
@@ -326,7 +326,7 @@
     "x": 23,
     "y": 81,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P032",
-    "product_code": "04-04-01-002"
+    "product_code": "04-04-01-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P033",
@@ -336,7 +336,7 @@
     "x": 77,
     "y": 18,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P033",
-    "product_code": "04-03-02-001"
+    "product_code": "04-03-02-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P034",
@@ -346,7 +346,7 @@
     "x": 83,
     "y": 20,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P034",
-    "product_code": "04-03-02-002"
+    "product_code": "04-03-02-0002"
   },
   {
     "qr_id": "QR-PRODUCT-P035",
@@ -356,7 +356,7 @@
     "x": 93,
     "y": 87,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P035",
-    "product_code": "04-03-01-001"
+    "product_code": "04-03-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P036",
@@ -366,7 +366,7 @@
     "x": 77,
     "y": 78,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P036",
-    "product_code": "04-02-01-001"
+    "product_code": "04-02-01-0001"
   },
   {
     "qr_id": "QR-PRODUCT-P037",
@@ -376,6 +376,6 @@
     "x": 83,
     "y": 82,
     "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P037",
-    "product_code": "04-02-01-002"
+    "product_code": "04-02-01-0002"
   }
 ]

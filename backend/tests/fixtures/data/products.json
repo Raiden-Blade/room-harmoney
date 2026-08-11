@@ -13,7 +13,7 @@
     "x": 17,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "03-02-01-001"
+    "product_code": "03-02-01-0001"
   },
   {
     "product_id": "P002",
@@ -29,7 +29,7 @@
     "x": 24,
     "y": 23,
     "sub_passage_flag": false,
-    "product_code": "03-02-02-001"
+    "product_code": "03-02-02-0001"
   },
   {
     "product_id": "P003",
@@ -45,7 +45,7 @@
     "x": 18,
     "y": 24,
     "sub_passage_flag": false,
-    "product_code": "03-04-01-001"
+    "product_code": "03-04-01-0001"
   },
   {
     "product_id": "P004",
@@ -61,7 +61,7 @@
     "x": 23,
     "y": 77,
     "sub_passage_flag": false,
-    "product_code": "03-04-02-001"
+    "product_code": "03-04-02-0001"
   },
   {
     "product_id": "P005",
@@ -77,7 +77,7 @@
     "x": 16,
     "y": 82,
     "sub_passage_flag": false,
-    "product_code": "03-05-01-001"
+    "product_code": "03-05-01-0001"
   },
   {
     "product_id": "P006",
@@ -93,7 +93,7 @@
     "x": 22,
     "y": 85,
     "sub_passage_flag": false,
-    "product_code": "03-05-02-001"
+    "product_code": "03-05-02-0001"
   },
   {
     "product_id": "P007",
@@ -109,7 +109,7 @@
     "x": 77,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "03-03-02-001"
+    "product_code": "03-03-02-0001"
   },
   {
     "product_id": "P008",
@@ -125,7 +125,7 @@
     "x": 83,
     "y": 22,
     "sub_passage_flag": false,
-    "product_code": "03-03-01-001"
+    "product_code": "03-03-01-0001"
   },
   {
     "product_id": "P009",
@@ -141,7 +141,7 @@
     "x": 93,
     "y": 86,
     "sub_passage_flag": true,
-    "product_code": "03-01-01-001"
+    "product_code": "03-01-01-0001"
   },
   {
     "product_id": "P010",
@@ -157,7 +157,7 @@
     "x": 97,
     "y": 90,
     "sub_passage_flag": true,
-    "product_code": "03-01-02-001"
+    "product_code": "03-01-02-0001"
   },
   {
     "product_id": "P011",
@@ -173,7 +173,7 @@
     "x": 17,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "02-03-01-001"
+    "product_code": "02-03-01-0001"
   },
   {
     "product_id": "P012",
@@ -189,7 +189,7 @@
     "x": 24,
     "y": 22,
     "sub_passage_flag": false,
-    "product_code": "02-03-02-001"
+    "product_code": "02-03-02-0001"
   },
   {
     "product_id": "P013",
@@ -205,7 +205,7 @@
     "x": 17,
     "y": 77,
     "sub_passage_flag": false,
-    "product_code": "02-04-01-001"
+    "product_code": "02-04-01-0001"
   },
   {
     "product_id": "P014",
@@ -221,7 +221,7 @@
     "x": 23,
     "y": 79,
     "sub_passage_flag": false,
-    "product_code": "02-04-02-001"
+    "product_code": "02-04-02-0001"
   },
   {
     "product_id": "P015",
@@ -237,7 +237,7 @@
     "x": 93,
     "y": 89,
     "sub_passage_flag": true,
-    "product_code": "02-04-03-001"
+    "product_code": "02-04-03-0001"
   },
   {
     "product_id": "P016",
@@ -253,7 +253,7 @@
     "x": 78,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "02-01-02-001"
+    "product_code": "02-01-02-0001"
   },
   {
     "product_id": "P017",
@@ -269,7 +269,7 @@
     "x": 83,
     "y": 23,
     "sub_passage_flag": false,
-    "product_code": "02-01-01-001"
+    "product_code": "02-01-01-0001"
   },
   {
     "product_id": "P018",
@@ -285,7 +285,7 @@
     "x": 77,
     "y": 78,
     "sub_passage_flag": false,
-    "product_code": "02-02-01-001"
+    "product_code": "02-02-01-0001"
   },
   {
     "product_id": "P019",
@@ -301,7 +301,7 @@
     "x": 83,
     "y": 82,
     "sub_passage_flag": false,
-    "product_code": "02-02-01-002"
+    "product_code": "02-02-01-0002"
   },
   {
     "product_id": "P020",
@@ -317,7 +317,7 @@
     "x": 17,
     "y": 19,
     "sub_passage_flag": false,
-    "product_code": "01-03-01-001"
+    "product_code": "01-03-01-0001"
   },
   {
     "product_id": "P021",
@@ -333,7 +333,7 @@
     "x": 24,
     "y": 23,
     "sub_passage_flag": false,
-    "product_code": "01-03-02-001"
+    "product_code": "01-03-02-0001"
   },
   {
     "product_id": "P022",
@@ -349,7 +349,7 @@
     "x": 17,
     "y": 77,
     "sub_passage_flag": false,
-    "product_code": "01-02-01-001"
+    "product_code": "01-02-01-0001"
   },
   {
     "product_id": "P023",
@@ -365,7 +365,7 @@
     "x": 23,
     "y": 79,
     "sub_passage_flag": false,
-    "product_code": "01-02-01-002"
+    "product_code": "01-02-01-0002"
   },
   {
     "product_id": "P024",
@@ -381,7 +381,7 @@
     "x": 77,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "01-01-01-001"
+    "product_code": "01-01-01-0001"
   },
   {
     "product_id": "P025",
@@ -397,7 +397,7 @@
     "x": 82,
     "y": 22,
     "sub_passage_flag": false,
-    "product_code": "01-01-02-001"
+    "product_code": "01-01-02-0001"
   },
   {
     "product_id": "P026",
@@ -413,7 +413,7 @@
     "x": 93,
     "y": 86,
     "sub_passage_flag": true,
-    "product_code": "01-01-02-002"
+    "product_code": "01-01-02-0002"
   },
   {
     "product_id": "P027",
@@ -429,7 +429,7 @@
     "x": 77,
     "y": 78,
     "sub_passage_flag": false,
-    "product_code": "01-04-01-001"
+    "product_code": "01-04-01-0001"
   },
   {
     "product_id": "P028",
@@ -445,7 +445,7 @@
     "x": 83,
     "y": 82,
     "sub_passage_flag": false,
-    "product_code": "01-04-01-002"
+    "product_code": "01-04-01-0002"
   },
   {
     "product_id": "P029",
@@ -461,7 +461,7 @@
     "x": 17,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "04-01-01-001"
+    "product_code": "04-01-01-0001"
   },
   {
     "product_id": "P030",
@@ -477,7 +477,7 @@
     "x": 24,
     "y": 22,
     "sub_passage_flag": false,
-    "product_code": "04-01-02-001"
+    "product_code": "04-01-02-0001"
   },
   {
     "product_id": "P031",
@@ -493,7 +493,7 @@
     "x": 17,
     "y": 78,
     "sub_passage_flag": false,
-    "product_code": "04-04-01-001"
+    "product_code": "04-04-01-0001"
   },
   {
     "product_id": "P032",
@@ -509,7 +509,7 @@
     "x": 23,
     "y": 81,
     "sub_passage_flag": false,
-    "product_code": "04-04-01-002"
+    "product_code": "04-04-01-0002"
   },
   {
     "product_id": "P033",
@@ -525,7 +525,7 @@
     "x": 77,
     "y": 18,
     "sub_passage_flag": false,
-    "product_code": "04-03-02-001"
+    "product_code": "04-03-02-0001"
   },
   {
     "product_id": "P034",
@@ -541,7 +541,7 @@
     "x": 83,
     "y": 20,
     "sub_passage_flag": false,
-    "product_code": "04-03-02-002"
+    "product_code": "04-03-02-0002"
   },
   {
     "product_id": "P035",
@@ -557,7 +557,7 @@
     "x": 93,
     "y": 87,
     "sub_passage_flag": true,
-    "product_code": "04-03-01-001"
+    "product_code": "04-03-01-0001"
   },
   {
     "product_id": "P036",
@@ -573,7 +573,7 @@
     "x": 77,
     "y": 78,
     "sub_passage_flag": false,
-    "product_code": "04-02-01-001"
+    "product_code": "04-02-01-0001"
   },
   {
     "product_id": "P037",
@@ -589,6 +589,6 @@
     "x": 83,
     "y": 82,
     "sub_passage_flag": false,
-    "product_code": "04-02-01-002"
+    "product_code": "04-02-01-0002"
   }
 ]

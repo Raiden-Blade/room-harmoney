@@ -1,4 +1,4 @@
-"""商品番号（`LL-MM-SS-NNN`）採番バッチ（新機能: 商品番号による直接遷移）。
+"""商品番号（`LL-MM-SS-NNNN`）採番バッチ（新機能: 商品番号による直接遷移）。
 
 QRを読み取れない来店客が、QR下部に併記された商品番号を入力すると、その商品のQRを
 スキャンしたのと等価に直接進めるようにする（要件4.1 カメラ非対応フォールバックの拡張。
@@ -7,22 +7,26 @@ QRを読み取れない来店客が、QR下部に併記された商品番号を�
 （`type == "product"`）エントリにも同じ `product_code` を付与する（「QRと併記」を表現）。
 
 ## コード体系（確定仕様）
-`LL-MM-SS-NNN`（合計9桁・階層式。表示はハイフン区切り、入力はハイフン有無どちらも許容
-— `repositories.ProductRepository` 側で数字9桁に正規化して突合する）。
+`LL-MM-SS-NNNN`（合計10桁・階層式。表示はハイフン区切り、入力はハイフン有無どちらも許容
+— `repositories.ProductRepository` 側で数字10桁に正規化して突合する）。
 
-    LL  = 大分類コード（2桁, 01〜）。全商品に現れる大分類を**名称ソート**して安定採番。
-    MM  = 中分類コード（2桁, 01〜）。その大分類配下に現れる中分類を名称ソートして安定採番。
-    SS  = 小分類コード（2桁, 01〜）。その中分類配下に現れる小分類を名称ソートして安定採番。
-    NNN = 個別番号（3桁, 001〜）。その小分類配下の商品を `product_id` 昇順
-          （ソースデータで既に一意・安定なキー）で安定採番。
+    LL   = 大分類コード（2桁, 01〜）。全商品に現れる大分類を**名称ソート**して安定採番。
+    MM   = 中分類コード（2桁, 01〜）。その大分類配下に現れる中分類を名称ソートして安定採番。
+    SS   = 小分類コード（2桁, 01〜）。その中分類配下に現れる小分類を名称ソートして安定採番。
+    NNNN = 個別番号（4桁, 0001〜9999）。その小分類配下の商品を `product_id` 昇順
+           （ソースデータで既に一意・安定なキー）で安定採番。
+
+段階B1（実データ投入）注記: 実データでは中分類ごとの商品数が1,000件を超えうる
+（例: カーテンは約2,600件）ため、個別番号は3桁（001〜999、最大999件）では桁あふれする。
+そのため4桁（0001〜9999、最大9999件）へ拡張した（実装指示より）。
 
 前提・注記（曖昧仕様の採用理由）: 仕様は「LL=大分類コード（名称ソートで安定採番）」を
 明示するが、MM/SSの採番基準までは明示していない。LLと同じ「名称ソートによる決定的採番」を
 階層全体で一貫して適用するのが最も自然かつ再現可能な解釈のため、MM/SSにも名称ソートを
-採用する。NNN（個別番号）は「商品を安定順で」とのみ指定されているため、ソースJSON内で
+採用する。NNNN（個別番号）は「商品を安定順で」とのみ指定されているため、ソースJSON内で
 既に一意なキーである `product_id` の昇順を「安定順」として採用する。
 
-フルコード（9桁）は階層プレフィックス（LL-MM-SS）＋その配下でのみ振られる連番（NNN）の
+フルコード（10桁）は階層プレフィックス（LL-MM-SS）＋その配下でのみ振られる連番（NNNN）の
 組み合わせのため、構築時点で自動的に**全商品ユニーク**になる（同名の小分類が異なる
 大分類・中分類に存在しても、上位桁が異なるため衝突しない）。
 
@@ -35,6 +39,12 @@ QRを読み取れない来店客が、QR下部に併記された商品番号を�
 ## CLI
     cd backend
     .venv\\Scripts\\python.exe -m batch.product_codes
+
+段階B1注記: 実データ（約9,180件）に対しては大量ファイル(`data/qr_codes.json`)への
+書き込みコストを避けるため、`run()` は既定で `attach_qr=False`（`data/products.json` の
+みへの付与）で呼び出す想定。CLIも同様（QR側への商品番号併記パターン化はB2で対応）。
+フィクスチャ規模（数十件）を対象とするテストでは `attach_qr=True` で従来通りの
+QRマスタ併記もあわせて検証する。
 """
 from __future__ import annotations
 
@@ -50,11 +60,15 @@ QR_CODES_FILENAME = "qr_codes.json"
 LARGE_DIGITS = 2
 MID_DIGITS = 2
 SMALL_DIGITS = 2
-SEQ_DIGITS = 3
+# 段階B1（実データ投入）で3桁(001〜999)から4桁(0001〜9999)へ拡張。実データでは中分類
+# （＝小分類、cat_small=cat_mid の前提）ごとの商品数が1,000件を超えうるため（例: カーテン約
+# 2,600件）、3桁では桁あふれする。
+SEQ_DIGITS = 4
+SEQ_MAX = 10**SEQ_DIGITS - 1  # 4桁なら 9999
 
 
 def assign_codes(products: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """商品リストに `product_code`（`"LL-MM-SS-NNN"`）を決定的に付与する（純粋関数）。
+    """商品リストに `product_code`（`"LL-MM-SS-NNNN"`）を決定的に付与する（純粋関数）。
 
     入力の並び順・既存キーは変更せず、`product_code` のみ追加/上書きした新しい
     辞書のリストを返す（同一入力から常に同一出力＝再現性を担保）。
@@ -86,7 +100,7 @@ def assign_codes(products: list[dict[str, Any]]) -> list[dict[str, Any]]:
         for i, small_name in enumerate(small_names):
             small_codes[(large_name, mid_name, small_name)] = str(i + 1).zfill(SMALL_DIGITS)
 
-    # 4) 個別番号: 小分類ごとに、その配下の商品を product_id 昇順で 001〜 を割り当てる。
+    # 4) 個別番号: 小分類ごとに、その配下の商品を product_id 昇順で 0001〜 を割り当てる。
     seq_codes: dict[str, str] = {}
     for large_name, mid_name, small_name in sorted(small_codes.keys()):
         members = sorted(
@@ -99,6 +113,11 @@ def assign_codes(products: list[dict[str, Any]]) -> list[dict[str, Any]]:
             ),
             key=lambda p: p["product_id"],
         )
+        if len(members) > SEQ_MAX:
+            raise ValueError(
+                f"小分類 {large_name}/{mid_name}/{small_name} の商品数 {len(members)} が"
+                f" 個別番号の上限 {SEQ_MAX} を超えています（SEQ_DIGITS拡張が必要）。"
+            )
         for i, product in enumerate(members):
             seq_codes[product["product_id"]] = str(i + 1).zfill(SEQ_DIGITS)
 
@@ -168,11 +187,25 @@ def write_qr_codes(
     return path
 
 
-def run(data_dir: Optional[Union[str, Path]] = None) -> dict[str, int]:
-    """バッチ本体: 読み込み→採番→書き出しを行い、件数サマリを返す。"""
+def run(
+    data_dir: Optional[Union[str, Path]] = None, attach_qr: bool = True
+) -> dict[str, int]:
+    """バッチ本体: 読み込み→採番→書き出しを行い、件数サマリを返す。
+
+    Args:
+        attach_qr: True（既定）なら `data/qr_codes.json` の商品QRにも `product_code` を
+            併記する（従来どおりの挙動。フィクスチャ規模のデータ向け）。段階B1（実データ
+            投入・約9,180件）では大量ファイル(`qr_codes.json`)への書き込みを避けるため、
+            CLI（`main()`）は `attach_qr=False` で呼び出す（QR側への商品番号併記の
+            パターン化はB2で対応。モジュールdocstring参照）。False の場合、
+            `qr_codes.json` の読み書きを一切行わない。
+    """
     products = load_products(data_dir=data_dir)
     updated_products = assign_codes(products)
     write_products(updated_products, data_dir=data_dir)
+
+    if not attach_qr:
+        return {"products": len(updated_products), "product_qr_codes": 0}
 
     qr_codes = load_qr_codes(data_dir=data_dir)
     updated_qr_codes = attach_codes_to_qr_codes(qr_codes, updated_products)
@@ -190,10 +223,13 @@ def run(data_dir: Optional[Union[str, Path]] = None) -> dict[str, int]:
 
 
 def main() -> None:
-    summary = run()
+    # 段階B1: 実データ（約9,180件）に対しては qr_codes.json（旧サンプルデータの38件構成）を
+    # 変更しない（実装指示: 「qr_codes.json/coordinates.json/co_purchase* はこのB1では
+    # 変更しない」）。QR側への商品番号併記パターン化はB2で対応する。
+    summary = run(attach_qr=False)
     print(
         f"products.json に商品番号（product_code）を付与しました: {summary['products']} 件"
-        f"（うちQRマスタ(qr_codes.json)に product_code を併記: {summary['product_qr_codes']} 件）"
+        "（段階B1: qr_codes.json は変更していません。B2で対応）"
     )
 
 

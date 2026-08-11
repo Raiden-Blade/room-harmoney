@@ -1,0 +1,15 @@
+{
+  "collectedAt": "2026-08-11T08:58:19.860Z",
+  "sourceCategory": "椅子・チェア",
+  "sourceCategoryCode": "Chair",
+  "sourceUrl": "https://www.nitori-net.jp/ec/cat/Chair/1/",
+  "chairApiTotalResults": 980,
+  "chairApiTotalPages": 10,
+  "sofaExclusionCategoryCode": "Sofa",
+  "sofaApiTotalResults": 1420,
+  "sofaApiTotalPages": 15,
+  "pageSize": 100,
+  "duplicateChairEntries": 172,
+  "sofaOverlapEntries": 103,
+  "uniqueNonSofaProductCodes": 705
+}

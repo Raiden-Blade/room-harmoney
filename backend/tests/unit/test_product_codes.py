@@ -1,7 +1,8 @@
 """商品番号採番バッチ（`backend/batch/product_codes.py`）の単体テスト。G1ゲート。
 
 重点観点（新機能「商品番号による直接遷移」実装指示より）:
-  (1) コード形式（"LL-MM-SS-NNN"、合計9桁のハイフン区切り）
+  (1) コード形式（"LL-MM-SS-NNNN"、合計10桁のハイフン区切り。段階B1で個別番号を
+      3桁→4桁へ拡張。実データで中分類あたり1,000件超のカテゴリに対応するため）
   (2) 階層採番（大分類/中分類/小分類ごとに名称ソートで安定採番されること）
   (3) 全商品ユニーク
   (4) 決定的/再現性（同一入力→同一出力。商品の並び順を変えても採番結果は不変）
@@ -21,7 +22,7 @@ from batch.product_codes import assign_codes, attach_codes_to_qr_codes, run
 
 from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
 
-CODE_RE = re.compile(r"^\d{2}-\d{2}-\d{2}-\d{3}$")
+CODE_RE = re.compile(r"^\d{2}-\d{2}-\d{2}-\d{4}$")
 
 
 def _product(
@@ -50,8 +51,8 @@ def _product(
     return base
 
 
-def test_code_format_is_ll_mm_ss_nnn_9_digits():
-    """(1) 生成される product_code は "LL-MM-SS-NNN"（合計9桁）形式であること。"""
+def test_code_format_is_ll_mm_ss_nnnn_10_digits():
+    """(1) 生成される product_code は "LL-MM-SS-NNNN"（合計10桁）形式であること。"""
     products = [
         _product("P001", "リビング", "ソファ", "2人掛け"),
         _product("P002", "リビング", "ソファ", "3人掛け"),
@@ -63,7 +64,7 @@ def test_code_format_is_ll_mm_ss_nnn_9_digits():
     for p in result:
         assert CODE_RE.match(p["product_code"]), p["product_code"]
         digits = p["product_code"].replace("-", "")
-        assert len(digits) == 9
+        assert len(digits) == 10
 
 
 def test_hierarchical_numbering_is_stable_name_sorted():
@@ -94,7 +95,7 @@ def test_hierarchical_numbering_is_stable_name_sorted():
 
 
 def test_individual_number_increments_within_smallest_bucket():
-    """(2) 個別番号(NNN)は同一小分類内で product_id 昇順に 001, 002, ... と振られる。"""
+    """(2) 個別番号(NNNN)は同一小分類内で product_id 昇順に 0001, 0002, ... と振られる。"""
     products = [
         _product("P003", "リビング", "ソファ", "2人掛け"),
         _product("P001", "リビング", "ソファ", "2人掛け"),
@@ -104,9 +105,9 @@ def test_individual_number_increments_within_smallest_bucket():
     result = assign_codes(products)
     by_id = {p["product_id"]: p for p in result}
 
-    assert by_id["P001"]["product_code"].split("-")[3] == "001"
-    assert by_id["P002"]["product_code"].split("-")[3] == "002"
-    assert by_id["P003"]["product_code"].split("-")[3] == "003"
+    assert by_id["P001"]["product_code"].split("-")[3] == "0001"
+    assert by_id["P002"]["product_code"].split("-")[3] == "0002"
+    assert by_id["P003"]["product_code"].split("-")[3] == "0003"
 
 
 def test_all_codes_are_unique_across_products():
@@ -171,11 +172,11 @@ def test_assign_codes_preserves_input_order_and_existing_fields():
 
 
 def test_normalize_product_code_treats_hyphenated_and_plain_as_equal():
-    """(5) ハイフン有無どちらの入力表現も同一の正規化結果になること。"""
-    assert normalize_product_code("01-03-02-001") == normalize_product_code("010302001")
-    assert normalize_product_code("01-03-02-001") == "010302001"
+    """(5) ハイフン有無どちらの入力表現も同一の正規化結果になること（4桁個別番号）。"""
+    assert normalize_product_code("01-03-02-0001") == normalize_product_code("0103020001")
+    assert normalize_product_code("01-03-02-0001") == "0103020001"
     # 前後の空白等が混じっても数字以外は除去される。
-    assert normalize_product_code(" 01-03-02-001 ") == "010302001"
+    assert normalize_product_code(" 01-03-02-0001 ") == "0103020001"
 
 
 def test_attach_codes_to_qr_codes_only_updates_product_type_entries():
@@ -268,4 +269,33 @@ def test_missing_category_field_raises_clear_error():
     products = [{"product_id": "P001"}]
 
     with pytest.raises(KeyError):
+        assign_codes(products)
+
+
+def test_seq_digits_supports_over_1000_products_in_single_bucket():
+    """段階B1: 個別番号(NNNN)が4桁化され、同一小分類に1,000件を超える商品があっても
+    (実データのカーテン等、約2,600件を想定) 4桁ゼロ詰めでユニークに採番できること。"""
+    products = [
+        _product(f"P{i:05d}", "ファブリック", "カーテン", "カーテン")
+        for i in range(1200)
+    ]
+
+    result = assign_codes(products)
+
+    codes = [p["product_code"] for p in result]
+    assert len(codes) == len(set(codes))
+    seqs = sorted(int(code.split("-")[3]) for code in codes)
+    assert seqs == list(range(1, 1201))
+    # 1000件目以降も4桁のままゼロ埋めなし（桁あふれしていない）ことを確認。
+    assert any(code.endswith("-1200") for code in codes)
+
+
+def test_seq_digits_overflow_raises_clear_error():
+    """個別番号の上限（9999）を超える場合はサイレントに無視せず例外を送出すること。"""
+    products = [
+        _product(f"P{i:05d}", "ファブリック", "カーテン", "カーテン")
+        for i in range(10000)
+    ]
+
+    with pytest.raises(ValueError):
         assign_codes(products)

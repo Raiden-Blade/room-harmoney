@@ -36,7 +36,7 @@ def test_resolve_by_hyphenated_code_returns_expected_shape(client):
 
 
 def test_resolve_by_digits_only_code_resolves_to_same_product(client):
-    """ハイフンを除いた数字9桁の入力でも同一商品に解決できること。"""
+    """ハイフンを除いた数字10桁の入力でも同一商品に解決できること。"""
     code = _expected_p001_code()
     digits_only = code.replace("-", "")
     assert digits_only != code
@@ -50,7 +50,7 @@ def test_resolve_by_digits_only_code_resolves_to_same_product(client):
 
 
 def test_resolve_unknown_code_returns_404_with_clear_code_and_message(client):
-    response = client.get("/api/product-code/99-99-99-999")
+    response = client.get("/api/product-code/99-99-99-9999")
 
     assert response.status_code == 404
     body = response.json()
