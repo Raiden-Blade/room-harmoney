@@ -34,6 +34,7 @@ import {
 import { ChatbotLink } from "../components/ChatbotLink";
 import { QrCameraScanner } from "../components/QrCameraScanner";
 import { buildRoutePath, parseInboundDeepLink } from "../deeplink";
+import { PRODUCT_CODE_MAX_LENGTH, formatProductCodeInput } from "../productCode";
 import { saveSession } from "../state/session";
 
 type Status = "idle" | "resolving" | "entrance" | "error";
@@ -267,8 +268,9 @@ export function ScanPage() {
             inputMode="numeric"
             autoComplete="off"
             placeholder="例: 01-03-02-001"
+            maxLength={PRODUCT_CODE_MAX_LENGTH}
             value={productCodeInput}
-            onChange={(e) => setProductCodeInput(e.target.value)}
+            onChange={(e) => setProductCodeInput(formatProductCodeInput(e.target.value))}
           />
           <button
             type="submit"

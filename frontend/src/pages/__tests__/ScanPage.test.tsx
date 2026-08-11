@@ -446,9 +446,9 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
     });
   });
 
-  it("ハイフン無しの数字列を入力しても同様に解決できる", async () => {
+  it("ハイフン無しの数字列を入力すると自動でハイフンが付与され、同じ商品に解決できる", async () => {
     installFetchMock([
-      route("GET", "/api/product-code/010302001", () => ({
+      route("GET", "/api/product-code/01-03-02-001", () => ({
         body: {
           product_id: "P001",
           qr_id: "QR-PRODUCT-P001",
@@ -498,7 +498,10 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
     renderAt("/scan");
 
     await screen.findByTestId("scan-page");
-    await user.type(screen.getByTestId("product-code-input"), "010302001");
+    const input = screen.getByTestId("product-code-input") as HTMLInputElement;
+    await user.type(input, "010302001");
+    // 数字だけ入力しても 2-2-2-3 の位置でハイフンが自動挿入される。
+    expect(input.value).toBe("01-03-02-001");
     await user.click(screen.getByTestId("product-code-submit"));
 
     await screen.findByTestId("product-page", undefined, { timeout: 3000 });
