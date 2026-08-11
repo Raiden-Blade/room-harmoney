@@ -43,8 +43,14 @@ def get_product_repo(settings: Settings = Depends(get_settings)) -> ProductRepos
 
 
 @lru_cache
-def get_qr_repo(settings: Settings = Depends(get_settings)) -> QrRepository:
-    return QrRepository.from_data_dir(data_dir=settings.data_dir)
+def get_qr_repo(
+    settings: Settings = Depends(get_settings),
+    product_repo: ProductRepository = Depends(get_product_repo),
+) -> QrRepository:
+    # 段階B2: 商品QRのパターン解決フォールバック（`QR-PRODUCT-<商品コード>` で
+    # qr_codes.json に明示エントリが無くても解決できるようにする）のため、
+    # ProductRepository を注入する（`QrRepository._resolve_product_pattern` 参照）。
+    return QrRepository.from_data_dir(data_dir=settings.data_dir, product_repo=product_repo)
 
 
 @lru_cache

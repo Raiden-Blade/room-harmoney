@@ -1,65 +1,77 @@
 [
   {
     "coordinate_id": "C001",
-    "name": "ナチュラルリビング",
-    "theme": "ナチュラル",
+    "name": "モダンリビングセット",
+    "theme": "モダン",
     "product_ids": [
-      "P001",
-      "P003",
-      "P007",
-      "P009"
+      "0000001157850-2110300000216s",
+      "0000004007994-2110100015403s",
+      "2100002576713s",
+      "2110300001794s"
     ],
     "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C001",
-    "total_price_estimate": 70690
+    "total_price_estimate": 323610
   },
   {
     "coordinate_id": "C002",
-    "name": "モダンベッドルーム",
-    "theme": "モダン",
-    "product_ids": [
-      "P012",
-      "P013",
-      "P016"
-    ],
-    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C002",
-    "total_price_estimate": 48790
-  },
-  {
-    "coordinate_id": "C003",
     "name": "北欧ダイニング",
     "theme": "北欧",
     "product_ids": [
-      "P020",
-      "P022",
-      "P027"
+      "0000004008044-2110100015403s",
+      "1850018s",
+      "1850027s"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C002",
+    "total_price_estimate": 114470
+  },
+  {
+    "coordinate_id": "C003",
+    "name": "リラックスソファ＋間接照明",
+    "theme": "アーバン",
+    "product_ids": [
+      "0000001157860-2110300050464s",
+      "2100002414565s",
+      "2110300035126s",
+      "2110300035607s"
     ],
     "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C003",
-    "total_price_estimate": 41780
+    "total_price_estimate": 198770
   },
   {
     "coordinate_id": "C004",
-    "name": "シンプルワークスペース",
+    "name": "収納＆テレビボードコーナー",
     "theme": "シンプル",
     "product_ids": [
-      "P029",
-      "P031",
-      "P036",
-      "P034"
+      "0000003510085-0001000180001s",
+      "0000003509514-0000000000011s",
+      "0000003509764-0000000000011s"
     ],
     "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C004",
-    "total_price_estimate": 28760
+    "total_price_estimate": 42669
   },
   {
     "coordinate_id": "C005",
-    "name": "アーバンリビング（フロア横断コーデ）",
-    "theme": "アーバン",
+    "name": "カーテン＆クッションコーディネート",
+    "theme": "ナチュラル",
     "product_ids": [
-      "P002",
-      "P008",
-      "P010",
-      "P037"
+      "2114100000179s",
+      "2114100000278s",
+      "2110300035607s"
     ],
     "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C005",
-    "total_price_estimate": 77770
+    "total_price_estimate": 32980
+  },
+  {
+    "coordinate_id": "C006",
+    "name": "寛ぎのリビング（フロア横断コーデ）",
+    "theme": "アーバン",
+    "product_ids": [
+      "0361163s",
+      "2100002576751s",
+      "2113400000803s",
+      "0000004008047-2110100003004s"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C006",
+    "total_price_estimate": 168060
   }
 ]

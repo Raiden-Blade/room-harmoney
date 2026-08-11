@@ -267,7 +267,7 @@ export function ScanPage() {
             type="text"
             inputMode="numeric"
             autoComplete="off"
-            placeholder="例: 01-03-02-001"
+            placeholder="例: 01-03-02-0001"
             maxLength={PRODUCT_CODE_MAX_LENGTH}
             value={productCodeInput}
             onChange={(e) => setProductCodeInput(formatProductCodeInput(e.target.value))}

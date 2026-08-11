@@ -368,12 +368,12 @@ describe("ScanPage (S1) - チャットボットからのディープリンク受
 describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () => {
   it("商品番号を入力して送信すると、商品番号解決→session作成→qr_scan送信→S2遷移まで到達する", async () => {
     const { calls } = installFetchMock([
-      route("GET", "/api/product-code/01-03-02-001", () => ({
+      route("GET", "/api/product-code/01-03-02-0001", () => ({
         body: {
           product_id: "P001",
           qr_id: "QR-PRODUCT-P001",
           position: { floor: 1, x: 17, y: 18 },
-          product_code: "01-03-02-001",
+          product_code: "01-03-02-0001",
         },
       })),
       route("GET", "/api/qr/QR-PRODUCT-P001", () => ({
@@ -408,7 +408,7 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
           x: 17,
           y: 18,
           sub_passage_flag: false,
-          product_code: "01-03-02-001",
+          product_code: "01-03-02-0001",
         },
       })),
       route("GET", "/api/recommendations", () => ({ body: { related: [], coordinates: [] } })),
@@ -419,14 +419,14 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
 
     await screen.findByTestId("scan-page");
     const input = screen.getByTestId("product-code-input");
-    await user.type(input, "01-03-02-001");
+    await user.type(input, "01-03-02-0001");
     await user.click(screen.getByTestId("product-code-submit"));
 
     await screen.findByTestId("product-page", undefined, { timeout: 3000 });
 
     // 商品番号解決API → qr_id を使ったセッション作成、の順で呼ばれている。
     const codeCall = calls.find(
-      (c) => c.method === "GET" && c.url.includes("/api/product-code/01-03-02-001"),
+      (c) => c.method === "GET" && c.url.includes("/api/product-code/01-03-02-0001"),
     );
     expect(codeCall).toBeDefined();
 
@@ -448,12 +448,12 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
 
   it("ハイフン無しの数字列を入力すると自動でハイフンが付与され、同じ商品に解決できる", async () => {
     installFetchMock([
-      route("GET", "/api/product-code/01-03-02-001", () => ({
+      route("GET", "/api/product-code/01-03-02-0001", () => ({
         body: {
           product_id: "P001",
           qr_id: "QR-PRODUCT-P001",
           position: { floor: 1, x: 17, y: 18 },
-          product_code: "01-03-02-001",
+          product_code: "01-03-02-0001",
         },
       })),
       route("GET", "/api/qr/QR-PRODUCT-P001", () => ({
@@ -488,7 +488,7 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
           x: 17,
           y: 18,
           sub_passage_flag: false,
-          product_code: "01-03-02-001",
+          product_code: "01-03-02-0001",
         },
       })),
       route("GET", "/api/recommendations", () => ({ body: { related: [], coordinates: [] } })),
@@ -499,9 +499,9 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
 
     await screen.findByTestId("scan-page");
     const input = screen.getByTestId("product-code-input") as HTMLInputElement;
-    await user.type(input, "010302001");
+    await user.type(input, "0103020001");
     // 数字だけ入力しても 2-2-2-3 の位置でハイフンが自動挿入される。
-    expect(input.value).toBe("01-03-02-001");
+    expect(input.value).toBe("01-03-02-0001");
     await user.click(screen.getByTestId("product-code-submit"));
 
     await screen.findByTestId("product-page", undefined, { timeout: 3000 });
@@ -509,11 +509,11 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
 
   it("無効な商品番号を入力するとエラーが表示され、遷移しない（該当商品なし）", async () => {
     installFetchMock([
-      route("GET", "/api/product-code/99-99-99-999", () => ({
+      route("GET", "/api/product-code/99-99-99-9999", () => ({
         status: 404,
         body: {
           code: "PRODUCT_CODE_NOT_FOUND",
-          message: "商品番号 99-99-99-999 に該当する商品が見つかりません。番号をご確認ください。",
+          message: "商品番号 99-99-99-9999 に該当する商品が見つかりません。番号をご確認ください。",
         },
       })),
     ]);
@@ -522,7 +522,7 @@ describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () 
     renderAt("/scan");
 
     await screen.findByTestId("scan-page");
-    await user.type(screen.getByTestId("product-code-input"), "99-99-99-999");
+    await user.type(screen.getByTestId("product-code-input"), "99-99-99-9999");
     await user.click(screen.getByTestId("product-code-submit"));
 
     const errorNotice = await screen.findByTestId("product-code-error");

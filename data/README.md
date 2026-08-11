@@ -37,21 +37,24 @@
 QRを読み取れない来店客が、QRの下に印刷された**商品番号**を入力すると、その商品のQRを
 スキャンしたのと等価に商品詳細へ直接進める機能（要件4.1 カメラ非対応フォールバックの拡張・
 9章アクセシビリティ）のための番号。**`backend/batch/product_codes.py`
-（商品番号採番バッチ）による生成物**として `products.json`（各商品）・`qr_codes.json`
-（商品QR＝`type=="product"` のエントリ）の両方に付与される。
+（商品番号採番バッチ）による生成物**として `products.json`（各商品）に付与される
+（サンプル/フィクスチャデータでは `qr_codes.json` の商品QRエントリにも併記されるが、
+実データ（段階B2）では `qr_codes.json` 側には併記しない。下記「qr_codes.json」節参照）。
 
-**コード体系**：`LL-MM-SS-NNN`（合計9桁・階層式。表示はハイフン区切り、入力はハイフン
-有無どちらも許容 — `backend/app/repositories.py` の `normalize_product_code` で数字9桁に
-正規化して突合する）。
+**コード体系**：`LL-MM-SS-NNNN`（合計10桁・階層式。表示はハイフン区切り、入力はハイフン
+有無どちらも許容 — `backend/app/repositories.py` の `normalize_product_code` で数字10桁に
+正規化して突合する）。段階B1（実データ投入）で個別番号を3桁（001〜999）から4桁
+（0001〜9999）へ拡張した（実データでは中分類＝小分類ごとの商品数が1,000件を超えうるため。
+例: カーテン約2,600件）。
 
 ```
-LL  = 大分類コード（2桁, 01〜）。大分類を名称ソートして安定採番。
-MM  = 中分類コード（2桁, 01〜）。その大分類配下の中分類を名称ソートして安定採番。
-SS  = 小分類コード（2桁, 01〜）。その中分類配下の小分類を名称ソートして安定採番。
-NNN = 個別番号（3桁, 001〜）。その小分類配下の商品を product_id 昇順で安定採番。
+LL   = 大分類コード（2桁, 01〜）。大分類を名称ソートして安定採番。
+MM   = 中分類コード（2桁, 01〜）。その大分類配下の中分類を名称ソートして安定採番。
+SS   = 小分類コード（2桁, 01〜）。その中分類配下の小分類を名称ソートして安定採番。
+NNNN = 個別番号（4桁, 0001〜）。その小分類配下の商品を product_id 昇順で安定採番。
 ```
 
-フルコード（9桁）は階層プレフィックス＋その配下の連番の組み合わせのため、構築時点で
+フルコード（10桁）は階層プレフィックス＋その配下の連番の組み合わせのため、構築時点で
 自動的に全商品ユニークになる。
 
 再生成コマンド（cwd=`backend`）:
@@ -61,11 +64,15 @@ NNN = 個別番号（3桁, 001〜）。その小分類配下の商品を product
 ```
 
 対応するAPI：`GET /api/product-code/{code}` が商品番号→`(product_id, qr_id, position)` を
-解決する（`backend/app/routers/product_code.py`）。フロントは解決した `qr_id` で既存の
+解決する（`backend/app/routers/product_code.py`）。まず `qr_codes.json` の明示エントリ
+（`QrRepository.get_by_product_id`）を優先し、無ければ `QR-PRODUCT-<商品コード>` の
+パターン解決フォールバックへ進む（実データ相当）。フロントは解決した `qr_id` で既存の
 `POST /api/session` フローにそのまま合流させ、「商品QRをスキャンしたのと等価」を担保する。
 単体テストは `backend/tests/unit/test_product_codes.py`（コード形式・階層採番・全商品
-ユニーク・決定的/再現性・ハイフン正規化）、結合テストは
-`backend/tests/integration/test_product_code_resolve.py`。
+ユニーク・決定的/再現性・ハイフン正規化）・`backend/tests/unit/test_repositories.py`
+（パターン解決フォールバック）、結合テストは
+`backend/tests/integration/test_product_code_resolve.py`・
+`backend/tests/integration/test_qr_pattern_resolution.py`。
 
 ## co_purchase.json（併売/リフトテーブル・中分類ペア単位）／co_purchase_source.json（上流入力）
 
@@ -105,12 +112,26 @@ high_lift_low_corate = (lift >= LIFT_THRESHOLD=2.0) and (co_purchase_rate <= COR
 | lift | float | リフト（近似） |
 | high_lift_low_corate | bool | 「リフト高×併売率低」＝伸びしろフラグ（`lift>=2.0` かつ `support<=0.045` で判定） |
 
-16ペア中6ペアが `high_lift_low_corate: true`（意図的に配置した「伸びしろ」ペア。フロアを跨ぐ
-組み合わせが多く、コーディネート・ルート提案でのクロスセル訴求を想定）。
+段階B2（実商品データ9,180件・9中分類への差し替え）: `co_purchase_source.json` を実9中分類
+（ソファ／椅子・チェア／テーブル／テレビ台・リビング収納・仏壇／収納家具／
+カーペット・ラグ・マット／カーテン／クッション・カバー／ライト・照明器具）に合わせて
+全面差し替えた。12ペア中3ペアが `high_lift_low_corate: true`（いずれも支持度の低い
+「ライト・照明器具」を軸にした「伸びしろ」ペア）。値はトランザクション生データが無いなかでの
+仮設定（実測値ではない。詳細な採用理由は `co_purchase_source.json` の `_meta.provenance` 参照）。
 
 ## coordinates.json（コーディネートマスタ）
 
-テーマ違いで5セット（3〜6商品構成）。`product_ids` は `products.json` の実在IDのみを参照。
+段階B2：スタイリング担当の実入稿データが無いため、`backend/ingest/build_coordinates.py`
+（**暫定コーディネート生成バッチ**）が実商品（`products.json`）から決定的に構築した
+**暫定コーディネート6セット**（3〜4商品構成）。`product_ids` は `products.json` の
+実在IDのみを参照する。将来スタイリング担当の入稿データが揃い次第、本バッチを経由せず
+`coordinates.json` を直接差し替えればよい（暫定・実コーデ差し替え口）。
+
+再生成コマンド（cwd=`backend`）:
+
+```powershell
+.venv\Scripts\python.exe -m ingest.build_coordinates
+```
 
 | 列 | 型 | 説明 |
 |---|---|---|
@@ -136,16 +157,24 @@ high_lift_low_corate = (lift >= LIFT_THRESHOLD=2.0) and (co_purchase_rate <= COR
 
 ## qr_codes.json（QRマスタ）
 
-入口QR1件＋商品QR（全商品分＝37件）で計38件。
+段階B2（実商品データ9,180件への差し替え）: 実データでは商品QRを全件明示列挙しない方針に
+変更した（9,180件分のエントリを持つと巨大ファイルになり、書き込み/読み込みコストも
+大きいため）。**`qr_codes.json` には入口QR（`QR-ENTRANCE-001`）のみを保持**し、商品QR
+（`QR-PRODUCT-<商品コード>`）は明示エントリが無くても `backend/app/repositories.py` の
+`QrRepository`（`GET /api/qr/{qr_id}` / `GET /api/product-code/{code}` の両方が経由）が
+`ProductRepository`（商品番号索引）でその場で解決する**パターン解決フォールバック**を持つ。
+サンプル/フィクスチャデータ（`backend/tests/fixtures/data/qr_codes.json`）は従来どおり
+`product_id` ベースの明示エントリ（`QR-PRODUCT-{product_id}`）を保持しており、そちらが
+優先される（後方互換。フィクスチャは変更していない）。
 
 | 列 | 型 | 説明 |
 |---|---|---|
-| qr_id | string | `QR-ENTRANCE-001` または `QR-PRODUCT-{product_id}` |
+| qr_id | string | `QR-ENTRANCE-001`（実データ・サンプル共通）。サンプル/フィクスチャは `QR-PRODUCT-{product_id}` の明示エントリも持つ。実データの商品QRは `QR-PRODUCT-{product_code}` をパターン解決する（明示エントリ無し） |
 | type | string | `entrance` / `product` |
 | product_id | string\|null | 商品QRの場合のみ設定 |
 | floor / x / y | 数値 | 設置座標 |
 | direct_url | string | カメラ不可時のURL直リンク（ダミードメイン） |
-| product_code | string（商品QRのみ） | 商品番号（`LL-MM-SS-NNN`）。QRの下に併記される想定の番号。`backend/batch/product_codes.py` が付与（上記「product_code（商品番号による直接遷移・新機能）」節参照） |
+| product_code | string（商品QRのみ・明示エントリの場合） | 商品番号（`LL-MM-SS-NNNN`）。QRの下に併記される想定の番号。`backend/batch/product_codes.py` が付与（上記「product_code（商品番号による直接遷移・新機能）」節参照） |
 
 ## aggregates.json（集計3指標・オプショナル）
 

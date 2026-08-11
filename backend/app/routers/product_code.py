@@ -36,7 +36,15 @@ def resolve_product_code(
             message=f"商品番号 {code} に該当する商品が見つかりません。番号をご確認ください。",
         )
 
+    # サンプル/フィクスチャデータ: qr_codes.json に商品QRが明示エントリとして
+    # 存在するので、それを優先する（従来どおりの挙動。qr_id は "QR-PRODUCT-<product_id>"）。
     qr = qr_repo.get_by_product_id(product["product_id"])
+    if qr is None and product.get("product_code"):
+        # 段階B2（実データ）: qr_codes.json に商品QRを全件明示列挙しないため、
+        # QrRepository のパターン解決フォールバック（"QR-PRODUCT-<商品コード>"）で
+        # その場で解決する（`repositories.QrRepository._resolve_product_pattern` 参照）。
+        fallback_qr_id = f"{QrRepository.PRODUCT_QR_PREFIX}{product['product_code']}"
+        qr = qr_repo.get(fallback_qr_id)
     if qr is None:
         # サンプル/実データの参照整合性が崩れている場合のフォールバック
         # （通常は products.json/qr_codes.json とも `batch.product_codes` で同時生成されるため発生しない）。

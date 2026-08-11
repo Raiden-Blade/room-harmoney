@@ -8,6 +8,13 @@
 未指定なら従来どおり（base推薦と完全一致）。**プライバシー厳守**（9章）: `member_id` は
 `events`（効果ログ）には一切保存しない。ログ・レスポンスには `personalized`（真偽値）
 のみを残し、会員IDそのものを含めない。
+
+段階B2（実商品データ9,180件への差し替え）: 任意クエリ `limit`（既定12）を追加。実データでは
+1中分類に1,000件超の商品が属することがあり、related を無制限に返すとレスポンスが肥大化する
+（性能・UI双方の観点）。`RecommenderInterface` のコア実装（`recommender/hybrid.py`・
+`recommender/personalized.py`）は変更せず、全件をスコア降順で算出させたうえで**API層で
+上位 `limit` 件にスライス**する（推薦ロジックと配信件数制御の責務分離）。`coordinates` は
+対象外（起点商品を含むコーデのみを返す既存仕様のため、通常は少数件で収まる）。
 """
 from __future__ import annotations
 
@@ -23,6 +30,8 @@ from ..store import Store
 
 router = APIRouter(tags=["recommendations"])
 
+DEFAULT_RELATED_LIMIT = 12
+
 
 @router.get("/api/recommendations")
 def get_recommendations(
@@ -32,6 +41,14 @@ def get_recommendations(
         description=(
             "会員ID（任意・フェーズ3-A個人最適化）。未指定/不明会員/購入履歴が空の場合は"
             "従来どおりベース推薦と完全に同一の結果を返す（DECISIONS.md 改訂#5-A）。"
+        ),
+    ),
+    limit: int = Query(
+        default=DEFAULT_RELATED_LIMIT,
+        ge=1,
+        description=(
+            "関連商品（related）の最大件数（段階B2・既定12）。スコア降順で上位 limit 件のみ返す。"
+            "coordinates には適用しない。"
         ),
     ),
     session: dict[str, Any] = Depends(require_active_session),
@@ -46,6 +63,8 @@ def get_recommendations(
             message=f"product_id={product_id} は見つかりません。",
         )
 
+    limited_related = result.related[:limit]
+
     related_payload = [
         {
             "product": item.product,
@@ -54,7 +73,7 @@ def get_recommendations(
             "high_lift_low_corate": item.high_lift_low_corate,
             "score": item.score,
         }
-        for item in result.related
+        for item in limited_related
     ]
 
     # 10章 計測: related_view（表示された関連商品）。experiment_group はセッションから付与。
@@ -65,7 +84,7 @@ def get_recommendations(
         event_type="related_view",
         payload={
             "product_id": product_id,
-            "related_product_ids": [item.product.get("product_id") for item in result.related],
+            "related_product_ids": [item.product.get("product_id") for item in limited_related],
             "coordinate_ids": [c.get("coordinate_id") for c in result.coordinates],
             "personalized": member_id is not None,
         },

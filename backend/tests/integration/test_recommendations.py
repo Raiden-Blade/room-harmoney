@@ -93,6 +93,54 @@ def test_recommendations_unknown_product_with_valid_session_returns_404(client, 
     assert response.json()["code"] == "PRODUCT_NOT_FOUND"
 
 
+def test_recommendations_related_default_limit_is_12(client, active_session):
+    """段階B2: limit 未指定時は既定12件以内に切られる（P027は8件なので全件そのまま返る）。"""
+    response = client.get(
+        "/api/recommendations",
+        params={"product_id": "P027", "session_id": active_session["session_id"]},
+    )
+
+    assert response.status_code == 200
+    related = response.json()["related"]
+    assert len(related) <= 12
+    assert len(related) == 8  # P027（食器）の related は8件（既存テストと同じ前提）
+
+
+def test_recommendations_limit_query_caps_related_count(client, active_session):
+    """段階B2: limit を指定すると related が上位 limit 件（スコア降順）に切られる。"""
+    response = client.get(
+        "/api/recommendations",
+        params={
+            "product_id": "P027",
+            "session_id": active_session["session_id"],
+            "limit": 3,
+        },
+    )
+
+    assert response.status_code == 200
+    related = response.json()["related"]
+    assert len(related) == 3
+    # リフト降順の先頭3件（キッチン雑貨×3）のみが残ること。
+    assert [item["cat_mid"] for item in related] == ["キッチン雑貨", "キッチン雑貨", "キッチン雑貨"]
+
+
+def test_recommendations_limit_does_not_truncate_coordinates(client, active_session):
+    """段階B2: limit は related のみに適用し、coordinates は対象外。"""
+    response = client.get(
+        "/api/recommendations",
+        params={
+            "product_id": "P001",
+            "session_id": active_session["session_id"],
+            "limit": 1,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["related"]) <= 1
+    assert len(body["coordinates"]) >= 1
+
+
 def test_recommendations_records_related_view_event_with_experiment_group(
     client, active_session, store
 ):

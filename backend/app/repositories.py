@@ -61,9 +61,25 @@ class ProductRepository:
 
 
 class QrRepository:
-    """QRマスタ（qr_codes.json）。"""
+    """QRマスタ（qr_codes.json）。
 
-    def __init__(self, qr_codes: list[dict[str, Any]]):
+    段階B2（実商品データ9,180件への差し替え）注記: 実データでは商品QRを
+    `qr_codes.json` に全件明示列挙しない方針を採る（9,180件分のエントリを持つと
+    巨大ファイルになり、`batch.product_codes` 実行時の書き込みコストも大きいため。
+    `backend/batch/product_codes.py` docstring 参照）。そのため、`qr_id` が
+    `QR-PRODUCT-<商品コード>` 形式かつ `qr_codes.json` に明示エントリが無い場合は、
+    `ProductRepository`（商品番号索引）を使って**その場で解決するフォールバック**を持つ
+    （`get()` 参照）。入口QR・既存の明示的な商品QR（サンプル/フィクスチャデータ）は
+    従来どおり `_by_id` の明示エントリが優先される（後方互換）。
+    """
+
+    PRODUCT_QR_PREFIX = "QR-PRODUCT-"
+
+    def __init__(
+        self,
+        qr_codes: list[dict[str, Any]],
+        product_repo: Optional["ProductRepository"] = None,
+    ):
         self._by_id = {q["qr_id"]: q for q in qr_codes if "qr_id" in q}
         # 商品QR（type=="product"）を product_id から引き当てる索引。
         # 新機能「商品番号による直接遷移」で、解決した product_id に対応する
@@ -73,16 +89,63 @@ class QrRepository:
             for q in qr_codes
             if q.get("type") == "product" and q.get("product_id")
         }
+        # 段階B2: 商品QRのパターン解決フォールバック用（明示エントリが無い商品コードを
+        # ProductRepository 経由でその場で解決する）。未指定（None）ならフォールバック無効
+        # （＝従来どおり明示エントリの無いqr_idは404扱い）。
+        self._product_repo = product_repo
 
     @classmethod
-    def from_data_dir(cls, data_dir: Optional[Union[str, Path]] = None) -> "QrRepository":
-        return cls(load_json_list("qr_codes.json", data_dir=data_dir))
+    def from_data_dir(
+        cls,
+        data_dir: Optional[Union[str, Path]] = None,
+        product_repo: Optional["ProductRepository"] = None,
+    ) -> "QrRepository":
+        return cls(load_json_list("qr_codes.json", data_dir=data_dir), product_repo=product_repo)
 
     def get(self, qr_id: str) -> Optional[dict[str, Any]]:
-        return self._by_id.get(qr_id)
+        qr = self._by_id.get(qr_id)
+        if qr is not None:
+            return qr
+        return self._resolve_product_pattern(qr_id)
+
+    def _resolve_product_pattern(self, qr_id: str) -> Optional[dict[str, Any]]:
+        """`QR-PRODUCT-<商品コード>` 形式の qr_id を、明示エントリが無くても
+        `ProductRepository.get_by_code` で解決するフォールバック（純粋関数的挙動。
+        `self._product_repo` 未設定時は常に None）。
+
+        商品コード部分（プレフィックス以降）はハイフンを含む（`LL-MM-SS-NNNN`）ため、
+        プレフィックス長で単純に切り出す（`ProductRepository.get_by_code` 側で
+        ハイフン有無を正規化して突合するので、この切り出しだけで十分）。
+        """
+        if self._product_repo is None:
+            return None
+        if not qr_id.startswith(self.PRODUCT_QR_PREFIX):
+            return None
+        code = qr_id[len(self.PRODUCT_QR_PREFIX) :]
+        if not code:
+            return None
+        product = self._product_repo.get_by_code(code)
+        if product is None:
+            return None
+        return {
+            "qr_id": qr_id,
+            "type": "product",
+            "product_id": product["product_id"],
+            "floor": product.get("floor"),
+            "x": product.get("x"),
+            "y": product.get("y"),
+            "direct_url": f"https://roomharmony.example.com/r/{qr_id}",
+            "product_code": product.get("product_code"),
+        }
 
     def get_by_product_id(self, product_id: str) -> Optional[dict[str, Any]]:
-        """指定した商品の商品QR（type=="product"）を引き当てる。"""
+        """指定した商品の商品QR（type=="product"）を引き当てる。
+
+        明示エントリ（サンプル/フィクスチャデータ）を優先する。実データ（段階B2）のように
+        明示エントリが無い場合は None を返す（呼び出し側 `product_code` ルータが
+        `product_code` からのパターン解決フォールバックへ進む。`routers/product_code.py`
+        参照）。
+        """
         return self._by_product_id.get(product_id)
 
 
