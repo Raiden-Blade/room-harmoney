@@ -99,7 +99,7 @@ export function CoordinatePage() {
           <li key={p.product_id} data-testid={`coordinate-product-${p.product_id}`}>
             <ImageWithFallback src={p.image_url} alt={p.name} width={72} height={72} />
             <span>{p.name}</span>
-            <span>¥{p.price.toLocaleString("ja-JP")}</span>
+            <span className="price">¥{p.price.toLocaleString("ja-JP")}</span>
           </li>
         ))}
       </ul>

@@ -138,7 +138,7 @@ export function ProductPage() {
                 <div>
                   <p>{item.product.name}</p>
                   <p>
-                    ¥{item.product.price.toLocaleString("ja-JP")}
+                    <span className="price">¥{item.product.price.toLocaleString("ja-JP")}</span>
                     {item.high_lift_low_corate && (
                       <span className="badge" data-testid="high-lift-low-corate-badge">
                         伸びしろ

@@ -1,65 +1,44 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /*
+   * 旧変数名（--text 等）は既存CSS各所で `var(--text, #6b6375)` の形で参照されているため、
+   * 名称は維持しつつ値を `theme.css` の `--rh-*` トークンへエイリアスする
+   * （見た目のみの置き換え。DOM/testid/文言には影響しない）。
+   * ライト固定（docs/DESIGN_SYSTEM.md §1: 店頭スマホ・白基調前提のためダーク対応は必須ではない）。
+   */
+  --text: var(--rh-text);
+  --text-h: var(--rh-heading);
+  --bg: var(--rh-bg);
+  --border: var(--rh-border);
+  --code-bg: var(--rh-surface-alt);
+  --accent: var(--rh-primary);
+  --accent-bg: var(--rh-surface-alt);
+  --accent-border: var(--rh-border);
+  --social-bg: var(--rh-surface-alt);
+  --shadow: var(--rh-shadow);
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: var(--rh-font-sans);
+  --heading: var(--rh-font-sans);
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  font: 16px/1.6 var(--sans);
+  letter-spacing: normal;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
 }
 
 #root {
-  width: 1126px;
   max-width: 100%;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background: var(--rh-bg);
 }
 
 body {
@@ -69,38 +48,36 @@ body {
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+  font-weight: 700;
+  color: var(--rh-heading);
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: normal;
+  margin: var(--rh-space-3) 0 var(--rh-space-1);
 }
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: normal;
+  margin: var(--rh-space-3) 0 var(--rh-space-1);
 }
 p {
   margin: 0;
+}
+
+a {
+  color: var(--rh-link);
 }
 
 code,
 .counter {
   font-family: var(--mono);
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  border-radius: var(--rh-radius);
+  color: var(--rh-heading);
 }
 
 code {

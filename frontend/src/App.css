@@ -1,73 +1,167 @@
+/**
+ * Room Harmony 画面共通スタイル（見た目のみ / docs/DESIGN_SYSTEM.md §4 準拠）。
+ * DOM構造・data-testid・表示テキストは変更しない。色・形状・余白は theme.css の
+ * `--rh-*` トークンを参照する。
+ */
+
+/* --- アプリシェル（ヘッダー相当）: 白背景＋上端に --rh-brand の細帯 --- */
 .app-shell {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 1rem;
+  gap: var(--rh-space-3);
   text-align: left;
-  padding: 1rem;
-  max-width: 640px;
+  padding: var(--rh-space-3) var(--rh-space-3) var(--rh-space-4);
+  padding-top: calc(var(--rh-space-3) + 4px);
+  max-width: var(--rh-max-width);
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
+  background: var(--rh-bg);
+  color: var(--rh-text);
+}
+
+/* ブランド帯（4px・--rh-brand）。「Room Harmony」ワードマークは各画面の見出しテキストが担う。 */
+.app-shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--rh-brand);
 }
 
 .app-shell > h1 {
   text-align: center;
+  color: var(--rh-heading);
 }
 
+/* --- ボタン --- */
 .btn-primary,
 .btn-secondary {
-  display: inline-block;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--rh-radius);
+  padding: 0.65rem 1.25rem;
+  min-height: var(--rh-tap-min);
   font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-primary {
-  background: var(--accent, #aa3bff);
-  color: #fff;
+  background: var(--rh-primary);
+  border: 1px solid var(--rh-primary);
+  color: var(--rh-on-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: var(--rh-primary-hover);
+  border-color: var(--rh-primary-hover);
+}
+
+.btn-primary:disabled {
+  background: var(--rh-text-muted);
+  border-color: var(--rh-text-muted);
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-  background: var(--accent-bg, rgba(170, 59, 255, 0.1));
-  color: var(--accent, #aa3bff);
+  background: var(--rh-bg);
+  border: 1px solid var(--rh-primary);
+  color: var(--rh-primary);
 }
 
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  background: var(--rh-surface-alt);
+}
+
+.btn-secondary:disabled {
+  color: var(--rh-text-muted);
+  border-color: var(--rh-border);
+  cursor: not-allowed;
+}
+
+/* --- 来店ロック / エラー導線: 赤系ではなく淡い面＋主要ボタン --- */
 .visit-lock {
-  border: 1px solid var(--border, #e5e4e7);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius-lg);
+  background: var(--rh-surface-alt);
+  padding: var(--rh-space-4);
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--rh-space-2);
   align-items: center;
 }
 
-.error-notice {
-  border: 1px solid #f2b8b5;
-  background: #fdecea;
-  color: #611a15;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.visit-lock h2 {
+  margin-top: 0;
 }
 
+.error-notice {
+  border: 1px solid var(--rh-border);
+  background: var(--rh-surface-alt);
+  color: var(--rh-price);
+  border-radius: var(--rh-radius-lg);
+  padding: var(--rh-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rh-space-1);
+  font-size: 0.9rem;
+}
+
+.error-notice .chatbot-link {
+  align-self: flex-start;
+}
+
+/* --- 商品詳細 / コーディネート詳細 --- */
 .product-detail,
 .coordinate-page {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--rh-space-1);
   align-items: flex-start;
 }
 
+.product-detail img {
+  border-radius: var(--rh-radius-lg);
+  border: 1px solid var(--rh-border);
+}
+
+.price,
+.total-price {
+  color: var(--rh-price);
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.total-price {
+  font-size: 1.25rem;
+}
+
+/* 関連/コーディネート構成商品カード内の価格は本文に合わせてやや小さめ。 */
+.related-list .price,
+.coordinate-products .price {
+  font-size: 1rem;
+}
+
+.product-code {
+  color: var(--rh-text-muted);
+  font-size: 0.85rem;
+}
+
+/* --- 関連商品 / コーディネート候補: 白面カード（1pxボーダー・角丸8px・軽い影） --- */
 .related-list,
 .coordinate-list,
 .coordinate-products {
@@ -76,67 +170,170 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--rh-space-2);
+}
+
+.related-list li,
+.coordinate-list li,
+.coordinate-products li {
+  background: var(--rh-surface);
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius-lg);
+  box-shadow: var(--rh-shadow);
+  padding: var(--rh-space-2);
+  box-sizing: border-box;
 }
 
 .related-list li,
 .coordinate-products li {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--rh-space-2);
 }
 
+.coordinate-list li {
+  padding: 0;
+  overflow: hidden;
+}
+
+.coordinate-list li a {
+  display: flex;
+  align-items: center;
+  gap: var(--rh-space-2);
+  padding: var(--rh-space-2);
+  color: var(--rh-heading);
+  text-decoration: none;
+}
+
+.coordinate-list li a:hover {
+  background: var(--rh-surface-alt);
+}
+
+.related-list li img,
+.coordinate-list li img,
+.coordinate-products li img {
+  border-radius: var(--rh-radius);
+  flex-shrink: 0;
+}
+
+/* --- バッジ（「伸びしろ」等） --- */
 .badge {
   display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-  background: #fff3cd;
-  color: #7a5b00;
+  margin-left: var(--rh-space-1);
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--rh-radius);
+  background: var(--rh-badge-bg);
+  color: var(--rh-badge-text);
   font-size: 0.75rem;
+  font-weight: 700;
 }
 
+/* --- コーディネート完成イメージ: 全幅・角丸8px --- */
 .coordinate-hero-image {
   width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--rh-radius-lg);
+  border: 1px solid var(--rh-border);
 }
 
+/* --- マップ・ルート画面: フロア切替はセグメント型 --- */
 .floor-switch {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--rh-space-1);
 }
 
+.floor-transfers,
 .visiting-order {
   padding-left: 1.25rem;
+  color: var(--rh-text);
+}
+
+.floor-transfers {
+  list-style: disc;
+  margin: 0;
+  color: var(--rh-text-muted);
+  font-size: 0.9rem;
 }
 
 .warning {
-  color: #7a5b00;
+  color: var(--rh-badge-text);
 }
 
+/* --- チャットボット導線: 副ボタン（アウトライン）＋アイコン風 --- */
 .chatbot-link {
   align-self: flex-start;
-  color: var(--accent, #aa3bff);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  min-height: var(--rh-tap-min);
+  box-sizing: border-box;
+  border: 1px solid var(--rh-primary);
+  border-radius: var(--rh-radius);
+  color: var(--rh-primary);
+  background: var(--rh-bg);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.chatbot-link::before {
+  content: "\1F4AC"; /* 吹き出しアイコン（アイコン風・実アセットは使わない） */
+}
+
+.chatbot-link:hover,
+.chatbot-link:focus-visible {
+  background: var(--rh-surface-alt);
 }
 
 .hint {
   font-size: 0.85rem;
-  color: var(--text, #6b6375);
+  color: var(--rh-text-muted);
+}
+
+/* --- QR読み取れない場合: 商品番号入力フォーム --- */
+.product-code-entry {
+  border-top: 1px solid var(--rh-border);
+  padding-top: var(--rh-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rh-space-1);
+}
+
+.product-code-entry form {
+  display: flex;
+  gap: var(--rh-space-1);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.product-code-entry input {
+  flex: 1;
+  min-width: 10rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.product-code-entry input:focus-visible {
+  outline: 2px solid var(--rh-primary);
+  outline-offset: 1px;
 }
 
 /* --- A/B×KPI管理ダッシュボード（フェーズ2-B2・内部向け） --- */
 .admin-dashboard {
   max-width: 900px;
-  gap: 1.5rem;
+  gap: var(--rh-space-4);
 }
 
 .admin-notice {
-  border: 1px solid var(--accent-border, rgba(170, 59, 255, 0.5));
-  background: var(--accent-bg, rgba(170, 59, 255, 0.1));
-  color: var(--text-h, #08060d);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+  border: 1px solid var(--rh-border);
+  background: var(--rh-surface-alt);
+  color: var(--rh-text);
+  border-radius: var(--rh-radius-lg);
+  padding: var(--rh-space-2) var(--rh-space-3);
 }
 
 .admin-token-form {
@@ -147,34 +344,34 @@
 
 .admin-token-form-row {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--rh-space-1);
 }
 
 .admin-token-form-row input {
   flex: 1;
   padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border, #e5e4e7);
-  border-radius: 8px;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius);
   font-size: 1rem;
 }
 
 .admin-auth-error {
-  border: 1px solid #f2b8b5;
-  background: #fdecea;
-  color: #611a15;
-  border-radius: 8px;
-  padding: 1rem;
+  border: 1px solid var(--rh-border);
+  background: var(--rh-surface-alt);
+  color: var(--rh-price);
+  border-radius: var(--rh-radius-lg);
+  padding: var(--rh-space-3);
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
 
 .admin-kpi-error {
-  border: 1px solid #f2b8b5;
-  background: #fdecea;
-  color: #611a15;
-  border-radius: 8px;
-  padding: 1rem;
+  border: 1px solid var(--rh-border);
+  background: var(--rh-surface-alt);
+  color: var(--rh-price);
+  border-radius: var(--rh-radius-lg);
+  padding: var(--rh-space-3);
 }
 
 .admin-kpi-content {
@@ -184,55 +381,63 @@
 }
 
 .kpi-bar-chart {
-  margin: 0.75rem 0;
+  margin: var(--rh-space-2) 0;
 }
 
 .kpi-bar-chart-legend {
   display: flex;
-  gap: 1rem;
+  gap: var(--rh-space-3);
   font-size: 0.8rem;
-  color: var(--text, #6b6375);
+  color: var(--rh-text-muted);
+}
+
+.legend-treatment {
+  color: var(--rh-brand);
+}
+
+.legend-control {
+  color: var(--rh-control-gray);
 }
 
 .kpi-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0.5rem;
+  margin-top: var(--rh-space-1);
 }
 
 .kpi-table th,
 .kpi-table td {
-  border: 1px solid var(--border, #e5e4e7);
+  border: 1px solid var(--rh-border);
   padding: 0.4rem 0.6rem;
   text-align: center;
   font-size: 0.9rem;
 }
 
 .kpi-diff-positive {
-  color: #1b7a3d;
-  font-weight: 600;
+  color: var(--rh-brand);
+  font-weight: 700;
 }
 
 .kpi-diff-negative {
-  color: #b3261e;
-  font-weight: 600;
+  color: var(--rh-price);
+  font-weight: 700;
 }
 
 .kpi-diff-neutral {
-  color: var(--text, #6b6375);
+  color: var(--rh-text-muted);
 }
 
 .sub-passage-highlight {
-  border: 1px solid var(--border, #e5e4e7);
-  border-radius: 12px;
-  padding: 1rem;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius-lg);
+  padding: var(--rh-space-3);
 }
 
 .sub-passage-values {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
+  gap: var(--rh-space-4);
+  margin-top: var(--rh-space-1);
 }
 
 .sub-passage-value {
@@ -244,16 +449,16 @@
 
 .sub-passage-value-label {
   font-size: 0.85rem;
-  color: var(--text, #6b6375);
+  color: var(--rh-text-muted);
 }
 
 .sub-passage-value-number {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-h, #08060d);
+  color: var(--rh-heading);
 }
 
 .causal-note {
-  border-top: 1px solid var(--border, #e5e4e7);
-  padding-top: 0.75rem;
+  border-top: 1px solid var(--rh-border);
+  padding-top: var(--rh-space-2);
 }

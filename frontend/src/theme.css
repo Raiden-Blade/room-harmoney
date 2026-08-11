@@ -1,0 +1,47 @@
+/**
+ * Room Harmony デザイントークン（ニトリネット準拠 / docs/DESIGN_SYSTEM.md §1-3）。
+ *
+ * ここに定義する `--rh-*` CSS変数が唯一の正のトークンソース。`App.css` / `index.css` は
+ * これらを参照する（色の直書きをしない）。DOM構造・data-testid・表示テキストへの影響はない
+ * （見た目＝CSS変数の値のみを変更する構成）。
+ *
+ * 商標配慮: 色・型・余白などの「デザイン言語」のみを踏襲し、ニトリの実ロゴ・独自画像アセットは
+ * 使用しない（`docs/DESIGN_SYSTEM.md` 冒頭の注記を参照）。
+ */
+:root {
+  /* --- カラートークン（§1） --- */
+  --rh-brand: #009e96;
+  --rh-primary: #008078;
+  --rh-primary-hover: #006e67;
+  --rh-on-primary: #ffffff;
+  --rh-heading: #14293a;
+  --rh-text: #333333;
+  --rh-text-muted: #6d6d6d;
+  --rh-link: #1f73b7;
+  --rh-price: #e8352a;
+  --rh-bg: #ffffff;
+  --rh-surface: #ffffff;
+  --rh-surface-alt: #f5f5f5;
+  --rh-border: #e1e1e1;
+  --rh-badge-bg: #fff1e8;
+  --rh-badge-text: #c05621;
+
+  /* KPI管理ダッシュボードの control 群バー色（§4。色覚配慮の斜線パターンと併用）。 */
+  --rh-control-gray: #b6b6b6;
+
+  /* --- 形状・余白・影（§3） --- */
+  --rh-radius: 4px;
+  --rh-radius-lg: 8px;
+  --rh-shadow: 0 1px 3px rgba(20, 41, 58, 0.08);
+  --rh-space-1: 8px;
+  --rh-space-2: 12px;
+  --rh-space-3: 16px;
+  --rh-space-4: 24px;
+  --rh-max-width: 640px;
+  --rh-tap-min: 44px;
+
+  /* --- タイポグラフィ（§2） --- */
+  --rh-font-sans:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo",
+    system-ui, sans-serif;
+}

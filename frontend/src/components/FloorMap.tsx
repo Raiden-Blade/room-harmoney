@@ -53,7 +53,7 @@ export function FloorMap({
       data-testid="floor-map-svg"
       data-floor={floorData.floor}
     >
-      {/* ゾーン矩形 */}
+      {/* ゾーン矩形（docs/DESIGN_SYSTEM.md §1: 通常ゾーン=--rh-surface-alt、サブ通路=--rh-badge-bg/text） */}
       {zonesRect.map((z) => (
         <g key={z.zone}>
           <rect
@@ -63,10 +63,10 @@ export function FloorMap({
             height={z.h}
             className={`zone-rect zone-${z.zone}`}
             data-testid={`zone-rect-${z.zone}`}
-            fill={z.zone === "SUB" ? "#ffe0b2" : "#e0e0e0"}
-            stroke="#999"
+            fill={z.zone === "SUB" ? "#fff1e8" : "#f5f5f5"}
+            stroke={z.zone === "SUB" ? "#c05621" : "#e1e1e1"}
           />
-          <text x={z.x + 4} y={z.y + 14} fontSize="6" fill="#333">
+          <text x={z.x + 4} y={z.y + 14} fontSize="6" fill="#333333">
             {z.zone === "SUB" ? "サブ通路" : `ゾーン${z.zone}`}
           </text>
         </g>
@@ -81,27 +81,28 @@ export function FloorMap({
             width={6}
             height={6}
             data-testid={`waypoint-${wp.type}`}
-            fill="#616161"
+            fill="#6d6d6d"
           />
-          <text x={wp.x + 4} y={wp.y + 3} fontSize="5" fill="#616161">
+          <text x={wp.x + 4} y={wp.y + 3} fontSize="5" fill="#6d6d6d">
             {wp.type}
           </text>
         </g>
       ))}
 
-      {/* ルート線（起点→目的商品、経由サブ通路含む） */}
+      {/* ルート線（起点→目的商品、経由サブ通路含む）: --rh-brand・太め・実線 */}
       {routeWaypoints.length >= 2 && (
         <polyline
           points={routePoints}
           data-testid="route-line"
           fill="none"
-          stroke="#aa3bff"
-          strokeWidth={1.5}
-          strokeDasharray="4 2"
+          stroke="#009e96"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       )}
 
-      {/* 経由サブ通路ピン */}
+      {/* 経由サブ通路ピン: 淡色＋破線（--rh-badge-bg/--rh-badge-text） */}
       {subPassagePoints.map((p, i) => (
         <circle
           key={`sub-${i}`}
@@ -109,22 +110,25 @@ export function FloorMap({
           cy={p.y}
           r={3}
           data-testid="route-subpassage"
-          fill="#fb8c00"
+          fill="#fff1e8"
+          stroke="#c05621"
+          strokeWidth={1}
+          strokeDasharray="1.5 1"
         />
       ))}
 
-      {/* 起点ピン */}
+      {/* 起点ピン（--rh-heading・濃紺） */}
       {startPoint && (
         <circle
           cx={startPoint.x}
           cy={startPoint.y}
           r={3.5}
           data-testid="route-start"
-          fill="#1976d2"
+          fill="#14293a"
         />
       )}
 
-      {/* 目的商品ピン（巡回順の番号付き） */}
+      {/* 目的商品ピン（巡回順の番号付き）: --rh-price */}
       {destinations.map((d) => (
         <g key={d.productId}>
           <circle
@@ -132,12 +136,12 @@ export function FloorMap({
             cy={d.y}
             r={3.5}
             data-testid={`route-destination-${d.productId}`}
-            fill="#d32f2f"
+            fill="#e8352a"
           />
           <text x={d.x} y={d.y + 1.5} fontSize="4.5" fill="#fff" textAnchor="middle">
             {d.order}
           </text>
-          <text x={d.x + 5} y={d.y - 3} fontSize="5" fill="#d32f2f">
+          <text x={d.x + 5} y={d.y - 3} fontSize="5" fill="#e8352a">
             {d.name}
           </text>
         </g>

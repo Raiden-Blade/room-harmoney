@@ -59,7 +59,7 @@ export function KpiBarChart({ title, items, formatValue, maxValue, testIdPrefix 
             patternTransform="rotate(45)"
             patternUnits="userSpaceOnUse"
           >
-            <line x1={0} y1={0} x2={0} y2={2} stroke="#616161" strokeWidth={1} />
+            <line x1={0} y1={0} x2={0} y2={2} stroke="#b6b6b6" strokeWidth={1} />
           </pattern>
         </defs>
         {items.map((item, index) => {
@@ -68,29 +68,31 @@ export function KpiBarChart({ title, items, formatValue, maxValue, testIdPrefix 
           const controlWidth = Math.max(scale(item.control), 0.5);
           return (
             <g key={item.key} data-testid={`${testIdPrefix}-row-${item.key}`}>
-              <text x={0} y={rowY + 4} fontSize={4} fill="var(--text-h, #08060d)">
+              <text x={0} y={rowY + 4} fontSize={4} fill="#14293a">
                 {item.label}
               </text>
+              {/* treatment（利用群）= --rh-brand（docs/DESIGN_SYSTEM.md §4） */}
               <rect
                 x={LABEL_WIDTH}
                 y={rowY + 6}
                 width={treatmentWidth}
                 height={BAR_HEIGHT}
-                fill="#1976d2"
+                fill="#009e96"
                 role="img"
                 aria-label={`利用群（treatment） ${item.label}: ${formatValue(item.treatment)}`}
                 data-testid={`${testIdPrefix}-bar-treatment-${item.key}`}
               />
-              <text x={LABEL_WIDTH + treatmentWidth + 1} y={rowY + 6 + BAR_HEIGHT - 1.2} fontSize={3.6} fill="#1976d2">
+              <text x={LABEL_WIDTH + treatmentWidth + 1} y={rowY + 6 + BAR_HEIGHT - 1.2} fontSize={3.6} fill="#009e96">
                 {formatValue(item.treatment)}
               </text>
+              {/* control（非利用群）= 灰(--rh-control-gray)。斜線パターンは色覚配慮のため維持。 */}
               <rect
                 x={LABEL_WIDTH}
                 y={rowY + 6 + BAR_HEIGHT + BAR_GAP}
                 width={controlWidth}
                 height={BAR_HEIGHT}
                 fill={`url(#${patternId})`}
-                stroke="#616161"
+                stroke="#b6b6b6"
                 strokeWidth={0.3}
                 role="img"
                 aria-label={`非利用群（control） ${item.label}: ${formatValue(item.control)}`}
@@ -100,7 +102,7 @@ export function KpiBarChart({ title, items, formatValue, maxValue, testIdPrefix 
                 x={LABEL_WIDTH + controlWidth + 1}
                 y={rowY + 6 + BAR_HEIGHT + BAR_GAP + BAR_HEIGHT - 1.2}
                 fontSize={3.6}
-                fill="#616161"
+                fill="#6d6d6d"
               >
                 {formatValue(item.control)}
               </text>
