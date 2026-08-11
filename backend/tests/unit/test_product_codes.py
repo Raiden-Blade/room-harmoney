@@ -19,6 +19,8 @@ import pytest
 from app.repositories import normalize_product_code
 from batch.product_codes import assign_codes, attach_codes_to_qr_codes, run
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
 CODE_RE = re.compile(r"^\d{2}-\d{2}-\d{2}-\d{3}$")
 
 
@@ -211,13 +213,12 @@ def test_attach_codes_to_qr_codes_only_updates_product_type_entries():
 
 
 def test_run_on_real_sample_data_produces_unique_codes_and_matches_qr_master(tmp_path):
-    """(7) 実データ（data/）で run() を隔離ディレクトリに対して実行し、
-    件数・ユニーク性・QRマスタとの整合を確認する（本番 data/ は書き換えない）。"""
-    from dataio import DEFAULT_DATA_DIR
-
+    """(7) サンプルデータ（段階A: 固定フィクスチャ）で run() を隔離ディレクトリに対して
+    実行し、件数・ユニーク性・QRマスタとの整合を確認する（本番 data/ は書き換えない。
+    フィクスチャを使うことで data/ の実データ差し替えでこのテストが壊れないようにする）。"""
     for filename in ("products.json", "qr_codes.json"):
         (tmp_path / filename).write_text(
-            (DEFAULT_DATA_DIR / filename).read_text(encoding="utf-8"), encoding="utf-8"
+            (FIXTURES_DATA_DIR / filename).read_text(encoding="utf-8"), encoding="utf-8"
         )
 
     summary = run(data_dir=tmp_path)
@@ -239,9 +240,8 @@ def test_run_on_real_sample_data_produces_unique_codes_and_matches_qr_master(tmp
 
 
 def test_run_is_reproducible_on_real_sample_data(tmp_path):
-    """(4)(7) 実データに対しても、run() を2回実行すればバイト単位で同一出力になること。"""
-    from dataio import DEFAULT_DATA_DIR
-
+    """(4)(7) サンプルデータ（段階A: 固定フィクスチャ）に対しても、run() を2回実行すれば
+    バイト単位で同一出力になること。"""
     dir_a = tmp_path / "a"
     dir_b = tmp_path / "b"
     dir_a.mkdir()
@@ -249,7 +249,7 @@ def test_run_is_reproducible_on_real_sample_data(tmp_path):
     for target in (dir_a, dir_b):
         for filename in ("products.json", "qr_codes.json"):
             (target / filename).write_text(
-                (DEFAULT_DATA_DIR / filename).read_text(encoding="utf-8"), encoding="utf-8"
+                (FIXTURES_DATA_DIR / filename).read_text(encoding="utf-8"), encoding="utf-8"
             )
 
     run(data_dir=dir_a)

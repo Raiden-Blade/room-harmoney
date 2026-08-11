@@ -12,6 +12,8 @@ from app.dependencies import get_pos_metrics, get_settings
 from app.experiment import CONTROL, TREATMENT
 from app.main import app
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
 ADMIN_TOKEN = "test-admin-token-abc123"
 
 
@@ -19,8 +21,17 @@ ADMIN_TOKEN = "test-admin-token-abc123"
 def _fixed_admin_token():
     """管理トークンをテスト内で決定的な値に固定する（実行環境のADMIN_API_TOKEN設定に
     依存させないため。`get_settings` は他ルータからも参照されるため、admin_api_token
-    以外は既定値のまま差し替える）。"""
-    app.dependency_overrides[get_settings] = lambda: Settings(admin_api_token=ADMIN_TOKEN)
+    以外は既定値のまま差し替える）。
+
+    段階A: `Settings(...)` を直接構築するとフィールドの静的既定値（`data_dir` は
+    `dataio.DEFAULT_DATA_DIR` ＝ライブの `data/`）が使われ、`RH_DATA_DIR` 環境変数
+    （`tests/conftest.py` 参照）を無視してしまう。`test_admin_kpi_default_pos_metrics_
+    dependency_reads_sample_data_file` が `data/pos_metrics.json` ではなくフィクスチャの
+    `pos_metrics.json` を読むよう、ここでも明示的に `data_dir=FIXTURES_DATA_DIR` を渡す。
+    """
+    app.dependency_overrides[get_settings] = lambda: Settings(
+        admin_api_token=ADMIN_TOKEN, data_dir=FIXTURES_DATA_DIR
+    )
     yield
     app.dependency_overrides.pop(get_settings, None)
 

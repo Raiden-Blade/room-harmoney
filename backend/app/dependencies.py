@@ -16,7 +16,7 @@ from recommender import RecommenderInterface
 from recommender.personalized import PersonalizedRecommender
 from routing import RouteGraphBuilder
 
-from dataio import DEFAULT_DATA_DIR, load_json_dict
+from dataio import load_json_dict
 
 from .config import Settings, get_settings
 from .errors import ApiError
@@ -32,24 +32,29 @@ from .visit import VisitVerifier, resolve_verifier
 
 
 # -- データ参照層（読み取り専用。data/ の実データから構築するシングルトン） -----------
+# いずれも `settings.data_dir`（既定は `dataio.DEFAULT_DATA_DIR` ＝ `data/`）から読み込む。
+# 段階A（テストをライブの data/ から切り離すリファクタ）: 直接 `DEFAULT_DATA_DIR` を
+# 参照せず `Settings` 経由にすることで、テストが `RH_DATA_DIR` 環境変数（または
+# `app.dependency_overrides[get_settings]`）で参照先をフィクスチャへ差し替えられる。
+# 本番/開発は `RH_DATA_DIR` 未設定のため、挙動は従来と完全に同一。
 @lru_cache
-def get_product_repo() -> ProductRepository:
-    return ProductRepository.from_data_dir()
-
-
-@lru_cache
-def get_qr_repo() -> QrRepository:
-    return QrRepository.from_data_dir()
-
-
-@lru_cache
-def get_coordinate_repo() -> CoordinateRepository:
-    return CoordinateRepository.from_data_dir()
+def get_product_repo(settings: Settings = Depends(get_settings)) -> ProductRepository:
+    return ProductRepository.from_data_dir(data_dir=settings.data_dir)
 
 
 @lru_cache
-def get_store_map_repo() -> StoreMapRepository:
-    return StoreMapRepository.from_data_dir()
+def get_qr_repo(settings: Settings = Depends(get_settings)) -> QrRepository:
+    return QrRepository.from_data_dir(data_dir=settings.data_dir)
+
+
+@lru_cache
+def get_coordinate_repo(settings: Settings = Depends(get_settings)) -> CoordinateRepository:
+    return CoordinateRepository.from_data_dir(data_dir=settings.data_dir)
+
+
+@lru_cache
+def get_store_map_repo(settings: Settings = Depends(get_settings)) -> StoreMapRepository:
+    return StoreMapRepository.from_data_dir(data_dir=settings.data_dir)
 
 
 # -- ロジック層（B1推薦／B2経路。RecommenderInterface として差し替え可能） -------------
@@ -58,15 +63,13 @@ def get_store_map_repo() -> StoreMapRepository:
 # base と完全に同一の結果を返す後方互換実装。よって既存の呼び出し（member_id無し）は
 # 挙動を一切変えないまま、任意で会員パーソナライズが使えるようになる。
 @lru_cache
-def get_recommender() -> RecommenderInterface:
-    return PersonalizedRecommender.from_data_dir()
+def get_recommender(settings: Settings = Depends(get_settings)) -> RecommenderInterface:
+    return PersonalizedRecommender.from_data_dir(data_dir=settings.data_dir)
 
 
 @lru_cache
-def get_route_builder() -> RouteGraphBuilder:
-    from dataio import DEFAULT_DATA_DIR
-
-    return RouteGraphBuilder.from_store_map_file(DEFAULT_DATA_DIR / "store_map.json")
+def get_route_builder(settings: Settings = Depends(get_settings)) -> RouteGraphBuilder:
+    return RouteGraphBuilder.from_store_map_file(settings.data_dir / "store_map.json")
 
 
 # -- 永続化層（sessions/events。テストは dependency_overrides で隔離DBに差し替える） ---
@@ -78,10 +81,11 @@ def get_store() -> Store:
 
 # -- POS突合データ（フェーズ2-B1 KPI集計。任意データ・欠損時は None＝N/A） --------------
 # `lru_cache` を付けない: 実運用でPOS集計値を随時更新する運用を想定し、リクエストの都度
-# 最新の `data/pos_metrics.json` を読む（ファイルI/Oは軽量なため許容）。結合テストでは
-# `app.dependency_overrides[get_pos_metrics]` で群別の固定値/Noneに差し替えて検証する。
-def get_pos_metrics() -> Optional[dict[str, Any]]:
-    data = load_json_dict("pos_metrics.json", default={}, data_dir=DEFAULT_DATA_DIR)
+# 最新の `settings.data_dir/pos_metrics.json` を読む（ファイルI/Oは軽量なため許容）。
+# 結合テストでは `app.dependency_overrides[get_pos_metrics]` で群別の固定値/Noneに
+# 差し替えて検証する。
+def get_pos_metrics(settings: Settings = Depends(get_settings)) -> Optional[dict[str, Any]]:
+    data = load_json_dict("pos_metrics.json", default={}, data_dir=settings.data_dir)
     return data or None
 
 

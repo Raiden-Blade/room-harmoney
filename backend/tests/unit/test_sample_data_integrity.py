@@ -12,9 +12,15 @@ from dataio import load_json_list
 from recommender.hybrid import HybridRecommender
 from routing import RouteGraphBuilder
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
+# 段階A: このテストは「サンプルデータの仕様（30〜50点等）」を検証するものであり、
+# ライブの `data/`（この後、実データ約9,180件へ差し替え予定）ではなく、固定フィクスチャ
+# （リファクタ時点の `data/*.json` サンプルのコピー）を参照する。
+
 
 def test_products_count_and_sub_passage_flag_within_spec():
-    products = load_json_list("products.json")
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
 
     assert 30 <= len(products) <= 50
     assert any(p["sub_passage_flag"] is True for p in products)
@@ -26,8 +32,8 @@ def test_products_count_and_sub_passage_flag_within_spec():
 
 
 def test_coordinates_product_ids_reference_existing_products():
-    products = load_json_list("products.json")
-    coordinates = load_json_list("coordinates.json")
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
+    coordinates = load_json_list("coordinates.json", data_dir=FIXTURES_DATA_DIR)
 
     product_ids = {p["product_id"] for p in products}
     assert 3 <= len(coordinates) <= 5
@@ -39,8 +45,8 @@ def test_coordinates_product_ids_reference_existing_products():
 
 
 def test_co_purchase_cat_mids_reference_existing_product_categories():
-    products = load_json_list("products.json")
-    co_purchase = load_json_list("co_purchase.json")
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
+    co_purchase = load_json_list("co_purchase.json", data_dir=FIXTURES_DATA_DIR)
 
     cat_mids = {p["cat_mid"] for p in products}
     assert len(co_purchase) > 0
@@ -52,7 +58,7 @@ def test_co_purchase_cat_mids_reference_existing_product_categories():
 
 def test_co_purchase_has_intentional_high_lift_low_corate_pairs():
     """「リフトは高いのに現状の併売率が低い」ペアが数組、意図的に含まれていること（5.1章）。"""
-    co_purchase = load_json_list("co_purchase.json")
+    co_purchase = load_json_list("co_purchase.json", data_dir=FIXTURES_DATA_DIR)
 
     flagged = [row for row in co_purchase if row["high_lift_low_corate"] is True]
     assert 2 <= len(flagged) <= 10
@@ -87,7 +93,7 @@ def test_store_map_all_waypoints_are_connected_across_four_floors():
 def test_real_sample_data_route_from_entrance_to_floor4_product_resolves():
     """実データで 1F入口 → 4F商品 の経路（フロア横断）が例外なく解けること（スモーク）。"""
     store_map = _load_store_map_dict()
-    products = load_json_list("products.json")
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
     builder = RouteGraphBuilder.from_store_map(store_map)
 
     floor4_product = next(p for p in products if p["floor"] == 4)
@@ -103,8 +109,8 @@ def test_real_sample_data_route_from_entrance_to_floor4_product_resolves():
 
 def test_real_sample_data_recommender_smoke():
     """実データで HybridRecommender.from_data_dir() が例外なく動作すること（スモーク）。"""
-    rec = HybridRecommender.from_data_dir()
-    products = load_json_list("products.json")
+    rec = HybridRecommender.from_data_dir(data_dir=FIXTURES_DATA_DIR)
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
 
     sample_product_id = products[0]["product_id"]
     result = rec.recommend(sample_product_id)
@@ -116,8 +122,7 @@ def test_real_sample_data_recommender_smoke():
 
 
 def _load_store_map_dict() -> dict:
-    from dataio import DEFAULT_DATA_DIR
     import json
 
-    path = DEFAULT_DATA_DIR / "store_map.json"
+    path = FIXTURES_DATA_DIR / "store_map.json"
     return json.loads(path.read_text(encoding="utf-8"))

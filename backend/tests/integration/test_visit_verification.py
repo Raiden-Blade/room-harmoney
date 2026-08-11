@@ -12,6 +12,8 @@ import pytest
 from app.config import Settings, get_settings
 from app.main import app
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
 # 目黒通り店（DECISIONS.md #4）付近の開発用ダミー座標（config.py の既定値と同一）。
 STORE_LAT = 35.6203
 STORE_LNG = 139.6883
@@ -26,11 +28,17 @@ def with_mode(client):
 
     `client` フィクスチャ自体のteardown（`app.dependency_overrides.clear()`）が
     最終的に呼ばれるため、ここで明示的に元へ戻さなくても後続テストへは波及しない。
+
+    段階A: `Settings(...)` を直接構築するとフィールドの静的既定値（`data_dir` は
+    `dataio.DEFAULT_DATA_DIR` ＝ライブの `data/`）が使われ、`RH_DATA_DIR` 環境変数
+    （`tests/conftest.py` 参照）を無視してしまうため、ここでも明示的に
+    `data_dir=FIXTURES_DATA_DIR` を渡し、recommendations/route が参照する P001 等が
+    フィクスチャ由来であることを担保する。
     """
 
     def _configure(mode: str):
         app.dependency_overrides[get_settings] = lambda: Settings(
-            visit_verification_mode=mode
+            visit_verification_mode=mode, data_dir=FIXTURES_DATA_DIR
         )
         return client
 

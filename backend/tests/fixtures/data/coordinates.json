@@ -1,0 +1,65 @@
+[
+  {
+    "coordinate_id": "C001",
+    "name": "ナチュラルリビング",
+    "theme": "ナチュラル",
+    "product_ids": [
+      "P001",
+      "P003",
+      "P007",
+      "P009"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C001",
+    "total_price_estimate": 70690
+  },
+  {
+    "coordinate_id": "C002",
+    "name": "モダンベッドルーム",
+    "theme": "モダン",
+    "product_ids": [
+      "P012",
+      "P013",
+      "P016"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C002",
+    "total_price_estimate": 48790
+  },
+  {
+    "coordinate_id": "C003",
+    "name": "北欧ダイニング",
+    "theme": "北欧",
+    "product_ids": [
+      "P020",
+      "P022",
+      "P027"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C003",
+    "total_price_estimate": 41780
+  },
+  {
+    "coordinate_id": "C004",
+    "name": "シンプルワークスペース",
+    "theme": "シンプル",
+    "product_ids": [
+      "P029",
+      "P031",
+      "P036",
+      "P034"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C004",
+    "total_price_estimate": 28760
+  },
+  {
+    "coordinate_id": "C005",
+    "name": "アーバンリビング（フロア横断コーデ）",
+    "theme": "アーバン",
+    "product_ids": [
+      "P002",
+      "P008",
+      "P010",
+      "P037"
+    ],
+    "image_url": "https://dummyimage.com/600x400/dddddd/333333&text=C005",
+    "total_price_estimate": 77770
+  }
+]

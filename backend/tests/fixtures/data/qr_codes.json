@@ -1,0 +1,381 @@
+[
+  {
+    "qr_id": "QR-ENTRANCE-001",
+    "type": "entrance",
+    "product_id": null,
+    "floor": 1,
+    "x": 3,
+    "y": 50,
+    "direct_url": "https://roomharmony.example.com/r/QR-ENTRANCE-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P001",
+    "type": "product",
+    "product_id": "P001",
+    "floor": 1,
+    "x": 17,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P001",
+    "product_code": "03-02-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P002",
+    "type": "product",
+    "product_id": "P002",
+    "floor": 1,
+    "x": 24,
+    "y": 23,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P002",
+    "product_code": "03-02-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P003",
+    "type": "product",
+    "product_id": "P003",
+    "floor": 1,
+    "x": 18,
+    "y": 24,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P003",
+    "product_code": "03-04-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P004",
+    "type": "product",
+    "product_id": "P004",
+    "floor": 1,
+    "x": 23,
+    "y": 77,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P004",
+    "product_code": "03-04-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P005",
+    "type": "product",
+    "product_id": "P005",
+    "floor": 1,
+    "x": 16,
+    "y": 82,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P005",
+    "product_code": "03-05-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P006",
+    "type": "product",
+    "product_id": "P006",
+    "floor": 1,
+    "x": 22,
+    "y": 85,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P006",
+    "product_code": "03-05-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P007",
+    "type": "product",
+    "product_id": "P007",
+    "floor": 1,
+    "x": 77,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P007",
+    "product_code": "03-03-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P008",
+    "type": "product",
+    "product_id": "P008",
+    "floor": 1,
+    "x": 83,
+    "y": 22,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P008",
+    "product_code": "03-03-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P009",
+    "type": "product",
+    "product_id": "P009",
+    "floor": 1,
+    "x": 93,
+    "y": 86,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P009",
+    "product_code": "03-01-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P010",
+    "type": "product",
+    "product_id": "P010",
+    "floor": 1,
+    "x": 97,
+    "y": 90,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P010",
+    "product_code": "03-01-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P011",
+    "type": "product",
+    "product_id": "P011",
+    "floor": 2,
+    "x": 17,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P011",
+    "product_code": "02-03-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P012",
+    "type": "product",
+    "product_id": "P012",
+    "floor": 2,
+    "x": 24,
+    "y": 22,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P012",
+    "product_code": "02-03-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P013",
+    "type": "product",
+    "product_id": "P013",
+    "floor": 2,
+    "x": 17,
+    "y": 77,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P013",
+    "product_code": "02-04-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P014",
+    "type": "product",
+    "product_id": "P014",
+    "floor": 2,
+    "x": 23,
+    "y": 79,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P014",
+    "product_code": "02-04-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P015",
+    "type": "product",
+    "product_id": "P015",
+    "floor": 2,
+    "x": 93,
+    "y": 89,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P015",
+    "product_code": "02-04-03-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P016",
+    "type": "product",
+    "product_id": "P016",
+    "floor": 2,
+    "x": 78,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P016",
+    "product_code": "02-01-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P017",
+    "type": "product",
+    "product_id": "P017",
+    "floor": 2,
+    "x": 83,
+    "y": 23,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P017",
+    "product_code": "02-01-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P018",
+    "type": "product",
+    "product_id": "P018",
+    "floor": 2,
+    "x": 77,
+    "y": 78,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P018",
+    "product_code": "02-02-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P019",
+    "type": "product",
+    "product_id": "P019",
+    "floor": 2,
+    "x": 83,
+    "y": 82,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P019",
+    "product_code": "02-02-01-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P020",
+    "type": "product",
+    "product_id": "P020",
+    "floor": 3,
+    "x": 17,
+    "y": 19,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P020",
+    "product_code": "01-03-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P021",
+    "type": "product",
+    "product_id": "P021",
+    "floor": 3,
+    "x": 24,
+    "y": 23,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P021",
+    "product_code": "01-03-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P022",
+    "type": "product",
+    "product_id": "P022",
+    "floor": 3,
+    "x": 17,
+    "y": 77,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P022",
+    "product_code": "01-02-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P023",
+    "type": "product",
+    "product_id": "P023",
+    "floor": 3,
+    "x": 23,
+    "y": 79,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P023",
+    "product_code": "01-02-01-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P024",
+    "type": "product",
+    "product_id": "P024",
+    "floor": 3,
+    "x": 77,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P024",
+    "product_code": "01-01-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P025",
+    "type": "product",
+    "product_id": "P025",
+    "floor": 3,
+    "x": 82,
+    "y": 22,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P025",
+    "product_code": "01-01-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P026",
+    "type": "product",
+    "product_id": "P026",
+    "floor": 3,
+    "x": 93,
+    "y": 86,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P026",
+    "product_code": "01-01-02-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P027",
+    "type": "product",
+    "product_id": "P027",
+    "floor": 3,
+    "x": 77,
+    "y": 78,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P027",
+    "product_code": "01-04-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P028",
+    "type": "product",
+    "product_id": "P028",
+    "floor": 3,
+    "x": 83,
+    "y": 82,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P028",
+    "product_code": "01-04-01-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P029",
+    "type": "product",
+    "product_id": "P029",
+    "floor": 4,
+    "x": 17,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P029",
+    "product_code": "04-01-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P030",
+    "type": "product",
+    "product_id": "P030",
+    "floor": 4,
+    "x": 24,
+    "y": 22,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P030",
+    "product_code": "04-01-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P031",
+    "type": "product",
+    "product_id": "P031",
+    "floor": 4,
+    "x": 17,
+    "y": 78,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P031",
+    "product_code": "04-04-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P032",
+    "type": "product",
+    "product_id": "P032",
+    "floor": 4,
+    "x": 23,
+    "y": 81,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P032",
+    "product_code": "04-04-01-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P033",
+    "type": "product",
+    "product_id": "P033",
+    "floor": 4,
+    "x": 77,
+    "y": 18,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P033",
+    "product_code": "04-03-02-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P034",
+    "type": "product",
+    "product_id": "P034",
+    "floor": 4,
+    "x": 83,
+    "y": 20,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P034",
+    "product_code": "04-03-02-002"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P035",
+    "type": "product",
+    "product_id": "P035",
+    "floor": 4,
+    "x": 93,
+    "y": 87,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P035",
+    "product_code": "04-03-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P036",
+    "type": "product",
+    "product_id": "P036",
+    "floor": 4,
+    "x": 77,
+    "y": 78,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P036",
+    "product_code": "04-02-01-001"
+  },
+  {
+    "qr_id": "QR-PRODUCT-P037",
+    "type": "product",
+    "product_id": "P037",
+    "floor": 4,
+    "x": 83,
+    "y": 82,
+    "direct_url": "https://roomharmony.example.com/r/QR-PRODUCT-P037",
+    "product_code": "04-02-01-002"
+  }
+]

@@ -13,6 +13,9 @@ import os
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+from typing import Union
+
+from dataio import DEFAULT_DATA_DIR
 
 # backend/app/config.py から見て ../../ が room-harmony リポジトリのルート
 # （backend/dataio/loader.py の DEFAULT_DATA_DIR と同じ規約に合わせる）。
@@ -65,6 +68,14 @@ def _parse_origins(raw: str) -> tuple[str, ...]:
     return tuple(origin.strip() for origin in raw.split(",") if origin.strip())
 
 
+def _resolve_project_path(raw: Union[str, Path]) -> Path:
+    """相対パスを `PROJECT_ROOT` 基準で解決する（`database_path` と同じ規約）。"""
+    path = Path(raw)
+    if not path.is_absolute():
+        path = (PROJECT_ROOT / path).resolve()
+    return path
+
+
 @dataclass(frozen=True)
 class Settings:
     """`.env.example` に対応する設定値。既定値は同ファイルの値に合わせる。"""
@@ -82,6 +93,14 @@ class Settings:
     store_geofence_lng: float = DEFAULT_STORE_GEOFENCE_LNG
     store_geofence_radius_m: float = DEFAULT_STORE_GEOFENCE_RADIUS_M
     store_wifi_ssids: tuple[str, ...] = _parse_origins(DEFAULT_STORE_WIFI_SSIDS)
+    # データディレクトリ（段階A: テストをライブの `data/` から切り離すリファクタ）。
+    # 商品/QR/コーディネート/店舗マップ/推薦（併売リフト・会員購入履歴）/POS突合の
+    # 読み込み元ディレクトリ。既定値は従来どおり `dataio.DEFAULT_DATA_DIR`（＝`data/`）
+    # のため、本番/開発の挙動は一切変わらない。テストは `RH_DATA_DIR` 環境変数で
+    # `backend/tests/fixtures/data/`（`data/` サンプルの固定コピー）へ向けることで、
+    # この後の実データ差し替え（段階B）で結合テストが壊れないようにする
+    # （`backend/tests/conftest.py` 参照）。
+    data_dir: Path = DEFAULT_DATA_DIR
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -114,6 +133,9 @@ class Settings:
             ),
             store_wifi_ssids=_parse_origins(
                 os.environ.get("STORE_WIFI_SSIDS", DEFAULT_STORE_WIFI_SSIDS)
+            ),
+            data_dir=_resolve_project_path(
+                os.environ.get("RH_DATA_DIR", DEFAULT_DATA_DIR)
             ),
         )
 

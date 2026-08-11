@@ -19,6 +19,8 @@ from batch.lift_batch import (
 )
 from dataio import load_json_list
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
 
 def _source(category_support: dict, co_purchases: list[dict]) -> dict:
     return {
@@ -225,14 +227,14 @@ def test_output_schema_matches_existing_co_purchase_columns():
 def test_run_generates_file_referencing_only_existing_product_categories(tmp_path):
     """(5) 参照整合: run() が生成した co_purchase.json の cat_mid が products.json に実在すること。
 
-    実データの `data/co_purchase_source.json` を入力に、一時ディレクトリへ生成して検証する
-    （本番の data/co_purchase.json を書き換えずに検証するため tmp_path を使う）。
+    段階A: サンプルの固定フィクスチャ（`data/co_purchase_source.json` のコピー）を入力に、
+    一時ディレクトリへ生成して検証する（本番の data/co_purchase.json を書き換えずに
+    検証するため tmp_path を使う。フィクスチャを使うことで `data/` の実データ差し替えで
+    このテストが壊れないようにする）。
     """
-    from dataio import DEFAULT_DATA_DIR
-
-    real_source_path = DEFAULT_DATA_DIR / "co_purchase_source.json"
+    fixture_source_path = FIXTURES_DATA_DIR / "co_purchase_source.json"
     (tmp_path / "co_purchase_source.json").write_text(
-        real_source_path.read_text(encoding="utf-8"), encoding="utf-8"
+        fixture_source_path.read_text(encoding="utf-8"), encoding="utf-8"
     )
 
     summary = run(data_dir=tmp_path)
@@ -243,7 +245,7 @@ def test_run_generates_file_referencing_only_existing_product_categories(tmp_pat
     generated = json.loads((tmp_path / "co_purchase.json").read_text(encoding="utf-8"))
     assert len(generated) == summary["generated"]
 
-    products = load_json_list("products.json")  # 本番 data/ から実商品マスタを読む
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)  # フィクスチャの商品マスタ
     cat_mids = {p["cat_mid"] for p in products}
 
     for row in generated:

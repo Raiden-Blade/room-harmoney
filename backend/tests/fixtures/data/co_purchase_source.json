@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "description": "co_purchase.json（中分類ペアの support/confidence/lift）を生成する上流の「素の集計」データ。",
+    "provenance": "これは実データ（POS由来の中分類レベル併売集計）に差し替える口。DECISIONS.md #2: 中分類レベル・色スコア不使用。トランザクション生データが入手でき次第、本ファイルの support / co_support を実測値で置き換え、backend/batch/lift_batch.py を再実行すれば co_purchase.json が再生成される。",
+    "schema": {
+      "category_support": "中分類ごとの単体支持度（support）＝その中分類を含む取引の割合（周辺確率 P(A)）。0〜1。",
+      "co_purchases": "中分類ペアの共起支持度（co_support）＝両方の中分類を含む取引の割合（P(A∩B)）。0〜1。co_support は必ず min(support_a, support_b) 以下。"
+    }
+  },
+  "category_support": [
+    { "cat_mid": "ソファ", "support": 0.12 },
+    { "cat_mid": "リビングテーブル", "support": 0.18 },
+    { "cat_mid": "照明", "support": 0.16 },
+    { "cat_mid": "ラグ・カーペット", "support": 0.14 },
+    { "cat_mid": "クッション", "support": 0.30 },
+    { "cat_mid": "ベッドフレーム", "support": 0.10 },
+    { "cat_mid": "寝具・布団", "support": 0.24 },
+    { "cat_mid": "カーテン", "support": 0.22 },
+    { "cat_mid": "チェスト・収納家具", "support": 0.20 },
+    { "cat_mid": "ダイニングテーブル", "support": 0.10 },
+    { "cat_mid": "ダイニングチェア", "support": 0.12 },
+    { "cat_mid": "キッチン雑貨", "support": 0.26 },
+    { "cat_mid": "食器", "support": 0.25 },
+    { "cat_mid": "デスク", "support": 0.09 },
+    { "cat_mid": "書棚・シェルフ", "support": 0.13 },
+    { "cat_mid": "収納ボックス", "support": 0.21 },
+    { "cat_mid": "デスクライト", "support": 0.11 }
+  ],
+  "co_purchases": [
+    { "cat_mid_a": "リビングテーブル", "cat_mid_b": "照明", "co_support": 0.0518 },
+    { "cat_mid_a": "キッチン雑貨", "cat_mid_b": "食器", "co_support": 0.0845 },
+    { "cat_mid_a": "寝具・布団", "cat_mid_b": "カーテン", "co_support": 0.0792 },
+    { "cat_mid_a": "クッション", "cat_mid_b": "ラグ・カーペット", "co_support": 0.0672 },
+    { "cat_mid_a": "収納ボックス", "cat_mid_b": "チェスト・収納家具", "co_support": 0.0588 },
+    { "cat_mid_a": "食器", "cat_mid_b": "収納ボックス", "co_support": 0.063 },
+    { "cat_mid_a": "書棚・シェルフ", "cat_mid_b": "収納ボックス", "co_support": 0.0437 },
+    { "cat_mid_a": "食器", "cat_mid_b": "カーテン", "co_support": 0.055 },
+    { "cat_mid_a": "クッション", "cat_mid_b": "カーテン", "co_support": 0.0594 },
+    { "cat_mid_a": "カーテン", "cat_mid_b": "収納ボックス", "co_support": 0.0554 },
+    { "cat_mid_a": "ダイニングテーブル", "cat_mid_b": "ラグ・カーペット", "co_support": 0.0392 },
+    { "cat_mid_a": "デスク", "cat_mid_b": "ラグ・カーペット", "co_support": 0.0378 },
+    { "cat_mid_a": "ソファ", "cat_mid_b": "デスクライト", "co_support": 0.037 },
+    { "cat_mid_a": "ベッドフレーム", "cat_mid_b": "書棚・シェルフ", "co_support": 0.0338 },
+    { "cat_mid_a": "ダイニングチェア", "cat_mid_b": "デスクライト", "co_support": 0.0343 },
+    { "cat_mid_a": "ベッドフレーム", "cat_mid_b": "デスク", "co_support": 0.0315 }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "_meta": "任意スロット（DECISIONS.md 改訂#5-A・承認日2026-08-07）。会員購入履歴の格納場所として用意したサンプルデータ。member_id は不透明トークンでありPII（氏名・連絡先等）は一切含まない。実会員データに差し替え可能。このファイルが存在しない/空/壊れたJSON/membersが空の場合でも、PersonalizedRecommender は常に HybridRecommender（base推薦）と完全に同一の結果を返し、全機能が動作する（後方互換）。",
+  "members": [
+    {
+      "member_id": "M001",
+      "purchased": [
+        {"cat_mid": "ラグ・カーペット", "count": 3},
+        {"product_id": "P020", "count": 1}
+      ]
+    },
+    {
+      "member_id": "M002",
+      "purchased": [
+        {"cat_mid": "デスクライト", "count": 2},
+        {"cat_mid": "書棚・シェルフ", "count": 1}
+      ]
+    },
+    {
+      "member_id": "M003",
+      "purchased": []
+    },
+    {
+      "member_id": "M004",
+      "purchased": [
+        {"cat_mid": "カーテン", "count": 3}
+      ]
+    }
+  ]
+}

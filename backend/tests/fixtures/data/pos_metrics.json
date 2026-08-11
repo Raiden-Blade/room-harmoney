@@ -1,0 +1,13 @@
+{
+  "note": "サンプル値（POS突合スロット）。実データ差し替え可能。ファイル欠損/空でもGET /api/admin/kpi は pos_metrics: null を返し500にならない（backend/app/dependencies.py get_pos_metrics）。",
+  "treatment": {
+    "co_purchase_rate": 0.24,
+    "items_per_purchase": 2.3,
+    "spend_per_customer": 18500
+  },
+  "control": {
+    "co_purchase_rate": 0.16,
+    "items_per_purchase": 1.8,
+    "spend_per_customer": 15200
+  }
+}

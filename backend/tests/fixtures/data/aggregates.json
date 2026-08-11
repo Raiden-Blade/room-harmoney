@@ -1,0 +1,6 @@
+{
+  "customer_total": 1250000,
+  "store_count": 570,
+  "member_count": 8300000,
+  "note": "サンプル値。ファイル欠損/空でもアプリは動作するようbackend側でフォールバックする。"
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "cat_mid_a": "リビングテーブル",
+    "cat_mid_b": "照明",
+    "co_purchase_rate": 0.0518,
+    "support": 0.0518,
+    "confidence": 0.288,
+    "lift": 1.8,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "キッチン雑貨",
+    "cat_mid_b": "食器",
+    "co_purchase_rate": 0.0845,
+    "support": 0.0845,
+    "confidence": 0.325,
+    "lift": 1.3,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "寝具・布団",
+    "cat_mid_b": "カーテン",
+    "co_purchase_rate": 0.0792,
+    "support": 0.0792,
+    "confidence": 0.33,
+    "lift": 1.5,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "クッション",
+    "cat_mid_b": "ラグ・カーペット",
+    "co_purchase_rate": 0.0672,
+    "support": 0.0672,
+    "confidence": 0.224,
+    "lift": 1.6,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "収納ボックス",
+    "cat_mid_b": "チェスト・収納家具",
+    "co_purchase_rate": 0.0588,
+    "support": 0.0588,
+    "confidence": 0.28,
+    "lift": 1.4,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "食器",
+    "cat_mid_b": "収納ボックス",
+    "co_purchase_rate": 0.063,
+    "support": 0.063,
+    "confidence": 0.252,
+    "lift": 1.2,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "書棚・シェルフ",
+    "cat_mid_b": "収納ボックス",
+    "co_purchase_rate": 0.0437,
+    "support": 0.0437,
+    "confidence": 0.336,
+    "lift": 1.6,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "食器",
+    "cat_mid_b": "カーテン",
+    "co_purchase_rate": 0.055,
+    "support": 0.055,
+    "confidence": 0.22,
+    "lift": 1.0,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "クッション",
+    "cat_mid_b": "カーテン",
+    "co_purchase_rate": 0.0594,
+    "support": 0.0594,
+    "confidence": 0.198,
+    "lift": 0.9,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "カーテン",
+    "cat_mid_b": "収納ボックス",
+    "co_purchase_rate": 0.0554,
+    "support": 0.0554,
+    "confidence": 0.252,
+    "lift": 1.2,
+    "high_lift_low_corate": false
+  },
+  {
+    "cat_mid_a": "ダイニングテーブル",
+    "cat_mid_b": "ラグ・カーペット",
+    "co_purchase_rate": 0.0392,
+    "support": 0.0392,
+    "confidence": 0.392,
+    "lift": 2.8,
+    "high_lift_low_corate": true
+  },
+  {
+    "cat_mid_a": "デスク",
+    "cat_mid_b": "ラグ・カーペット",
+    "co_purchase_rate": 0.0378,
+    "support": 0.0378,
+    "confidence": 0.42,
+    "lift": 3.0,
+    "high_lift_low_corate": true
+  },
+  {
+    "cat_mid_a": "ソファ",
+    "cat_mid_b": "デスクライト",
+    "co_purchase_rate": 0.037,
+    "support": 0.037,
+    "confidence": 0.308,
+    "lift": 2.8,
+    "high_lift_low_corate": true
+  },
+  {
+    "cat_mid_a": "ベッドフレーム",
+    "cat_mid_b": "書棚・シェルフ",
+    "co_purchase_rate": 0.0338,
+    "support": 0.0338,
+    "confidence": 0.338,
+    "lift": 2.6,
+    "high_lift_low_corate": true
+  },
+  {
+    "cat_mid_a": "ダイニングチェア",
+    "cat_mid_b": "デスクライト",
+    "co_purchase_rate": 0.0343,
+    "support": 0.0343,
+    "confidence": 0.286,
+    "lift": 2.6,
+    "high_lift_low_corate": true
+  },
+  {
+    "cat_mid_a": "ベッドフレーム",
+    "cat_mid_b": "デスク",
+    "co_purchase_rate": 0.0315,
+    "support": 0.0315,
+    "confidence": 0.315,
+    "lift": 3.5,
+    "high_lift_low_corate": true
+  }
+]

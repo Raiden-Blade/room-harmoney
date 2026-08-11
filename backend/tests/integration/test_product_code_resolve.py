@@ -10,9 +10,13 @@ from __future__ import annotations
 
 from dataio import load_json_list
 
+from tests.fixtures import DATA_DIR as FIXTURES_DATA_DIR
+
 
 def _expected_p001_code() -> str:
-    products = load_json_list("products.json")
+    # 段階A: `client` フィクスチャ（DIチェーン経由でフィクスチャを参照）と整合させるため、
+    # ここでの期待値算出も同じフィクスチャ（`data/` サンプルの固定コピー）から読む。
+    products = load_json_list("products.json", data_dir=FIXTURES_DATA_DIR)
     p001 = next(p for p in products if p["product_id"] == "P001")
     assert p001.get("product_code"), "products.json に product_code が付与されていません。先に `py -m batch.product_codes` を実行してください。"
     return p001["product_code"]
