@@ -25,6 +25,25 @@ export interface Product {
   x: number;
   y: number;
   sub_passage_flag: boolean;
+  /**
+   * 商品番号（新機能「商品番号による直接遷移」・`backend/batch/product_codes.py` で採番、
+   * 例: "01-03-02-001"）。QRの下に併記される表示用の番号で、`GET /api/product-code/{code}`
+   * で商品QRと同じ解決結果（qr_id等）を得られる。既存テストの手書きモックを壊さないよう
+   * 任意（optional）フィールドとする。
+   */
+  product_code?: string;
+}
+
+/**
+ * `GET /api/product-code/{code}`（新機能: 商品番号による直接遷移）のレスポンス型。
+ * QRを読み取れない来店客が商品番号を入力した際、その商品QRをスキャンしたのと等価に
+ * 進むため、返された `qr_id` をそのまま既存のQR解決フロー（`POST /api/session`）に渡す。
+ */
+export interface ProductCodeResolution {
+  product_id: string;
+  qr_id: string;
+  position: { floor: number; x: number; y: number };
+  product_code: string;
 }
 
 export interface RelatedItem {

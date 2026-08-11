@@ -11,6 +11,7 @@ import type {
   AdminKpiResponse,
   CoordinateDetail,
   Product,
+  ProductCodeResolution,
   QrResolution,
   RecommendationsResponse,
   RouteResponse,
@@ -77,6 +78,15 @@ export function resolveQr(qrId: string): Promise<QrResolution> {
 
 export function getProduct(productId: string): Promise<Product> {
   return request<Product>(`/api/products/${encodeURIComponent(productId)}`);
+}
+
+/**
+ * `GET /api/product-code/{code}`（新機能: 商品番号による直接遷移）。
+ * QRを読み取れない来店客が入力した商品番号（ハイフン有無どちらでも可）を解決する。
+ * S1 ScanPage が返り値の `qr_id` で既存のQR解決フロー（session作成等）にそのまま合流する。
+ */
+export function resolveProductCode(code: string): Promise<ProductCodeResolution> {
+  return request<ProductCodeResolution>(`/api/product-code/${encodeURIComponent(code)}`);
 }
 
 export function getRecommendations(

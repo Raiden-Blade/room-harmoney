@@ -13,11 +13,24 @@
  * QR解決フロー: `GET /api/qr/{qr_id}` で種別判定 → `POST /api/session` でセッション開始
  * （読取地点を起点として記録）→ `qr_scan` イベント送信 → 商品QRなら S2、入口QRなら
  * 店内トップ（本画面内に留まりチャットボット導線等を表示）。
+ *
+ * 4つ目の到達経路（新機能）: **商品番号による直接遷移**。QRの下に併記された商品番号
+ * （`LL-MM-SS-NNN`。ハイフン有無どちらでも入力可）を手入力すると、
+ * `GET /api/product-code/{code}` でその商品の `qr_id` を解決し、以降は
+ * 上記と全く同じ `resolveAndEnter`（session作成→qr_scanイベント送信→S2遷移）に
+ * 合流する。つまり「その商品のQRをスキャンしたのと等価」になる。
  */
 import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-import { ApiError, createSession, postEvent, resolveQr } from "../api/client";
+import {
+  ApiError,
+  createSession,
+  postEvent,
+  resolveProductCode,
+  resolveQr,
+} from "../api/client";
 import { ChatbotLink } from "../components/ChatbotLink";
 import { QrCameraScanner } from "../components/QrCameraScanner";
 import { buildRoutePath, parseInboundDeepLink } from "../deeplink";
@@ -45,6 +58,11 @@ export function ScanPage() {
   const [error, setError] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+
+  // 商品番号による直接遷移（新機能）: 手入力フォームの状態。
+  const [productCodeInput, setProductCodeInput] = useState("");
+  const [productCodeError, setProductCodeError] = useState<string | null>(null);
+  const [productCodeSubmitting, setProductCodeSubmitting] = useState(false);
 
   const inboundDeepLink = parseInboundDeepLink(searchParams);
   const deepProductId = inboundDeepLink.productId;
@@ -107,6 +125,34 @@ export function ScanPage() {
           ? err.message
           : "QRの読み取りに失敗しました。時間をおいて再度お試しください。",
       );
+    }
+  }
+
+  /**
+   * 商品番号（新機能）の手入力フォーム送信ハンドラ。
+   * `GET /api/product-code/{code}` で qr_id を解決し、以降は
+   * `resolveAndEnter`（＝カメラ/URL直リンクと同一のQR解決フロー）に合流する。
+   * ここでの失敗（無効な商品番号）は、QR自体の解決失敗とは別の `productCodeError` として
+   * 表示する（9章アクセシビリティ: 何が失敗したか分かりやすい案内）。
+   */
+  async function handleProductCodeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const trimmed = productCodeInput.trim();
+    if (!trimmed) return;
+
+    setProductCodeError(null);
+    setProductCodeSubmitting(true);
+    try {
+      const resolution = await resolveProductCode(trimmed);
+      await resolveAndEnter(resolution.qr_id);
+    } catch (err) {
+      setProductCodeError(
+        err instanceof ApiError
+          ? err.message
+          : "商品番号の確認に失敗しました。時間をおいて再度お試しください。",
+      );
+    } finally {
+      setProductCodeSubmitting(false);
     }
   }
 
@@ -208,6 +254,37 @@ export function ScanPage() {
       <p className="hint">
         カメラが使えない場合は、QRに記載のURL（例: <code>/s/QR-PRODUCT-P001</code>）から直接お進みいただけます。
       </p>
+
+      <section className="product-code-entry" aria-labelledby="product-code-heading">
+        <h2 id="product-code-heading">QRを読み取れない場合</h2>
+        <p>QRの下に表示された商品番号を入力してください。</p>
+        <form onSubmit={(e) => void handleProductCodeSubmit(e)}>
+          <label htmlFor="product-code-input">商品番号</label>
+          <input
+            id="product-code-input"
+            data-testid="product-code-input"
+            type="text"
+            inputMode="numeric"
+            autoComplete="off"
+            placeholder="例: 01-03-02-001"
+            value={productCodeInput}
+            onChange={(e) => setProductCodeInput(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="btn-secondary"
+            data-testid="product-code-submit"
+            disabled={productCodeSubmitting || productCodeInput.trim().length === 0}
+          >
+            商品へ進む
+          </button>
+        </form>
+        {productCodeError && (
+          <p className="error-notice" role="alert" data-testid="product-code-error">
+            {productCodeError}
+          </p>
+        )}
+      </section>
     </main>
   );
 }

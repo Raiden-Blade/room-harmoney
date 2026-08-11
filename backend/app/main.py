@@ -13,6 +13,7 @@ from .routers import (
     admin,
     coordinates,
     events,
+    product_code,
     products,
     qr,
     recommendations,
@@ -47,6 +48,7 @@ register_exception_handlers(app)
 
 app.include_router(session.router)
 app.include_router(qr.router)
+app.include_router(product_code.router)
 app.include_router(products.router)
 app.include_router(recommendations.router)
 app.include_router(coordinates.router)

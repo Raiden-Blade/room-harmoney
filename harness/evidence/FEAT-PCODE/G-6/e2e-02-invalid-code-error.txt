@@ -1,0 +1,26 @@
+=== E2E test: invalid product code entry -> error display, no navigation ===
+URL: http://localhost:5173/scan
+Input entered: 99-99-99-999 (known non-existent code, matches integration test expectation)
+Clicked product-code-submit.
+
+Page text after submit (get_page_text):
+---
+Room Harmony
+店頭のQRコードを読み取ってください。
+カメラでQRを読み取る
+カメラが使えない場合は、QRに記載のURL（例: /s/QR-PRODUCT-P001）から直接お進みいただけます。
+QRを読み取れない場合
+QRの下に表示された商品番号を入力してください。
+商品番号商品へ進む
+商品番号 99-99-99-999 に該当する商品が見つかりません。番号をご確認ください。
+---
+
+DOM (read_page): alert role element [ref_14] with exact text
+"商品番号 99-99-99-999 に該当する商品が見つかりません。番号をご確認ください。"
+(matches data-testid="product-code-error" per ScanPage.tsx source, role="alert").
+
+Page remained on S1 (scan-page); no navigation to /products/* occurred.
+
+Conclusion: Invalid product code correctly surfaces an accessible error message and does
+not navigate away from S1, matching backend 404 PRODUCT_CODE_NOT_FOUND response verified
+independently via: GET /api/product-code/99-99-99-999 -> 404 PRODUCT_CODE_NOT_FOUND.

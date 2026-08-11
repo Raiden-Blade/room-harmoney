@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -355,5 +356,174 @@ describe("ScanPage (S1) - チャットボットからのディープリンク受
     renderAt("/scan?to_product=P001");
 
     await screen.findByTestId("visit-lock");
+  });
+});
+
+/**
+ * 新機能: 商品番号（数字列）による直接遷移。
+ * QRを読み取れない来店客が商品番号を手入力すると、`GET /api/product-code/{code}` で
+ * qr_id を解決し、以降は既存のQR解決フロー（session作成→qr_scan送信→S2遷移）に
+ * 合流することを確認する。
+ */
+describe("ScanPage (S1) - 商品番号（手入力）による直接遷移", () => {
+  it("商品番号を入力して送信すると、商品番号解決→session作成→qr_scan送信→S2遷移まで到達する", async () => {
+    const { calls } = installFetchMock([
+      route("GET", "/api/product-code/01-03-02-001", () => ({
+        body: {
+          product_id: "P001",
+          qr_id: "QR-PRODUCT-P001",
+          position: { floor: 1, x: 17, y: 18 },
+          product_code: "01-03-02-001",
+        },
+      })),
+      route("GET", "/api/qr/QR-PRODUCT-P001", () => ({
+        body: {
+          type: "product",
+          product_id: "P001",
+          position: { floor: 1, x: 17, y: 18 },
+          direct_url: "https://roomharmony.example.com/r/QR-PRODUCT-P001",
+        },
+      })),
+      route("POST", "/api/session", () => ({
+        body: {
+          session_id: "sess-code-1",
+          start: { floor: 1, x: 17, y: 18 },
+          floor: 1,
+          experiment_group: "A",
+        },
+      })),
+      route("POST", "/api/events", () => ({ body: { ok: true } })),
+      route("GET", "/api/products/P001", () => ({
+        body: {
+          product_id: "P001",
+          name: "ナチュラル2人掛けソファ",
+          cat_large: "リビング",
+          cat_mid: "ソファ",
+          cat_small: "2人掛けソファ",
+          color: "ナチュラル",
+          price: 39900,
+          image_url: "https://dummyimage.com/300x300",
+          floor: 1,
+          zone: "A",
+          x: 17,
+          y: 18,
+          sub_passage_flag: false,
+          product_code: "01-03-02-001",
+        },
+      })),
+      route("GET", "/api/recommendations", () => ({ body: { related: [], coordinates: [] } })),
+    ]);
+
+    const user = userEvent.setup();
+    renderAt("/scan");
+
+    await screen.findByTestId("scan-page");
+    const input = screen.getByTestId("product-code-input");
+    await user.type(input, "01-03-02-001");
+    await user.click(screen.getByTestId("product-code-submit"));
+
+    await screen.findByTestId("product-page", undefined, { timeout: 3000 });
+
+    // 商品番号解決API → qr_id を使ったセッション作成、の順で呼ばれている。
+    const codeCall = calls.find(
+      (c) => c.method === "GET" && c.url.includes("/api/product-code/01-03-02-001"),
+    );
+    expect(codeCall).toBeDefined();
+
+    const sessionCall = calls.find((c) => c.method === "POST" && c.url.includes("/api/session"));
+    expect(sessionCall?.body).toEqual({ qr_id: "QR-PRODUCT-P001" });
+
+    const qrScanCall = calls.find(
+      (c) =>
+        c.method === "POST" &&
+        c.url.includes("/api/events") &&
+        (c.body as { event_type?: string })?.event_type === "qr_scan",
+    );
+    expect(qrScanCall).toBeDefined();
+
+    await waitFor(() => {
+      expect(getSession()?.sessionId).toBe("sess-code-1");
+    });
+  });
+
+  it("ハイフン無しの数字列を入力しても同様に解決できる", async () => {
+    installFetchMock([
+      route("GET", "/api/product-code/010302001", () => ({
+        body: {
+          product_id: "P001",
+          qr_id: "QR-PRODUCT-P001",
+          position: { floor: 1, x: 17, y: 18 },
+          product_code: "01-03-02-001",
+        },
+      })),
+      route("GET", "/api/qr/QR-PRODUCT-P001", () => ({
+        body: {
+          type: "product",
+          product_id: "P001",
+          position: { floor: 1, x: 17, y: 18 },
+          direct_url: "https://roomharmony.example.com/r/QR-PRODUCT-P001",
+        },
+      })),
+      route("POST", "/api/session", () => ({
+        body: {
+          session_id: "sess-code-2",
+          start: { floor: 1, x: 17, y: 18 },
+          floor: 1,
+          experiment_group: "B",
+        },
+      })),
+      route("POST", "/api/events", () => ({ body: { ok: true } })),
+      route("GET", "/api/products/P001", () => ({
+        body: {
+          product_id: "P001",
+          name: "ナチュラル2人掛けソファ",
+          cat_large: "リビング",
+          cat_mid: "ソファ",
+          cat_small: "2人掛けソファ",
+          color: "ナチュラル",
+          price: 39900,
+          image_url: "https://dummyimage.com/300x300",
+          floor: 1,
+          zone: "A",
+          x: 17,
+          y: 18,
+          sub_passage_flag: false,
+          product_code: "01-03-02-001",
+        },
+      })),
+      route("GET", "/api/recommendations", () => ({ body: { related: [], coordinates: [] } })),
+    ]);
+
+    const user = userEvent.setup();
+    renderAt("/scan");
+
+    await screen.findByTestId("scan-page");
+    await user.type(screen.getByTestId("product-code-input"), "010302001");
+    await user.click(screen.getByTestId("product-code-submit"));
+
+    await screen.findByTestId("product-page", undefined, { timeout: 3000 });
+  });
+
+  it("無効な商品番号を入力するとエラーが表示され、遷移しない（該当商品なし）", async () => {
+    installFetchMock([
+      route("GET", "/api/product-code/99-99-99-999", () => ({
+        status: 404,
+        body: {
+          code: "PRODUCT_CODE_NOT_FOUND",
+          message: "商品番号 99-99-99-999 に該当する商品が見つかりません。番号をご確認ください。",
+        },
+      })),
+    ]);
+
+    const user = userEvent.setup();
+    renderAt("/scan");
+
+    await screen.findByTestId("scan-page");
+    await user.type(screen.getByTestId("product-code-input"), "99-99-99-999");
+    await user.click(screen.getByTestId("product-code-submit"));
+
+    const errorNotice = await screen.findByTestId("product-code-error");
+    expect(errorNotice.textContent).toContain("見つかりません");
+    expect(screen.queryByTestId("product-page")).toBeNull();
   });
 });

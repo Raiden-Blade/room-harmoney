@@ -98,6 +98,11 @@ export function ProductPage() {
           <p>
             売場: {product.floor}F ゾーン{product.zone}
           </p>
+          {product.product_code && (
+            <p className="product-code" data-testid="product-code">
+              商品番号: {product.product_code}（QR下部に記載）
+            </p>
+          )}
           <Link
             to={`/route?to_product=${encodeURIComponent(product.product_id)}`}
             className="btn-primary"

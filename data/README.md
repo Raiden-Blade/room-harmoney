@@ -28,8 +28,44 @@
 | zone | string | ゾーン記号（A/B/C/D=通常ゾーン、SUB=サブ通路） |
 | x, y | float | 売場座標（フロア内 0〜100 のローカル座標） |
 | sub_passage_flag | bool | サブ通路商品か（`zone == "SUB"` の商品で true。関連商品の経路優先案内に利用） |
+| product_code | string | 商品番号（`LL-MM-SS-NNN`。新機能「商品番号による直接遷移」。下記節参照） |
 
 37点、うち6点が `sub_passage_flag: true`。
+
+### product_code（商品番号による直接遷移・新機能）
+
+QRを読み取れない来店客が、QRの下に印刷された**商品番号**を入力すると、その商品のQRを
+スキャンしたのと等価に商品詳細へ直接進める機能（要件4.1 カメラ非対応フォールバックの拡張・
+9章アクセシビリティ）のための番号。**`backend/batch/product_codes.py`
+（商品番号採番バッチ）による生成物**として `products.json`（各商品）・`qr_codes.json`
+（商品QR＝`type=="product"` のエントリ）の両方に付与される。
+
+**コード体系**：`LL-MM-SS-NNN`（合計9桁・階層式。表示はハイフン区切り、入力はハイフン
+有無どちらも許容 — `backend/app/repositories.py` の `normalize_product_code` で数字9桁に
+正規化して突合する）。
+
+```
+LL  = 大分類コード（2桁, 01〜）。大分類を名称ソートして安定採番。
+MM  = 中分類コード（2桁, 01〜）。その大分類配下の中分類を名称ソートして安定採番。
+SS  = 小分類コード（2桁, 01〜）。その中分類配下の小分類を名称ソートして安定採番。
+NNN = 個別番号（3桁, 001〜）。その小分類配下の商品を product_id 昇順で安定採番。
+```
+
+フルコード（9桁）は階層プレフィックス＋その配下の連番の組み合わせのため、構築時点で
+自動的に全商品ユニークになる。
+
+再生成コマンド（cwd=`backend`）:
+
+```powershell
+.venv\Scripts\python.exe -m batch.product_codes
+```
+
+対応するAPI：`GET /api/product-code/{code}` が商品番号→`(product_id, qr_id, position)` を
+解決する（`backend/app/routers/product_code.py`）。フロントは解決した `qr_id` で既存の
+`POST /api/session` フローにそのまま合流させ、「商品QRをスキャンしたのと等価」を担保する。
+単体テストは `backend/tests/unit/test_product_codes.py`（コード形式・階層採番・全商品
+ユニーク・決定的/再現性・ハイフン正規化）、結合テストは
+`backend/tests/integration/test_product_code_resolve.py`。
 
 ## co_purchase.json（併売/リフトテーブル・中分類ペア単位）／co_purchase_source.json（上流入力）
 
@@ -109,6 +145,7 @@ high_lift_low_corate = (lift >= LIFT_THRESHOLD=2.0) and (co_purchase_rate <= COR
 | product_id | string\|null | 商品QRの場合のみ設定 |
 | floor / x / y | 数値 | 設置座標 |
 | direct_url | string | カメラ不可時のURL直リンク（ダミードメイン） |
+| product_code | string（商品QRのみ） | 商品番号（`LL-MM-SS-NNN`）。QRの下に併記される想定の番号。`backend/batch/product_codes.py` が付与（上記「product_code（商品番号による直接遷移・新機能）」節参照） |
 
 ## aggregates.json（集計3指標・オプショナル）
 

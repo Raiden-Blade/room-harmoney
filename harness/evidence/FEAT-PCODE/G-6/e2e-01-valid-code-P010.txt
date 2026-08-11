@@ -1,0 +1,26 @@
+=== E2E test: valid product code entry -> S2 navigation ===
+Input entered into product-code-input: 03-01-02-001 (real code for P010, verified via API GET /api/product-code/03-01-02-001)
+Clicked product-code-submit button.
+
+Result page text (get_page_text after submit):
+---
+ネイビークッション
+リビング / クッション / 円形クッション・ネイビー
+¥2,490
+売場: 1F ゾーンSUB
+商品番号: 03-01-02-001（QR下部に記載）
+この商品の場所を見る
+関連商品
+（グレーカーペット, ベージュラグ, ネイビー遮光カーテン, ナチュラルレースカーテン）
+この商品を使ったコーディネート
+アーバンリビング（フロア横断コーデ）（アーバン）
+---
+
+DOM (read_page): product-code element shows "商品番号: 03-01-02-001（QR下部に記載）" inside <main> region matching P010's ProductPage.
+Product name "ネイビークッション" matches data/products.json entry for P010, and the entered code
+03-01-02-001 exactly matches P010's product_code field verified independently via:
+  GET /api/product-code/03-01-02-001 -> {"product_id":"P010","qr_id":"QR-PRODUCT-P010",...}
+  GET /api/products/P010 -> product_code "03-01-02-001"
+
+Conclusion: Manual product-code entry correctly resolved to the same product (P010) as
+the corresponding QR (QR-PRODUCT-P010), confirming equivalence with QR scan flow (S1 -> S2).
