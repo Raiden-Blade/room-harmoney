@@ -161,4 +161,35 @@ describe("ProductPage (S2)", () => {
 
     expect(await screen.findByTestId("visit-lock")).toBeInTheDocument();
   });
+
+  it("ガイド型チャット群では重複を抑えて関連商品を4件に畳み、全件へ展開できる", async () => {
+    saveSession({
+      sessionId: "sess-treatment",
+      experimentGroup: "treatment",
+      qrId: "QR-PRODUCT-P027",
+      start: { floor: 1, x: 3, y: 50 },
+    });
+    const related = Array.from({ length: 6 }, (_, index) => ({
+      product: relatedProduct(`P1${index}`, `関連商品${index + 1}`),
+      cat_mid: "キッチン雑貨",
+      lift: 1.2 - index * 0.01,
+      high_lift_low_corate: false,
+      score: 1.2 - index * 0.01,
+    }));
+    installFetchMock([
+      route("GET", "/api/products/P027", () => ({ body: PRODUCT })),
+      route("GET", "/api/recommendations", () => ({
+        body: { related, coordinates: [] },
+      })),
+    ]);
+
+    renderProductPage();
+
+    const list = await screen.findByTestId("related-list");
+    expect(within(list).getAllByRole("listitem")).toHaveLength(4);
+    fireEvent.click(screen.getByRole("button", { name: "関連商品をすべて見る（6件）" }));
+    expect(within(list).getAllByRole("listitem")).toHaveLength(6);
+    fireEvent.click(screen.getByRole("button", { name: "関連商品を4件表示に戻す" }));
+    expect(within(list).getAllByRole("listitem")).toHaveLength(4);
+  });
 });

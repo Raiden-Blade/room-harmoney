@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/chat/turn": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Chat Turn */
+        post: operations["post_chat_turn_api_chat_turn_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/coordinates/{coordinate_id}": {
         parameters: {
             query?: never;
@@ -198,6 +215,48 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ChatState
+         * @description クライアントとAPIの間で往復させる匿名の短期会話状態。
+         */
+        ChatState: {
+            /** Answered Question Ids */
+            answered_question_ids?: string[];
+            /** Preferences */
+            preferences?: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * ChatTurnRequest
+         * @description `POST /api/chat/turn` の入力。
+         *
+         *     自由入力は解釈にだけ使い、イベントログへは保存しない。`state` をクライアントへ
+         *     返して往復させるため、会話本文を永続化する専用DBは不要である。
+         */
+        ChatTurnRequest: {
+            /** Product Id */
+            product_id: string;
+            /**
+             * Action
+             * @default start
+             * @enum {string}
+             */
+            action: "start" | "answer" | "skip" | "finish";
+            /** Question Id */
+            question_id?: string | null;
+            /** Answer Id */
+            answer_id?: string | null;
+            /** Text */
+            text?: string | null;
+            /**
+             * Mode
+             * @default customer
+             * @enum {string}
+             */
+            mode: "customer" | "staff";
+            state?: components["schemas"]["ChatState"];
+        };
         /**
          * CreateSessionRequest
          * @description `POST /api/session` リクエストボディ。
@@ -417,6 +476,44 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_chat_turn_api_chat_turn_post: {
+        parameters: {
+            query?: {
+                /** @description 来店セッションID（POST /api/session で発行） */
+                session_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatTurnRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {

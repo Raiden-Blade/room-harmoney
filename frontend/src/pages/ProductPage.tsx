@@ -14,6 +14,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError, getProduct, getRecommendations } from "../api/client";
 import type { Product, RecommendationsResponse } from "../api/types";
 import { ChatbotLink } from "../components/ChatbotLink";
+import { ChatbotPanel } from "../components/ChatbotPanel";
 import { ErrorNotice } from "../components/ErrorNotice";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { VisitLockScreen } from "../components/VisitLockScreen";
@@ -24,11 +25,14 @@ export function ProductPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const logEvent = useEventLog();
+  const activeSession = getSession();
+  const activeSessionId = activeSession?.sessionId ?? null;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [productError, setProductError] = useState<string | null>(null);
 
   const [recommendations, setRecommendations] = useState<RecommendationsResponse | null>(null);
+  const [showAllRelated, setShowAllRelated] = useState(false);
   const [locked, setLocked] = useState(false);
   const [recError, setRecError] = useState<string | null>(null);
 
@@ -47,15 +51,14 @@ export function ProductPage() {
         );
       });
 
-    const activeSession = getSession();
-    if (!activeSession) {
+    if (!activeSessionId) {
       setLocked(true);
       return () => {
         cancelled = true;
       };
     }
 
-    getRecommendations(productId, activeSession.sessionId)
+    getRecommendations(productId, activeSessionId)
       .then((r) => {
         if (!cancelled) setRecommendations(r);
       })
@@ -75,11 +78,19 @@ export function ProductPage() {
     return () => {
       cancelled = true;
     };
-  }, [productId]);
+  }, [productId, activeSessionId]);
 
   if (!productId) {
     return <ErrorNotice message="商品IDが指定されていません。" />;
   }
+
+  const guidedChatEnabled = Boolean(
+    activeSession && activeSession.experimentGroup !== "control",
+  );
+  const visibleRelated =
+    recommendations && guidedChatEnabled && !showAllRelated
+      ? recommendations.related.slice(0, 4)
+      : recommendations?.related;
 
   return (
     <main className="app-shell" data-testid="product-page">
@@ -120,6 +131,10 @@ export function ProductPage() {
         </section>
       )}
 
+      {!locked && activeSession && guidedChatEnabled && (
+        <ChatbotPanel productId={productId} sessionId={activeSession.sessionId} />
+      )}
+
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">関連商品</h2>
         {locked && <VisitLockScreen />}
@@ -127,7 +142,7 @@ export function ProductPage() {
         {!locked && recommendations && (
           <ul className="related-list" data-testid="related-list">
             {recommendations.related.length === 0 && <li>関連商品は見つかりませんでした。</li>}
-            {recommendations.related.map((item) => (
+            {visibleRelated?.map((item) => (
               <li key={item.product.product_id} data-testid={`related-item-${item.product.product_id}`}>
                 <ImageWithFallback
                   src={item.product.image_url}
@@ -166,6 +181,20 @@ export function ProductPage() {
             ))}
           </ul>
         )}
+        {!locked &&
+          recommendations &&
+          guidedChatEnabled &&
+          recommendations.related.length > 4 && (
+            <button
+              type="button"
+              className="related-list-toggle"
+              onClick={() => setShowAllRelated((current) => !current)}
+            >
+              {showAllRelated
+                ? "関連商品を4件表示に戻す"
+                : `関連商品をすべて見る（${recommendations.related.length}件）`}
+            </button>
+          )}
       </section>
 
       <section aria-labelledby="coordinates-heading">
@@ -188,7 +217,9 @@ export function ProductPage() {
         )}
       </section>
 
-      <ChatbotLink productId={productId} screen="product_detail" />
+      {(!activeSession || !guidedChatEnabled) && (
+        <ChatbotLink productId={productId} screen="product_detail" />
+      )}
     </main>
   );
 }

@@ -68,6 +68,59 @@ export interface RecommendationsResponse {
   coordinates: CoordinateSummary[];
 }
 
+export type ChatMode = "customer" | "staff";
+export type ChatAction = "start" | "answer" | "skip" | "finish";
+
+export interface ChatState {
+  answered_question_ids: string[];
+  preferences: Record<string, string>;
+}
+
+export interface ChatQuestionOption {
+  option_id: string;
+  label: string;
+  description: string;
+}
+
+export interface ChatQuestion {
+  question_id: string;
+  text: string;
+  reason: string;
+  options: ChatQuestionOption[];
+}
+
+export interface ChatRecommendation {
+  product: Product;
+  cat_mid: string;
+  lift: number;
+  high_lift_low_corate: boolean;
+  base_score: number;
+  guided_score: number;
+  reasons: string[];
+}
+
+export interface ChatTurnRequest {
+  product_id: string;
+  action: ChatAction;
+  question_id?: string;
+  answer_id?: string;
+  text?: string;
+  mode: ChatMode;
+  state: ChatState;
+}
+
+export interface ChatTurnResponse {
+  message: string;
+  recognized: boolean;
+  completed: boolean;
+  question: ChatQuestion | null;
+  state: ChatState;
+  recommendations: ChatRecommendation[];
+  route_product_ids: string[];
+  coordinates: CoordinateSummary[];
+  data_notice: string;
+}
+
 export interface CoordinateDetail extends CoordinateSummary {
   products: Product[];
 }
@@ -203,6 +256,30 @@ export interface PosMetricsBlock {
 export interface AdminKpiResponse {
   groups: Record<ExperimentGroupKey, KpiGroupResult>;
   diff: KpiRates;
+  chatbot_metrics?: ChatbotMetricsBlock;
   pos_metrics: PosMetricsBlock | null;
+  note: string;
+}
+
+export interface ChatbotMetricCounts {
+  opened: number;
+  answered: number;
+  recommendation_viewed: number;
+  recommendation_tapped: number;
+  completed: number;
+}
+
+export interface ChatbotMetricRates {
+  answer_rate: number;
+  recommendation_tap_rate: number;
+  completion_rate: number;
+}
+
+export interface ChatbotMetricsBlock {
+  groups: Record<
+    ExperimentGroupKey,
+    { counts: ChatbotMetricCounts; rates: ChatbotMetricRates }
+  >;
+  diff: ChatbotMetricRates;
   note: string;
 }

@@ -1,13 +1,66 @@
 # Room Harmony
 
-来店客向けWebアプリ（レスポンシブ／PWA）。店内QRのスキャンを起点に、**関連商品提示・コーディネート提案・店内簡易ルート案内**を行い、同じ空間の商品の併売を促す。
-要件は `docs/DESIGN.md`（全体設計）・`docs/DECISIONS.md`（発注者確認済みの確定事項）・`docs/HARNESS.md`（開発ハーネス）を参照。
+来店客向けWebアプリ（レスポンシブ／PWA）。店内の商品QRを起点に、**関連商品提示・3問以内のガイド型チャット・コーディネート提案・複数商品の店内ルート案内**を一つの導線にし、同じ空間に置く商品の認知と併売を促す。
+要件は `docs/DESIGN.md`（全体設計）・`docs/DECISIONS.md`（確定事項）・`docs/CHATBOT_REQUIREMENTS.md`（チャット要件）・`docs/CHATBOT_AUDIT.md`（課題適合性の批評・修正記録）を参照。
 
-> ステータス: **フェーズ1 MVP 実装・検証済み**（G1 推薦/経路単体 → G2 API結合 → G3 フロント → G4 E2Eハッピーパス まで、独立QAゲートを通過）。各ゲートの合否・証跡は `harness/reports/` と `harness/evidence/` を参照。
+> ステータス: **ガイド型チャット統合版**。既存の推薦・QR・コーディネート・ルート機能を維持したまま、Python中心の質問制御、説明可能な後段再ランキング、キーボード／音声入力、スタッフ向け根拠表示、匿名KPIを追加した。
 
 ---
 
-## 1. 前提環境
+## 1. 完成版の全体フロー
+
+![Room Harmony ガイド型チャット統合フロー](docs/assets/room-harmony-chatbot-flow.svg)
+
+白い太線は来店客の主導線、細い実線は現在実装済みのシステム連携、破線は将来のニトリ既存Chatbot接続または人手承認後の更新を示す。図はSVGのため、GitHub上でも拡大して確認できる。
+
+主導線は次の通りである。
+
+1. 来店客またはスタッフが、商品QR（カメラ非対応時は商品番号）から来店セッションを開始する。
+2. QRの商品IDとQR起点位置を引き継ぎ、既存推薦器が関連候補を生成する。
+3. 同一カテゴリだけで画面が埋まらないよう、初期候補を複数カテゴリへ分散して表示する。
+4. 顧客は自由作文を強制されず、最大3問の選択肢に回答する。文字入力・対応ブラウザの音声入力・スキップも使える。
+5. 回答は価格・分類・既知の色・売場・コーディネート適合度等の構造化条件へ変換され、既存候補の後段再ランキングに使われる。
+6. 商品カードの理由を確認し、1商品または複数商品の売場ルートへ進む。会計システムとの接続は本実装の対象外である。
+
+## 2. Chatbotの設計意図
+
+### 2.1 生成AIではなく「ガイド型推薦インターフェース」
+
+初版はOpenAI等の外部LLMへ接続せず、Pythonの質問ポリシー・再ランキング・日本語テンプレートで動作する。そのため `sk-...` のAPIキーは不要で、商品情報を外部サービスへ送らない。9,180件の商品データでのローカル計測では、初期構築後の1ターンは概ね数十msで処理できる。
+
+Chatbotは新しい商品を勝手に生成しない。既存 `PersonalizedRecommender` が併売リフトとコーディネート適合度から候補を作り、`GuidedReranker` が来店客の回答を使って候補集合の中を並べ替える。この責務分離により、従来の `/api/recommendations` の結果と既存画面を壊さない。
+
+### 2.2 「相性」と「探索」の違い
+
+- **まとまり・相性**: 既存スコアと登録済みコーディネートで一緒に使われる商品を重視する。
+- **価格を抑える**: 関連候補内の相対価格を使い、価格を抑えやすい商品を上げる。
+- **新しい組み合わせ**: 関連候補という安全な範囲を維持しながら、高リフト・低併売率の分類と、異なる商品種類・価格帯・既知の色・売場を持つ候補を広く提示する。
+- **関連性を優先**: 既存の併売リフトと関連度を主信号として維持する。
+
+「探索」は売上向上を保証する機能ではない。商品単位の実併売データが無い現状でAIが未知の相性を発見したとは主張せず、比較対象を広げる仮説生成として扱う。効果判定にはA/B割付とPOS突合が必要である。treatmentは「既存Room Harmony＋ガイド型チャット」、controlは「既存Room Harmonyフロー」であり、システム全体の利用／非利用比較ではない。
+
+### 2.3 質問を固定しない理由
+
+`products.json` は価格・分類・売場座標を全件で持つ一方、色が取得できた商品は全体の一部だけである。したがって色の質問は、現在の関連候補で60%以上の色が分かり、かつ2色以上を比較できる場合だけ表示する。回答が実際に順位を変えられない質問を出さないことで、「聞いただけの見せかけの個人最適化」を避ける。
+
+### 2.4 ニトリ既存Chatbotとの将来接続
+
+現行の応答生成は `ResponseComposer` 境界の `TemplateResponseComposer` である。正式な接続仕様・認証方式・データ取り扱い条件が提供された後は、この応答生成部分を既存Bot向けアダプタへ差し替えられる。公開する `/api/chat/turn`、質問状態、推薦器、フロント画面は維持する設計である。従来の外部ディープリンク `ChatbotLink` もcontrol群・既存連携用に残している。
+
+## 3. データの出所と限界
+
+| データ | 現在の内容 | 出所・生成方法 | 本番前に必要な差し替え |
+|---|---|---|---|
+| 商品マスタ | 9,180商品。名称・価格・画像・商品URL・分類等 | [ニトリネット公式EC](https://www.nitori-net.jp/ec/)の商品ページ情報を手動取得済みCSVから変換。例: [商品7017971s](https://www.nitori-net.jp/ec/product/7017971s/)。自動スクレイピングは実装していない | 承認済みの商品・価格・在庫フィード |
+| 併売リフト | 中分類9種・12ペア | 実習用の仮設定から `backend/batch/lift_batch.py` で再現可能に算出。**ニトリの実POSではない** | 実トランザクションまたは承認済み集計値 |
+| コーディネート | 暫定6セット | 実商品IDから `backend/ingest/build_coordinates.py` が決定的に生成。スタイリスト入稿ではない | 正式な構成商品・テーマ・完成画像 |
+| 売場位置・マップ | 4フロア、カテゴリ代表座標 | 目黒通り店を参考にした検証用モデル。同一中分類の商品は代表点を共有 | 実測フロア・什器・商品位置 |
+| POS指標 | 併売率・買上点数・客単価のサンプルスロット | 検証用の仮値 | 実験群と突合可能な実POS集計 |
+| システムキッチン資料 | 商品マスタには未使用 | [法人・リフォーム事業の配布資料ページ](https://www.nitori.co.jp/reform/reformmenu/system_kitchen/)は課題背景の関連資料であり、現在の9カテゴリの商品入力元ではない | 対象カテゴリへ広げる場合に別途データ設計 |
+
+各商品には取得元 `source_url` を保持している。一方、併売率・座標・コーディネートまでニトリ公式サイトから得たものではない。この区別を崩すと、デモデータを「実績」と誤認するため注意する。詳細は `data/README.md` を参照。
+
+## 4. 前提環境
 
 - OS: Windows（PowerShell / Git Bash いずれでも可）
 - Python: **`py` ランチャ経由**で実行（`python` は Windows Store のスタブで動作しない環境がある）。確認: `py --version`（3.13系）
@@ -16,25 +69,27 @@
 
 ---
 
-## 2. リポジトリ構成
+## 5. リポジトリ構成
 
 ```
 room-harmony/
 ├─ frontend/         # TypeScript + React（Vite, PWA）。QR読取・SVG地図/ルート・5画面・計測
 │  ├─ src/api/       # OpenAPIからの型・fetchクライアント
 │  ├─ src/pages/     # S1 Scan / S2 Product / S3 Coordinate / S4 Route
-│  ├─ src/components/# FloorMap(SVG) / VisitLock / ChatbotLink 等
+│  ├─ src/components/# FloorMap / ChatbotPanel / ChatbotLink 等
 │  ├─ src/hooks/     # useEventLog（計測）
 │  └─ e2e/           # Playwright E2E（G4）
 ├─ backend/          # Python + FastAPI
 │  ├─ app/           # API層（main.py, routers/, dependencies.py, store.py, experiment.py, errors.py）
+│  │  └─ chat/       # 質問ポリシー・会話サービス・応答生成の差し替え境界
 │  ├─ recommender/   # 中分類併売率→リフト近似＋ハイブリッド（RecommenderInterface / HybridRecommender）
+│  │  └─ guided.py   # 回答条件を使う説明可能な後段再ランキング
 │  ├─ routing/       # ウェイポイント・グラフ最短経路（networkx, 4フロア・階段/EV接続）
 │  ├─ dataio/        # data/*.json ローダ（欠損時フォールバック）
 │  ├─ scripts/       # export_openapi.py（docs/openapi.json 出力）
 │  └─ tests/         # unit（G1）/ integration（G2）
 ├─ data/             # サンプルデータ（products/co_purchase/coordinates/store_map/qr_codes/aggregates ほか）
-├─ docs/             # DESIGN / DECISIONS / HARNESS / openapi.json
+├─ docs/             # DESIGN / CHATBOT_REQUIREMENTS / CHATBOT_AUDIT / 完成版SVG / openapi.json
 ├─ harness/          # QAゲートのレポート・証跡
 ├─ .env.example
 └─ README.md
@@ -42,29 +97,34 @@ room-harmony/
 
 ---
 
-## 3. 環境変数（`.env.example`）
+## 6. 環境変数（`.env.example`）
 
-`.env.example` をコピーして `.env` を作成し値を設定する。秘匿値は `.env` に直書きし、コミットしないこと（`.gitignore` 済み）。
+ルートの `.env.example` はバックエンド環境変数の参照一覧である。`python-dotenv` を必須依存にしないため、バックエンドは**ルートの `.env` を自動では読み込まない**。未設定なら開発用の既定値で動作し、上書きする場合は起動するPowerShellまたはデプロイ先のプロセスマネージャーで設定する。Viteは `frontend/` 直下の `.env*` だけを読むため、フロント変数は `frontend/.env.example` を `frontend/.env` へコピーする。秘匿値はコミットしないこと。
 
 | 変数 | 用途 |
 |---|---|
 | `DATABASE_URL` | セッション/イベントログの保存先。開発は SQLite（既定 `sqlite:///./data/room_harmony.db`）。本番は PostgreSQL 等に差し替え |
-| `CHATBOT_BASE_URL` | 既存チャットボットの連携先URL（相互リンク・ディープリンク） |
+| `CHATBOT_BASE_URL` | 将来またはcontrol群で使う既存チャットボットの外部リンク。統合ガイド型チャットには不要 |
 | `STORE_ID` | 対象店舗ID（サンプルは目黒通り店ベースの4フロア、既定 `meguro-dori`） |
 | `EXPERIMENT_GROUP_MODE` / `EXPERIMENT_GROUP_RATIO` | 実験群（A/B）割付の方式・比率（既定 random / 0.5） |
 | `CORS_ALLOW_ORIGINS` | バックエンドCORS許可オリジン（カンマ区切り。既定に dev 5173 / preview 4173 を含む） |
 | `VITE_API_BASE_URL` | フロントから参照するバックエンドAPIのベースURL（既定 `http://localhost:8000`） |
-| `VITE_CHATBOT_BASE_URL` | フロントからのチャットボット導線URL（未設定でもダミー既定値で動作） |
+| `VITE_CHATBOT_BASE_URL` | 外部ChatbotLinkの遷移先。統合ガイド型チャットのAPI接続には使わない |
 
 ```powershell
-Copy-Item .env.example .env
+# バックエンドの上書き例（現在のPowerShellセッションにだけ適用）
+$env:EXPERIMENT_GROUP_RATIO = "1.0"
+$env:ADMIN_API_TOKEN = "change-this-token"
+
+# フロントのAPIアドレス／外部Botリンクを変更する場合
+Copy-Item frontend\.env.example frontend\.env
 ```
 
 ---
 
-## 4. セットアップ・起動
+## 7. セットアップ・起動
 
-### 4.1 バックエンド（Python + FastAPI）
+### 7.1 バックエンド（Python + FastAPI）
 
 ```powershell
 cd backend
@@ -94,7 +154,7 @@ cd backend
 .venv\Scripts\python -m batch.lift_batch
 ```
 
-### 4.2 フロントエンド（TypeScript + React / Vite）
+### 7.2 フロントエンド（TypeScript + React / Vite）
 
 ```powershell
 cd frontend
@@ -112,19 +172,26 @@ npm run preview      # http://localhost:4173
 
 ---
 
-## 5. 一連の体験を再現する（カメラ不要のURL直リンク）
+## 8. 一連の体験を再現する（カメラ不要のURL直リンク）
 
 実カメラが無くても、QRに紐づくURL直リンクで同一フローに到達できる（要件4.1のフォールバック）。
 backend（8000）と frontend（dev 5173 もしくは preview 4173）を起動した状態で、ブラウザで次を開く:
 
 ```
-http://localhost:5173/s/QR-PRODUCT-P001
+http://localhost:5173/s/QR-PRODUCT-01-02-01-0799
 ```
 
-1. **S1 スキャン**: `QR-PRODUCT-P001` を解決してセッション開始（`experiment_group` 割付、`session_start`/`qr_scan` 記録）
-2. **S2 商品詳細**: 商品情報＋**関連商品（リフト順）**＋この商品を使ったコーディネートを表示
-3. 関連の「場所を見る」→ **S4 マップ・ルート**（起点→目的商品の経路をSVGに描画、経由サブ通路表示）／コーデ→ **S3 コーデ詳細**（完成イメージ・構成商品・合計金額目安）
-4. 各操作は効果ログとして記録される（`related_view`/`route_view`/`coordinate_view` 等、すべて `experiment_group` 付き）
+デモで統合ガイド型チャットを必ず表示する場合は、バックエンド起動前にPowerShellで利用群を100%にする（本番評価時は0.5等へ戻す）。
+
+```powershell
+$env:EXPERIMENT_GROUP_RATIO = "1.0"
+```
+
+1. **S1 スキャン**: 商品番号付きQRを解決してセッション開始（`experiment_group` 割付、`session_start`/`qr_scan` 記録）
+2. **S2 商品詳細**: 商品情報＋関連商品＋コーディネート＋「3問以内でコーディネート相談」を表示
+3. **ガイド型チャット**: 選択肢・文字・音声・スキップで条件を反映。お客様向け／スタッフ向けを開始前に選択できる
+4. **複数商品の売場ルート**: 「おすすめをまとめて売場で見る」から、起点商品と候補を複数目的地として案内する
+5. 各操作は匿名イベントとして記録され、自由入力本文は保存されない
 
 - 入口QR例: `http://localhost:5173/s/QR-ENTRANCE-001`
 - 実在の商品ID/QR/コーデIDは `data/products.json` `data/qr_codes.json` `data/coordinates.json` を参照
@@ -132,9 +199,27 @@ http://localhost:5173/s/QR-PRODUCT-P001
 
 ---
 
-## 6. テスト実行手順
+### 8.1 Chat APIの最小例
 
-### 6.1 バックエンド（単体 G1 / 結合 G2）
+`session_id` は先に `POST /api/session` で発行する。Chat APIは外部AIのキーではなく、Room Harmony自身のFastAPIへ接続する。
+
+```http
+POST /api/chat/turn?session_id=<来店セッションID>
+Content-Type: application/json
+
+{
+  "product_id": "7017971s",
+  "action": "start",
+  "mode": "customer",
+  "state": {"answered_question_ids": [], "preferences": {}}
+}
+```
+
+レスポンスは自然文だけでなく、`question`、`state`、`recommendations`、`route_product_ids` を持つ構造化JSONである。フロントはこの契約を使うため、将来の応答生成器を差し替えても画面とルートを維持できる。
+
+## 9. テスト実行手順
+
+### 9.1 バックエンド（単体 G1 / 結合 G2）
 
 ```powershell
 cd backend
@@ -143,14 +228,14 @@ cd backend
 .venv\Scripts\python -m pytest tests -v                # まとめて実行
 ```
 
-### 6.2 フロントエンド（コンポーネント/結合）
+### 9.2 フロントエンド（コンポーネント/結合）
 
 ```powershell
 cd frontend
 npm run test         # vitest（画面描画・イベント発火・来店ロック・SVGルート描画）
 ```
 
-### 6.3 E2E（G4・Playwright）
+### 9.3 E2E（G4・Playwright）
 
 ```powershell
 cd frontend
@@ -161,7 +246,7 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 
 ---
 
-## 7. 開発ハーネス・ゲート
+## 10. 開発ハーネス・ゲート
 
 実装エージェントとQAエージェントを分離したテストゲート方式（`docs/HARNESS.md`）で開発。合否・証跡は `harness/reports/`・`harness/evidence/` に記録。
 
@@ -174,14 +259,34 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 
 ---
 
-## 8. 現時点のステータス（フェーズ1 MVP）
+## 11. 検証結果
+
+本統合版で実行した検証は次の通りである。
+
+| 対象 | 結果 |
+|---|---|
+| Python構文・バックエンド単体／結合 | `234 passed` |
+| フロント静的検査 | `oxlint` 警告・エラーなし |
+| フロントコンポーネント／結合 | `10 files / 59 tests passed` |
+| TypeScript・本番ビルド | `tsc -b && vite build` 成功 |
+| 実ブラウザ統合 | 商品QR→探索回答→再推薦→4商品ルート、ローカルAPI 14件すべて200 |
+| レスポンシブ | 1280px／390pxで横方向のはみ出しなし |
+| 完成版SVG | 2400×1350で再レンダリングし、文字切れ・重なり・線・余白を目視確認 |
+
+既知の警告は、FastAPI TestClientが依存するStarletteの `httpx` 非推奨警告1件であり、今回の機能失敗ではない。またヘッドレスChromeではニトリ外部画像CDNが失敗する場合があるため、画面は既存フォールバックを表示する。本番前には承認済み画像の自社配信が必要である。
+
+## 12. 現時点のステータス
 
 - [x] backend: FastAPI、17章の8エンドポイント、来店ロック、experiment_group割付、イベントログ（SQLite）
 - [x] recommender: 中分類併売率→支持度/信頼度/リフト近似、ハイブリッド並び（重みは外出し・A/B調整可）
 - [x] routing: 4フロアのウェイポイント最短経路・巡回順（networkx）
 - [x] frontend: S1〜S5画面、QR読取（カメラ＋URL直リンクfallback）、SVGフロアマップ/ルート、PWA、計測
+- [x] chatbot backend: 最大3問の適応型質問、自由入力の保守的解釈、説明可能な再ランキング、探索多様化、テンプレート応答
+- [x] chatbot frontend: 商品ページ統合、お客様／スタッフモード、選択・文字・音声・スキップ、3件に絞ったカード、複数商品ルート
+- [x] chatbot privacy/KPI: 自由入力本文を保存しない匿名イベント、回答到達率・提案タップ率・完了率、POS指標との分離
 - [x] サンプルデータ一式（`data/`、実データ差し替え可能な構造）
 - [x] テスト: 単体（G1）・結合（G2）・コンポーネント（G3）・E2E（G4）
 - [x] フェーズ2-A: リフト算出バッチ本実装（`backend/batch/lift_batch.py`。`data/co_purchase_source.json` → `data/co_purchase.json` を再現可能に生成、単体テスト `backend/tests/unit/test_lift_batch.py`）
-- [ ] フェーズ2（本番強化・残り）: A/B×KPI突合ダッシュボード、チャットボット双方向ディープリンクの拡張 ほか（`docs/DESIGN.md`・要件13章参照）
+- [ ] 実店舗導入前: 正式な商品・在庫・POS・什器位置・コーディネートデータへの差し替え
+- [ ] 将来連携: ニトリ既存Chatbotの正式API・認証・データ取り扱い仕様を受領後、`ResponseComposer`境界へ接続
 </content>

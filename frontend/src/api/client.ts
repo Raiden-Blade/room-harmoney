@@ -9,6 +9,8 @@
 import type { components } from "./schema";
 import type {
   AdminKpiResponse,
+  ChatTurnRequest,
+  ChatTurnResponse,
   CoordinateDetail,
   Product,
   ProductCodeResolution,
@@ -96,6 +98,21 @@ export function getRecommendations(
   const params = new URLSearchParams({ product_id: productId });
   if (sessionId) params.set("session_id", sessionId);
   return request<RecommendationsResponse>(`/api/recommendations?${params.toString()}`);
+}
+
+/**
+ * 商品文脈付きガイド型チャット。会話状態はレスポンスから次のリクエストへそのまま渡す。
+ * 自由入力本文はバックエンドで永続化されない。
+ */
+export function postChatTurn(
+  sessionId: string,
+  body: ChatTurnRequest,
+): Promise<ChatTurnResponse> {
+  const params = new URLSearchParams({ session_id: sessionId });
+  return request<ChatTurnResponse>(`/api/chat/turn?${params.toString()}`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getCoordinate(

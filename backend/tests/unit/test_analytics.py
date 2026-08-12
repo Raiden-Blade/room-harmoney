@@ -223,3 +223,31 @@ def test_compute_kpis_pos_metrics_partial_group_yields_none_diff_for_missing_met
     assert pos["groups"][CONTROL]["co_purchase_rate"] is None
     assert pos["diff"]["co_purchase_rate"] is None
     assert pos["diff"]["items_per_purchase"] is None
+
+
+def test_compute_kpis_separates_guided_chatbot_metrics_from_external_link_open():
+    events = [
+        _event("T1", "chatbot_open", TREATMENT, {"action": "start"}),
+        _event("T1", "chatbot_answer", TREATMENT, {"question_id": "focus"}),
+        _event("T1", "chatbot_recommendation_view", TREATMENT),
+        _event("T1", "chatbot_recommendation_tap", TREATMENT),
+        _event("T1", "chatbot_finish", TREATMENT),
+        # 既存の外部Botリンク。今回の埋め込みチャットのopenedへ混ぜない。
+        _event("C1", "chatbot_open", CONTROL, {"screen": "product_detail"}),
+    ]
+
+    chatbot = compute_kpis(events)["chatbot_metrics"]
+
+    treatment = chatbot["groups"][TREATMENT]
+    assert treatment["counts"] == {
+        "opened": 1,
+        "answered": 1,
+        "recommendation_viewed": 1,
+        "recommendation_tapped": 1,
+        "completed": 1,
+    }
+    assert treatment["rates"]["answer_rate"] == pytest.approx(1.0)
+    assert treatment["rates"]["recommendation_tap_rate"] == pytest.approx(1.0)
+    assert treatment["rates"]["completion_rate"] == pytest.approx(1.0)
+    assert chatbot["groups"][CONTROL]["counts"]["opened"] == 0
+    assert "POS" in chatbot["note"]

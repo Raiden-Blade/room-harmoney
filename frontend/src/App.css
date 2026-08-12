@@ -286,6 +286,227 @@
   background: var(--rh-surface-alt);
 }
 
+.related-list-toggle {
+  margin-top: var(--rh-space-2);
+  border: 0;
+  background: transparent;
+  color: var(--rh-link);
+  padding: 0.5rem 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* --- 商品詳細内ガイド型チャット: 1問ずつ、推薦3件までに絞って密度を抑える --- */
+.chatbot-panel {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius-lg);
+  background: var(--rh-surface);
+  box-shadow: var(--rh-shadow);
+  padding: var(--rh-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rh-space-3);
+}
+
+.chatbot-panel-intro {
+  background: var(--rh-surface-alt);
+}
+
+.chatbot-panel h2,
+.chatbot-panel h3,
+.chatbot-panel p {
+  margin: 0;
+}
+
+.chatbot-eyebrow {
+  color: var(--rh-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.chatbot-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rh-space-2);
+}
+
+.chatbot-mode {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rh-space-1);
+}
+
+.chatbot-mode legend {
+  width: 100%;
+  margin-bottom: 0.25rem;
+  color: var(--rh-text-muted);
+  font-size: 0.82rem;
+}
+
+.chatbot-mode-label,
+.chatbot-progress {
+  color: var(--rh-text-muted);
+  font-size: 0.78rem;
+}
+
+.chatbot-message {
+  border-left: 3px solid var(--rh-brand);
+  background: var(--rh-surface-alt);
+  padding: var(--rh-space-2);
+}
+
+.chatbot-error {
+  color: var(--rh-price);
+  background: var(--rh-surface-alt);
+  padding: var(--rh-space-2);
+  border-radius: var(--rh-radius);
+}
+
+.chatbot-results,
+.chatbot-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rh-space-2);
+}
+
+.chatbot-product-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--rh-space-1);
+}
+
+.chatbot-product-list li {
+  display: flex;
+  gap: var(--rh-space-2);
+  padding: var(--rh-space-2) 0;
+  border-bottom: 1px solid var(--rh-border);
+}
+
+.chatbot-product-list li:last-child {
+  border-bottom: 0;
+}
+
+.chatbot-product-list img {
+  flex: 0 0 auto;
+  border-radius: var(--rh-radius);
+}
+
+.chatbot-reason {
+  color: var(--rh-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.chatbot-text-button,
+.chatbot-secondary-actions button,
+.chatbot-restart {
+  border: 0;
+  background: transparent;
+  color: var(--rh-link);
+  padding: 0.35rem 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.chatbot-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rh-space-1);
+}
+
+.chatbot-options button {
+  min-height: 68px;
+  padding: var(--rh-space-1);
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius);
+  background: var(--rh-bg);
+  color: var(--rh-text);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.chatbot-options button:hover,
+.chatbot-options button:focus-visible {
+  border-color: var(--rh-primary);
+  background: var(--rh-surface-alt);
+}
+
+.chatbot-options span {
+  color: var(--rh-text-muted);
+  font-size: 0.75rem;
+}
+
+.chatbot-free-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.chatbot-free-input label {
+  color: var(--rh-text-muted);
+  font-size: 0.82rem;
+}
+
+.chatbot-free-input > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rh-space-1);
+}
+
+.chatbot-free-input input {
+  flex: 1;
+  min-width: 10rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--rh-border);
+  border-radius: var(--rh-radius);
+  font-size: 1rem;
+}
+
+.chatbot-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rh-space-3);
+}
+
+.chatbot-route-button {
+  align-self: stretch;
+}
+
+.chatbot-data-notice {
+  color: var(--rh-text-muted);
+  font-size: 0.78rem;
+}
+
+.chatbot-data-notice p {
+  margin-top: var(--rh-space-1);
+}
+
+@media (max-width: 480px) {
+  .chatbot-options {
+    grid-template-columns: 1fr;
+  }
+
+  .chatbot-free-input input {
+    flex-basis: 100%;
+  }
+
+  .chatbot-free-input .btn-secondary {
+    flex: 1;
+  }
+}
+
 .hint {
   font-size: 0.85rem;
   color: var(--rh-text-muted);

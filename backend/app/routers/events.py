@@ -24,6 +24,10 @@ ALLOWED_EVENT_TYPES = {
     "coordinate_tap",
     "route_view",
     "chatbot_open",
+    "chatbot_answer",
+    "chatbot_recommendation_view",
+    "chatbot_recommendation_tap",
+    "chatbot_finish",
     "experiment_group",
 }
 

@@ -13,23 +13,25 @@ flowchart TB
   end
 
   subgraph Server["backend (Python + FastAPI)"]
-    API["REST API 層<br/>session / qr / products / recommendations /<br/>coordinates / route / store-map / events"]
+    API["REST API 層<br/>session / qr / products / recommendations / chat /<br/>coordinates / route / store-map / events / admin"]
     REC["recommender/<br/>中分類併売率→支持度・信頼度・リフト近似<br/>RecommenderInterface（差替可）"]
+    GUIDE["chat/ + recommender/guided.py<br/>最大3問・回答条件・説明可能な後段再ランキング"]
     RT["routing/<br/>ウェイポイント・グラフ最短経路<br/>（networkx）4フロア/階段・EV接続"]
     ING["ingest/<br/>ニトリ商品JSON→商品マスタ 変換アダプタ"]
   end
 
   DB[("RDB（開発:SQLite / 本番:PostgreSQL）<br/>products / co_purchase / coordinates /<br/>store_map / qr_codes / events")]
-  CHAT["既存チャットボット（Python・相互リンク/ディープリンク）"]
+  CHAT["将来：ニトリ既存チャットボット<br/>ResponseComposer境界で差し替え"]
   AGG["集計3指標ローダ（客総数・店舗数・会員数）<br/>※無ければ空ファイルで動作"]
 
   FE -->|"REST/JSON (OpenAPI型共有)"| API
   API --> REC --> DB
+  API --> GUIDE --> REC
   API --> RT --> DB
   API --> DB
   ING --> DB
-  API -. "相互リンク" .-> CHAT
-  FE -. "?product_id= / ?coordinate_id=" .-> CHAT
+  GUIDE -. "正式仕様取得後" .-> CHAT
+  FE -. "control群・既存ディープリンク" .-> CHAT
   API -.-> AGG
 ```
 
@@ -37,7 +39,7 @@ flowchart TB
 - 責務分離：データ層／ロジック層（推薦・経路）／UI層。推薦ロジックと店舗データは差し替え可能（`RecommenderInterface`、データはアダプタ経由）。
 - 型整合：OpenAPI スキーマ → フロントTS型を生成し不整合を防ぐ。
 - 来店時のみ作動：有効な店内QR起点セッションが無ければ中核機能ロック（判定は差し替え可能、将来Wi-Fi/ジオフェンス拡張）。
-- プライバシー：個人情報/購入情報をURLに載せない。ログはセッション単位で匿名。
+- プライバシー：個人情報/購入情報をURLに載せない。ログはセッション単位で匿名。ガイド型チャットの自由入力本文は保存しない。
 
 ---
 
@@ -106,7 +108,7 @@ flowchart TB
 | id | PK | 連番 |
 | session_id | text | 匿名セッション |
 | timestamp | datetime | 時刻 |
-| event_type | text | session_start / qr_scan / related_view / related_tap / coordinate_view / coordinate_tap / route_view / chatbot_open / experiment_group |
+| event_type | text | session_start / qr_scan / related_view / related_tap / coordinate_view / coordinate_tap / route_view / chatbot_open / chatbot_answer / chatbot_recommendation_view / chatbot_recommendation_tap / chatbot_finish / experiment_group |
 | payload | json | 各イベント詳細 |
 | experiment_group | text | A/B割付（利用群/非利用群） |
 
@@ -125,6 +127,7 @@ REST / JSON。OpenAPI スキーマを出力しフロントTS型を生成。
 | `GET /api/qr/{qr_id}` | QR解決（入口/商品判別） | — | `type, product_id?, 設置座標, direct_url` |
 | `GET /api/products/{product_id}` | 商品詳細 | — | 商品情報（分類・色・価格・画像・売場） |
 | `GET /api/recommendations` | 関連商品＋コーデ | `product_id`（＋`session_id`） | `related[]（リフト順）, coordinates[]` |
+| `POST /api/chat/turn` | 商品文脈付きガイド型チャット | `product_id, action, mode, state`（＋`session_id`） | `message, question, state, recommendations, route_product_ids` |
 | `GET /api/coordinates/{coordinate_id}` | コーデ詳細 | — | 構成商品・完成画像・合計金額目安 |
 | `GET /api/route` | 簡易ルート | `from_qr, to_product`（複数可） | ウェイポイント座標列・経由サブ通路・巡回順 |
 | `GET /api/store-map/{floor}` | フロアマップ | — | フロアプラン・ゾーン・ウェイポイント |
@@ -141,15 +144,15 @@ REST / JSON。OpenAPI スキーマを出力しフロントTS型を生成。
 | # | 画面 | 主内容 | 主なAPI | 発火ログ |
 |---|---|---|---|---|
 | S1 | 起動/スキャン | QR読取。読取地点を起点として記録。カメラ不可時はURL直リンク | `POST /session`, `GET /qr/{id}` | session_start, qr_scan |
-| S2 | 商品詳細 | 商品情報＋関連商品（リフト順）＋この商品を使ったコーデ | `GET /products/{id}`, `GET /recommendations` | related_view, related_tap |
+| S2 | 商品詳細 | 商品情報＋関連商品＋コーデ＋最大3問のガイド型チャット | `GET /products/{id}`, `GET /recommendations`, `POST /chat/turn` | related_view, related_tap, chatbot_* |
 | S3 | コーデ詳細 | 完成イメージ大・構成商品・合計金額・「揃える/場所を見る」 | `GET /coordinates/{id}` | coordinate_view, coordinate_tap |
 | S4 | マップ・ルート | 起点→目的商品の簡易ルート、経由サブ通路、複数目的地の巡回順、フロア切替 | `GET /route`, `GET /store-map/{floor}` | route_view |
-| S5 | チャットボット導線 | 既存チャットボットへの相互リンク | （外部） | chatbot_open |
+| S5 | ガイド型チャット／外部Bot導線 | treatment群は商品ページ内で質問・再推薦。control群は既存外部リンクを維持 | `POST /chat/turn`／外部 | chatbot_open, chatbot_answer, chatbot_recommendation_tap, chatbot_finish |
 
 **UXフロー（ハッピーパス）**
 ```
-S1 QR読取 → S2 商品詳細（関連＋コーデ） → S3 コーデ詳細 or S2の関連タップ
-   → S4 ルート表示（起点→目的地・サブ通路経由） →（回遊・併売） …迷ったらS5チャットボット
+S1 商品QR → S2 商品詳細（関連＋コーデ） → S5 ガイド型チャット（最大3問・途中終了可）
+   → S4 複数商品のルート表示（起点→候補・サブ通路経由） → 商品比較・回遊
 ```
 UX方針：入力極小化（QRを読むだけ）、コーデ完成イメージを大きく、常設のワンタップ「場所を見に行く」。
 
@@ -162,7 +165,9 @@ room-harmony/
 ├─ frontend/   # TS + React（PWA, QR読取, SVG地図, UI）
 ├─ backend/    # Python + FastAPI
 │   ├─ app/            # API層
+│   │   └─ chat/       # 質問ポリシー・会話サービス・応答生成境界
 │   ├─ recommender/    # 中分類併売率→リフト近似, RecommenderInterface
+│   │   └─ guided.py   # 回答条件による後段再ランキング・説明根拠
 │   ├─ routing/        # ウェイポイントグラフ最短経路
 │   └─ ingest/         # ニトリ商品JSON変換アダプタ
 ├─ data/       # サンプル（商品・併売/リフト・コーデ・マップ・QR・集計3指標）
@@ -181,9 +186,10 @@ room-harmony/
 |---|---|---|
 | B1 推薦ロジック | 中分類併売率→リフト近似、ハイブリッド並び順 | G1 単体 |
 | B2 経路計算 | 4フロア・ウェイポイント最短経路・巡回順 | G1 単体 |
-| B3 API | 8エンドポイント＋バリデーション＋来店ロック | G2 結合 |
-| B4 サンプルデータ | 商品30〜50・中分類併売(リフト高×併売低含む)・コーデ3〜5・4フロアマップ・QR | G2で利用 |
+| B3 API | REST API＋バリデーション＋来店ロック＋構造化Chat API | G2 結合 |
+| B4 データ | 商品9,180・中分類併売(仮値)・暫定コーデ6・4フロア検証マップ・QR | G2で利用 |
 | B5 フロント | S1〜S5、QR読取(URL直リンク含む)、SVG地図・ルート | G3 結合 |
 | B6 計測 | 各操作にイベントログ＋experiment_group | G2/G4 |
 | B7 E2E | QR起点→関連→コーデ→ルート→ログ 一気通貫 | G4 E2E |
+| B8 ガイド型チャット | 適応質問→後段再ランキング→商品カード→複数商品ルート→匿名KPI | G1/G2/G3 |
 ```

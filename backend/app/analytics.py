@@ -36,8 +36,9 @@ _FUNNEL_EVENT_TYPES = (
 POS_METRIC_KEYS = ("co_purchase_rate", "items_per_purchase", "spend_per_customer")
 
 CAUSAL_NOTE = (
-    "この集計は experiment_group（treatment=Room Harmony利用群 / control=非利用群）による"
-    "A/B割付を前提とした群間比較です。利用有無の単純な事後比較（相関）ではなく、"
+    "この集計は experiment_group（treatment=既存Room Harmony＋ガイド型チャット / "
+    "control=既存Room Harmonyフロー）によるA/B割付を前提とした群間比較です。"
+    "利用有無の単純な事後比較（相関）ではなく、"
     "割付済みの2群の差分（diff）として解釈してください。"
 )
 
@@ -162,8 +163,66 @@ def compute_kpis(
     return {
         "groups": groups_result,
         "diff": diff,
+        "chatbot_metrics": _compute_chatbot_metrics(events),
         "pos_metrics": _compute_pos_block(pos_metrics),
         "note": CAUSAL_NOTE,
+    }
+
+
+def _compute_chatbot_metrics(events: list[dict[str, Any]]) -> dict[str, Any]:
+    """ガイド型チャット固有の中間指標を群別に返す。
+
+    既存の外部Botリンクも `chatbot_open` を使うため、ガイド型APIが付与する
+    `payload.action == "start"` のイベントだけを opened として数える。これにより、
+    外部リンクと今回の埋め込みチャットを混同しない。
+    """
+    event_sets: dict[str, dict[str, set]] = {group: defaultdict(set) for group in GROUPS}
+    for event in events:
+        group = event.get("experiment_group")
+        session_id = event.get("session_id")
+        if group not in GROUPS or session_id is None:
+            continue
+        event_type = event.get("event_type")
+        payload = event.get("payload") or {}
+        if event_type == "chatbot_open" and payload.get("action") == "start":
+            event_sets[group]["opened"].add(session_id)
+        elif event_type == "chatbot_answer":
+            event_sets[group]["answered"].add(session_id)
+        elif event_type == "chatbot_recommendation_view":
+            event_sets[group]["recommendation_viewed"].add(session_id)
+        elif event_type == "chatbot_recommendation_tap":
+            event_sets[group]["recommendation_tapped"].add(session_id)
+        elif event_type == "chatbot_finish":
+            event_sets[group]["completed"].add(session_id)
+
+    groups: dict[str, Any] = {}
+    for group in GROUPS:
+        values = event_sets[group]
+        counts = {
+            "opened": len(values["opened"]),
+            "answered": len(values["answered"]),
+            "recommendation_viewed": len(values["recommendation_viewed"]),
+            "recommendation_tapped": len(values["recommendation_tapped"]),
+            "completed": len(values["completed"]),
+        }
+        groups[group] = {
+            "counts": counts,
+            "rates": {
+                "answer_rate": _rate(counts["answered"], counts["opened"]),
+                "recommendation_tap_rate": _rate(
+                    counts["recommendation_tapped"], counts["recommendation_viewed"]
+                ),
+                "completion_rate": _rate(counts["completed"], counts["opened"]),
+            },
+        }
+    rate_keys = groups[TREATMENT]["rates"].keys()
+    return {
+        "groups": groups,
+        "diff": {
+            key: groups[TREATMENT]["rates"][key] - groups[CONTROL]["rates"][key]
+            for key in rate_keys
+        },
+        "note": "チャット指標は中間行動です。併売率向上の判定にはPOS突合が必要です。",
     }
 
 
