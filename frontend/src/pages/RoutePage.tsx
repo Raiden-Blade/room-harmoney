@@ -129,13 +129,39 @@ export function RoutePage() {
   const subPassagesOnFloor =
     currentFloor == null ? [] : route.sub_passages.filter((p) => p.floor === currentFloor);
 
-  const destinations: RouteDestinationPin[] = route.visiting_order
-    .map((id, index) => {
-      const p = products[id];
-      if (!p || p.floor !== currentFloor) return null;
-      return { productId: id, name: p.name, x: p.x, y: p.y, order: index + 1 } satisfies RouteDestinationPin;
-    })
-    .filter((v): v is RouteDestinationPin => v !== null);
+  const destinationGroups = new Map<
+    string,
+    { pin: RouteDestinationPin; productNames: string[] }
+  >();
+  route.visiting_order.forEach((id, index) => {
+    const product = products[id];
+    if (!product || product.floor !== currentFloor) return;
+    const locationKey = `${product.floor}:${product.x}:${product.y}`;
+    const group = destinationGroups.get(locationKey);
+    if (group) {
+      group.productNames.push(product.name);
+      return;
+    }
+    destinationGroups.set(locationKey, {
+      pin: {
+        productId: id,
+        name: product.name,
+        x: product.x,
+        y: product.y,
+        order: index + 1,
+      },
+      productNames: [product.name],
+    });
+  });
+  const destinations: RouteDestinationPin[] = Array.from(destinationGroups.values()).map(
+    ({ pin, productNames }) => ({
+      ...pin,
+      name:
+        productNames.length === 1
+          ? productNames[0]
+          : `${productNames[0]} ほか${productNames.length - 1}点`,
+    }),
+  );
 
   const startOnThisFloor = session && currentFloor === session.start.floor ? session.start : null;
 
@@ -193,7 +219,17 @@ export function RoutePage() {
         />
       )}
 
-      <ChatbotLink toProducts={toProducts} screen="route" />
+      {session?.experimentGroup === "control" ? (
+        <ChatbotLink toProducts={toProducts} screen="route" />
+      ) : (
+        <Link
+          to={`/products/${encodeURIComponent(toProducts[0])}`}
+          className="chatbot-link"
+          data-testid="guided-chatbot-return"
+        >
+          商品ページの相談に戻る
+        </Link>
+      )}
     </main>
   );
 }

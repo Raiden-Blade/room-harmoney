@@ -28,8 +28,8 @@ import { KpiBarChart } from "../components/KpiBarChart";
 import { clearAdminToken, getAdminToken, saveAdminToken } from "../state/adminAuth";
 
 const GROUP_LABEL: Record<ExperimentGroupKey, string> = {
-  treatment: "利用群（treatment）",
-  control: "非利用群（control）",
+  treatment: "ガイド型チャット群（treatment）",
+  control: "既存フロー群（control）",
 };
 
 const FUNNEL_STAGES: { key: keyof KpiFunnel; label: string }[] = [
@@ -51,6 +51,12 @@ const POS_METRICS: { key: PosMetricKey; label: string }[] = [
   { key: "items_per_purchase", label: "買上点数" },
   { key: "spend_per_customer", label: "客単価" },
 ];
+
+const CHATBOT_RATE_STAGES = [
+  { key: "answer_rate", label: "回答到達率" },
+  { key: "recommendation_tap_rate", label: "チャット提案タップ率" },
+  { key: "completion_rate", label: "3問以内の完了率" },
+] as const;
 
 // 現状の感覚値（要件書10章の補足文脈・サブ通路通過率の目安）。実測との比較用の参考線。
 const SUB_PASSAGE_REFERENCE_RATE = 0.1;
@@ -362,6 +368,25 @@ export function AdminDashboardPage() {
                   );
                 })()}
               </section>
+
+              {kpi.chatbot_metrics && (
+                <section data-testid="admin-chatbot-section">
+                  <h2>ガイド型チャットの中間指標</h2>
+                  <KpiBarChart
+                    title="群別チャット指標"
+                    testIdPrefix="kpi-chatbot"
+                    formatValue={formatPercent}
+                    maxValue={1}
+                    items={CHATBOT_RATE_STAGES.map((stage) => ({
+                      key: stage.key,
+                      label: stage.label,
+                      treatment: kpi.chatbot_metrics!.groups.treatment.rates[stage.key],
+                      control: kpi.chatbot_metrics!.groups.control.rates[stage.key],
+                    }))}
+                  />
+                  <p className="hint">{kpi.chatbot_metrics.note}</p>
+                </section>
+              )}
 
               <p className="causal-note hint" data-testid="causal-note">
                 {kpi.note}

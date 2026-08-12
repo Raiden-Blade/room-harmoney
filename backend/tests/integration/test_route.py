@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import pytest
 
-from app.dependencies import get_route_builder
+from app.dependencies import get_product_repo, get_route_builder
 from app.main import app
+from app.repositories import ProductRepository
 from routing import RouteGraphBuilder
+from tests.fixtures import DATA_DIR
 
 
 def test_route_without_session_returns_409(client):
@@ -77,6 +79,45 @@ def test_route_multi_destination_returns_nearest_neighbor_visiting_order(client,
     assert body["visiting_order"] == ["P001", "P009"]
     assert len(body["sub_passages"]) >= 1
     assert body["unreachable"] == []
+
+
+def test_route_keeps_all_products_that_share_one_route_node(client, active_session, store):
+    """同じ売場座標の商品は経路を一度だけ訪れ、商品一覧では全件を保持する。"""
+    products = ProductRepository.from_data_dir(DATA_DIR).all()
+    original = next(product for product in products if product["product_id"] == "P001")
+    same_location = {
+        **original,
+        "product_id": "P001-SAME-NODE",
+        "product_code": "99-99-99-9999",
+        "name": "同じ売場の商品",
+    }
+    product_repo = ProductRepository([*products, same_location])
+    app.dependency_overrides[get_product_repo] = lambda: product_repo
+    try:
+        response = client.get(
+            "/api/route",
+            params={
+                "from_qr": "QR-ENTRANCE-001",
+                "to_product": ["P001", "P001-SAME-NODE"],
+                "session_id": active_session["session_id"],
+            },
+        )
+    finally:
+        del app.dependency_overrides[get_product_repo]
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["visiting_order"] == ["P001", "P001-SAME-NODE"]
+    assert body["unreachable"] == []
+    assert body["waypoints"][-1]["x"] == pytest.approx(original["x"])
+    assert body["waypoints"][-1]["y"] == pytest.approx(original["y"])
+
+    route_event = next(
+        event
+        for event in store.list_events(active_session["session_id"])
+        if event["event_type"] == "route_view"
+    )
+    assert route_event["payload"]["visiting_order"] == ["P001", "P001-SAME-NODE"]
 
 
 def test_route_unknown_from_qr_returns_404(client, active_session):

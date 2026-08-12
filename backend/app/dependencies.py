@@ -19,6 +19,7 @@ from routing import RouteGraphBuilder
 from dataio import load_json_dict
 
 from .config import Settings, get_settings
+from .chat import ChatService
 from .errors import ApiError
 from .experiment import ExperimentAssigner
 from .repositories import (
@@ -71,6 +72,18 @@ def get_store_map_repo(settings: Settings = Depends(get_settings)) -> StoreMapRe
 @lru_cache
 def get_recommender(settings: Settings = Depends(get_settings)) -> RecommenderInterface:
     return PersonalizedRecommender.from_data_dir(data_dir=settings.data_dir)
+
+
+def get_chat_service(
+    recommender: RecommenderInterface = Depends(get_recommender),
+    product_repo: ProductRepository = Depends(get_product_repo),
+) -> ChatService:
+    """ガイド型チャットを構築する差し替え口。
+
+    初版は外部AIを使わない。将来の既存Bot連携では `ChatService` に渡す応答生成器を
+    差し替え、公開APIと推薦ロジックを維持する。
+    """
+    return ChatService(recommender=recommender, product_repo=product_repo)
 
 
 @lru_cache

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1350" viewBox="0 0 2400 1350" role="img" aria-labelledby="title desc">
+  <title id="title">QRを起点に推薦・対話・売場行動を接続する</title>
+  <desc id="desc">QR起点の顧客体験、Room Harmonyフロントエンド、ガイド型推薦制御、データ、将来のChatbot差し替え、効果評価を六領域に分けた実装構成図。</desc>
+  <defs>
+    <marker id="arrow-main" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L11,6 L0,11 Z" fill="#f1f1f1"/>
+    </marker>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L10,5.5 L0,10 Z" fill="#b8b8b8"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,1 L10,5.5 L0,10 Z" fill="#858585"/>
+    </marker>
+    <style>
+      .canvas{fill:#141414}
+      .cluster{fill:#fff;fill-opacity:.024;stroke:#4e4e4e;stroke-width:1.6}
+      .cluster-core{fill:#fff;fill-opacity:.033;stroke:#696969;stroke-width:1.9}
+      .node{fill:#363636;stroke:#595959;stroke-width:1.4}
+      .node-core{fill:#414141;stroke:#969696;stroke-width:2.1}
+      .node-future{fill:#2c2c2c;stroke:#888;stroke-width:1.7;stroke-dasharray:8 7}
+      .title{font:700 34px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#fff}
+      .subtitle{font:400 18px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#bdbdbd}
+      .cluster-title{font:700 23px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#fff;text-anchor:middle}
+      .node-title{font:700 20px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#fff;text-anchor:middle}
+      .node-text{font:400 16px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#e5e5e5;text-anchor:middle}
+      .small{font:400 15px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#bcbcbc;text-anchor:middle}
+      .step{font:700 16px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#141414;text-anchor:middle}
+      .edge-label{font:600 15px -apple-system,BlinkMacSystemFont,'Segoe UI','Yu Gothic',Meiryo,sans-serif;fill:#f3f3f3;text-anchor:middle;paint-order:stroke;stroke:#141414;stroke-width:7px;stroke-linejoin:round}
+      .main{fill:none;stroke:#f1f1f1;stroke-width:2.8;marker-end:url(#arrow-main)}
+      .edge{fill:none;stroke:#b8b8b8;stroke-width:1.7;marker-end:url(#arrow)}
+      .soft{fill:none;stroke:#858585;stroke-width:1.5;marker-end:url(#arrow-soft)}
+      .future{fill:none;stroke:#a8a8a8;stroke-width:1.7;stroke-dasharray:8 7;marker-end:url(#arrow)}
+      .bus{fill:none;stroke:#929292;stroke-width:1.6}
+    </style>
+  </defs>
+
+  <rect width="2400" height="1350" class="canvas"/>
+  <text x="55" y="48" class="title">QRから3問以内の対話・推薦・売場行動を一つの導線にする</text>
+  <text x="55" y="78" class="subtitle">実装済みの主導線、Python中心の推薦制御、将来の既存Bot接続境界を分離</text>
+
+  <!-- 1 customer journey -->
+  <rect x="40" y="105" width="2320" height="270" rx="4" class="cluster-core"/>
+  <text x="1200" y="138" class="cluster-title">① 顧客体験の主導線</text>
+
+  <g>
+    <circle cx="215" cy="174" r="17" fill="#ededed"/><text x="215" y="180" class="step">1</text>
+    <circle cx="535" cy="174" r="17" fill="#ededed"/><text x="535" y="180" class="step">2</text>
+    <circle cx="855" cy="174" r="17" fill="#ededed"/><text x="855" y="180" class="step">3</text>
+    <circle cx="1175" cy="174" r="17" fill="#ededed"/><text x="1175" y="180" class="step">4</text>
+    <circle cx="1495" cy="174" r="17" fill="#ededed"/><text x="1495" y="180" class="step">5</text>
+    <circle cx="1815" cy="174" r="17" fill="#ededed"/><text x="1815" y="180" class="step">6</text>
+    <circle cx="2160" cy="174" r="17" fill="#ededed"/><text x="2160" y="180" class="step">7</text>
+  </g>
+
+  <rect x="90" y="198" width="250" height="100" rx="2" class="node"/>
+  <text x="215" y="237" class="node-title">顧客・売場スタッフ</text>
+  <text x="215" y="269" class="node-text">商品に関心・疑問</text>
+
+  <rect x="410" y="198" width="250" height="100" rx="2" class="node"/>
+  <text x="535" y="237" class="node-title">商品QR／店内端末</text>
+  <text x="535" y="269" class="node-text">商品QRを読み取る</text>
+
+  <rect x="730" y="198" width="250" height="100" rx="2" class="node"/>
+  <text x="855" y="237" class="node-title">商品文脈を取得</text>
+  <text x="855" y="269" class="node-text">商品ID・QR起点位置</text>
+
+  <rect x="1050" y="198" width="250" height="100" rx="2" class="node"/>
+  <text x="1175" y="237" class="node-title">初期推薦を表示</text>
+  <text x="1175" y="269" class="node-text">分類を分散した関連候補</text>
+
+  <rect x="1370" y="188" width="250" height="120" rx="2" class="node-core"/>
+  <text x="1495" y="226" class="node-title">ガイド付き質問</text>
+  <text x="1495" y="257" class="node-text">選択肢・文字・音声</text>
+  <text x="1495" y="284" class="node-text">スキップ可能</text>
+
+  <rect x="1690" y="188" width="250" height="120" rx="2" class="node-core"/>
+  <text x="1815" y="226" class="node-title">条件更新・再推薦</text>
+  <text x="1815" y="257" class="node-text">回答を条件化</text>
+  <text x="1815" y="284" class="node-text">候補を再順位付け</text>
+
+  <rect x="2010" y="188" width="300" height="120" rx="2" class="node"/>
+  <text x="2160" y="222" class="node-title">次の売場行動</text>
+  <text x="2160" y="254" class="node-text">商品確認・売場経路</text>
+  <text x="2160" y="282" class="node-text">比較・終了（会計は対象外）</text>
+
+  <path d="M340 248 H410" class="main"/>
+  <path d="M660 248 H730" class="main"/>
+  <path d="M980 248 H1050" class="main"/>
+  <path d="M1300 248 H1370" class="main"/>
+  <path d="M1620 248 H1690" class="main"/>
+  <path d="M1940 248 H2010" class="main"/>
+  <path d="M1815 308 V333 H1495 V308" class="soft"/>
+  <text x="1655" y="352" class="small">必要な場合のみ再質問（最大3問・スキップ可）</text>
+
+  <!-- separator message -->
+  <path d="M1200 375 V414" class="soft"/>
+  <text x="1345" y="402" class="small">以下の5領域で実装・評価</text>
+
+  <!-- 2 frontend -->
+  <rect x="40" y="430" width="610" height="560" rx="4" class="cluster"/>
+  <text x="345" y="465" class="cluster-title">② Room Harmony フロントエンド</text>
+
+  <rect x="85" y="510" width="480" height="92" rx="2" class="node"/>
+  <text x="325" y="547" class="node-title">商品コンテキスト</text>
+  <text x="325" y="578" class="node-text">QRから商品ID・画面状態を取得</text>
+
+  <rect x="85" y="670" width="480" height="105" rx="2" class="node-core"/>
+  <text x="325" y="708" class="node-title">対話UI</text>
+  <text x="325" y="739" class="node-text">クイック選択・文字・音声・スキップ</text>
+
+  <rect x="85" y="845" width="480" height="100" rx="2" class="node"/>
+  <text x="325" y="882" class="node-title">回答・関連商品カード</text>
+  <text x="325" y="913" class="node-text">推薦理由・価格・複数商品ルート</text>
+
+  <path d="M325 602 V670" class="edge"/>
+  <path d="M325 775 V845" class="edge"/>
+
+  <!-- 3 control -->
+  <rect x="720" y="430" width="920" height="560" rx="4" class="cluster-core"/>
+  <text x="1180" y="465" class="cluster-title">③ 対話・推薦制御</text>
+
+  <rect x="765" y="510" width="260" height="92" rx="2" class="node"/>
+  <text x="895" y="547" class="node-title">文脈・意図管理</text>
+  <text x="895" y="578" class="node-text">商品・モード・匿名の短期状態</text>
+
+  <rect x="1090" y="495" width="310" height="122" rx="2" class="node-core"/>
+  <text x="1245" y="533" class="node-title">適応型質問制御</text>
+  <text x="1245" y="565" class="node-text">候補差分から次の一問を選択</text>
+  <text x="1245" y="593" class="node-text">回答を推薦条件へ変換</text>
+
+  <rect x="765" y="735" width="300" height="120" rx="2" class="node-core"/>
+  <text x="915" y="773" class="node-title">推薦・ガイド再順位付け</text>
+  <text x="915" y="805" class="node-text">既存の関連候補を維持</text>
+  <text x="915" y="833" class="node-text">回答条件で再順位付け・探索</text>
+
+  <rect x="1130" y="735" width="240" height="120" rx="2" class="node"/>
+  <text x="1250" y="773" class="node-title">構造化回答</text>
+  <text x="1250" y="805" class="node-text">商品事実＋推薦理由</text>
+  <text x="1250" y="833" class="node-text">＋複数商品ルート</text>
+
+  <rect x="1435" y="735" width="160" height="120" rx="2" class="node"/>
+  <text x="1515" y="768" class="node-title">回答方式</text>
+  <text x="1515" y="799" class="node-text">現行：定型・高速</text>
+  <text x="1515" y="827" class="node-text">将来：差し替え可能</text>
+
+  <path d="M1025 556 H1090" class="edge"/>
+  <path d="M1065 795 H1130" class="edge"/>
+  <path d="M1370 795 H1435" class="edge"/>
+  <path d="M1245 617 C1198 654 1110 683 1018 735" class="edge"/>
+  <text x="1118" y="681" class="edge-label">条件更新</text>
+  <path d="M915 735 C955 668 1040 642 1115 605" class="edge"/>
+  <text x="1000" y="648" class="edge-label">候補差分</text>
+  <path d="M1245 617 V735" class="edge"/>
+
+  <!-- short frontend/control API corridor -->
+  <path d="M565 722 H690 V556 H765" class="edge"/>
+  <text x="674" y="633" class="edge-label">入力</text>
+  <path d="M1130 825 H690 V895 H565" class="edge"/>
+  <text x="675" y="883" class="edge-label">構造化応答</text>
+
+  <!-- 4 data -->
+  <rect x="1710" y="430" width="650" height="560" rx="4" class="cluster"/>
+  <text x="2035" y="465" class="cluster-title">④ データ・アルゴリズム</text>
+
+  <rect x="1755" y="510" width="250" height="92" rx="2" class="node"/>
+  <text x="1880" y="547" class="node-title">商品マスタ</text>
+  <text x="1880" y="578" class="node-text">名称・価格・分類・売場座標</text>
+
+  <rect x="2070" y="510" width="245" height="92" rx="2" class="node"/>
+  <text x="2192" y="547" class="node-title">コーディネート情報</text>
+  <text x="2192" y="578" class="node-text">構成商品・テーマ</text>
+
+  <rect x="1845" y="690" width="330" height="110" rx="2" class="node-core"/>
+  <text x="2010" y="730" class="node-title">既存推薦アルゴリズム</text>
+  <text x="2010" y="762" class="node-text">併売リフト＋コーデ適合</text>
+
+  <rect x="1845" y="865" width="330" height="82" rx="2" class="node"/>
+  <text x="2010" y="899" class="node-title">売場マップ・経路情報</text>
+  <text x="2010" y="927" class="node-text">商品位置から経路を生成</text>
+
+  <path d="M1880 602 C1880 640 1935 658 1970 690" class="edge"/>
+  <path d="M2192 602 C2192 640 2125 662 2080 690" class="edge"/>
+  <path d="M1845 745 H1740 V900" class="bus"/>
+  <path d="M1845 906 H1740" class="bus"/>
+  <path d="M1740 900 H915 V855" class="edge"/>
+  <text x="1390" y="918" class="edge-label">商品・推薦・経路API</text>
+
+  <!-- 5 provider -->
+  <rect x="40" y="1060" width="1420" height="250" rx="4" class="cluster"/>
+  <text x="750" y="1094" class="cluster-title">⑤ Chatbot実装の差し替え領域</text>
+
+  <rect x="90" y="1150" width="280" height="92" rx="2" class="node"/>
+  <text x="230" y="1187" class="node-title">共通対話インターフェース</text>
+  <text x="230" y="1218" class="node-text">文脈入力・構造化応答</text>
+
+  <rect x="450" y="1150" width="270" height="92" rx="2" class="node"/>
+  <text x="585" y="1187" class="node-title">現行：ローカル</text>
+  <text x="585" y="1218" class="node-text">PythonテンプレートBot</text>
+
+  <rect x="800" y="1150" width="220" height="92" rx="2" class="node"/>
+  <text x="910" y="1187" class="node-title">ResponseComposer</text>
+  <text x="910" y="1218" class="node-text">応答生成の差し替え境界</text>
+
+  <rect x="1100" y="1140" width="300" height="112" rx="2" class="node-future"/>
+  <text x="1250" y="1177" class="node-title">将来：ニトリ既存Chatbot</text>
+  <text x="1250" y="1208" class="node-text">正式仕様取得後に接続</text>
+  <text x="1250" y="1235" class="node-text">現時点では未接続</text>
+
+  <path d="M370 1196 H450" class="edge"/>
+  <path d="M370 1170 C540 1095 720 1098 800 1170" class="future"/>
+  <path d="M1020 1196 H1100" class="future"/>
+
+  <!-- provider call routed through whitespace -->
+  <path d="M1515 855 V1022 H230 V1150" class="edge"/>
+  <text x="845" y="1044" class="edge-label">共通インターフェースを呼び出し</text>
+
+  <!-- 6 evaluation -->
+  <rect x="1530" y="1060" width="830" height="250" rx="4" class="cluster"/>
+  <text x="1945" y="1094" class="cluster-title">⑥ 行動ログ・効果評価・統制された改善</text>
+
+  <rect x="1570" y="1150" width="220" height="92" rx="2" class="node"/>
+  <text x="1680" y="1187" class="node-title">匿名行動ログ</text>
+  <text x="1680" y="1218" class="node-text">提示・回答・タップ・終了</text>
+
+  <rect x="1840" y="1150" width="200" height="92" rx="2" class="node"/>
+  <text x="1940" y="1187" class="node-title">効果評価</text>
+  <text x="1940" y="1218" class="node-text">完了率・提案タップ・POS突合</text>
+
+  <rect x="2090" y="1140" width="225" height="112" rx="2" class="node"/>
+  <text x="2202" y="1177" class="node-title">人手で検証後に改善</text>
+  <text x="2202" y="1208" class="node-text">質問・ルール・条件</text>
+  <text x="2202" y="1229" class="small">自由入力本文は保存しない</text>
+  <text x="2202" y="1247" class="small">個人情報を扱わない</text>
+
+  <path d="M1790 1196 H1840" class="edge"/>
+  <path d="M2040 1196 H2090" class="edge"/>
+
+  <!-- event and controlled feedback routed through gutters -->
+  <path d="M565 895 H615 V1022 H1680 V1150" class="soft"/>
+  <text x="1325" y="1044" class="edge-label">匿名行動イベント</text>
+  <path d="M2202 1140 H2380 V405 H1500 V495" class="future"/>
+  <text x="1975" y="402" class="edge-label">評価・承認後に質問ルールを更新</text>
+
+  <!-- legend -->
+  <line x1="70" y1="1332" x2="120" y2="1332" class="main"/>
+  <text x="220" y="1338" class="small">顧客体験の主導線</text>
+  <line x1="395" y1="1332" x2="445" y2="1332" class="edge"/>
+  <text x="540" y="1338" class="small">現在のシステム連携</text>
+  <line x1="745" y1="1332" x2="795" y2="1332" class="future"/>
+  <text x="900" y="1338" class="small">将来接続・承認後の更新</text>
+  <rect x="1105" y="1321" width="26" height="20" class="node-core"/>
+  <text x="1245" y="1338" class="small">今回の設計上の中核</text>
+</svg>

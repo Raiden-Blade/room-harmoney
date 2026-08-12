@@ -6,7 +6,7 @@
 """
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -40,3 +40,26 @@ class EventRequest(BaseModel):
     session_id: str
     event_type: str
     payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class ChatState(BaseModel):
+    """クライアントとAPIの間で往復させる匿名の短期会話状態。"""
+
+    answered_question_ids: list[str] = Field(default_factory=list, max_length=3)
+    preferences: dict[str, str] = Field(default_factory=dict)
+
+
+class ChatTurnRequest(BaseModel):
+    """`POST /api/chat/turn` の入力。
+
+    自由入力は解釈にだけ使い、イベントログへは保存しない。`state` をクライアントへ
+    返して往復させるため、会話本文を永続化する専用DBは不要である。
+    """
+
+    product_id: str = Field(min_length=1)
+    action: Literal["start", "answer", "skip", "finish"] = "start"
+    question_id: Optional[str] = None
+    answer_id: Optional[str] = None
+    text: Optional[str] = Field(default=None, max_length=200)
+    mode: Literal["customer", "staff"] = "customer"
+    state: ChatState = Field(default_factory=ChatState)

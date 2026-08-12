@@ -1,5 +1,5 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
@@ -31,5 +31,15 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     css: true,
+    // Codex/手動セットアップ中に残る `node_modules.partial` をテスト探索対象にすると、
+    // Windows上で全量 `vitest run` が長時間停止する。製品コードではない一時依存、
+    // ビルド成果物、Playwright専用E2Eを明示的に除外し、標準 `npm test` を決定的にする。
+    exclude: [
+      ...configDefaults.exclude,
+      "node_modules.partial/**",
+      "dist/**",
+      "e2e/**",
+      "test-results/**",
+    ],
   },
 });

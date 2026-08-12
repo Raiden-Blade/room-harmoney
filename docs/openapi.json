@@ -3,7 +3,7 @@
   "info": {
     "title": "Room Harmony API",
     "description": "来店客向けアプリ Room Harmony のバックエンドAPI（17章 API仕様）",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "paths": {
     "/api/session": {
@@ -257,6 +257,69 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Get Recommendations Api Recommendations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/turn": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Post Chat Turn",
+        "operationId": "post_chat_turn_api_chat_turn_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "来店セッションID（POST /api/session で発行）",
+              "title": "Session Id"
+            },
+            "description": "来店セッションID（POST /api/session で発行）"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatTurnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Post Chat Turn Api Chat Turn Post"
                 }
               }
             }
@@ -572,6 +635,100 @@
   },
   "components": {
     "schemas": {
+      "ChatState": {
+        "properties": {
+          "answered_question_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "title": "Answered Question Ids"
+          },
+          "preferences": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Preferences"
+          }
+        },
+        "type": "object",
+        "title": "ChatState",
+        "description": "クライアントとAPIの間で往復させる匿名の短期会話状態。"
+      },
+      "ChatTurnRequest": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Product Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "start",
+              "answer",
+              "skip",
+              "finish"
+            ],
+            "title": "Action",
+            "default": "start"
+          },
+          "question_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question Id"
+          },
+          "answer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Id"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "customer",
+              "staff"
+            ],
+            "title": "Mode",
+            "default": "customer"
+          },
+          "state": {
+            "$ref": "#/components/schemas/ChatState"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "title": "ChatTurnRequest",
+        "description": "`POST /api/chat/turn` の入力。\n\n自由入力は解釈にだけ使い、イベントログへは保存しない。`state` をクライアントへ\n返して往復させるため、会話本文を永続化する専用DBは不要である。"
+      },
       "CreateSessionRequest": {
         "properties": {
           "qr_id": {

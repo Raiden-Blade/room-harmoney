@@ -1,6 +1,6 @@
 """Room Harmony backend - FastAPI アプリのエントリポイント。
 
-17章 API仕様の8エンドポイントを `app/routers/` に分割して結線する（G2 API結合）。
+RESTエンドポイントを `app/routers/` に分割して結線する（G2 API結合）。
 推薦（B1 HybridRecommender）・経路（B2 RouteGraphBuilder）・データ層（dataio/ 経由の
 リポジトリ）は `app/dependencies.py` の `Depends` を通じて注入し、差し替え可能にする。
 """
@@ -11,6 +11,7 @@ from .config import get_settings
 from .errors import register_exception_handlers
 from .routers import (
     admin,
+    chat,
     coordinates,
     events,
     product_code,
@@ -25,7 +26,7 @@ from .routers import (
 app = FastAPI(
     title="Room Harmony API",
     description="来店客向けアプリ Room Harmony のバックエンドAPI（17章 API仕様）",
-    version="0.2.0",
+    version="0.3.0",
 )
 
 # フロント開発用に localhost からの CORS を許可する。
@@ -51,6 +52,7 @@ app.include_router(qr.router)
 app.include_router(product_code.router)
 app.include_router(products.router)
 app.include_router(recommendations.router)
+app.include_router(chat.router)
 app.include_router(coordinates.router)
 app.include_router(route.router)
 app.include_router(store_map.router)

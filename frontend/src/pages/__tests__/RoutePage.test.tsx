@@ -113,11 +113,46 @@ describe("RoutePage (S4)", () => {
     expect(screen.queryByTestId("floor-switch")).not.toBeInTheDocument();
     expect(screen.queryByTestId("floor-transfers")).not.toBeInTheDocument();
 
-    // チャットボット導線にも同じ文脈（to_product）が引き継がれる（往復導線）。
-    const chatbotLink = screen.getByTestId("chatbot-link") as HTMLAnchorElement;
-    const chatbotUrl = new URL(chatbotLink.href);
-    expect(chatbotUrl.searchParams.get("to_product")).toBe("P001,P002");
-    expect(chatbotUrl.searchParams.get("screen")).toBe("route");
+    // treatment群は外部の未接続URLへ出さず、商品ページ内の相談へ戻す。
+    expect(screen.getByTestId("guided-chatbot-return")).toHaveAttribute(
+      "href",
+      "/products/P001",
+    );
+  });
+
+  it("同じ売場座標の商品は一覧に全件残し、マップ上は1つの目的地としてまとめる", async () => {
+    saveSession({
+      sessionId: "sess-shared-location",
+      experimentGroup: "treatment",
+      qrId: "QR-ENTRANCE-001",
+      start: { floor: 1, x: 3, y: 50 },
+    });
+
+    installFetchMock([
+      route("GET", "/api/route", () => ({
+        body: {
+          waypoints: [
+            { floor: 1, x: 3, y: 50, type: "入口" },
+            { floor: 1, x: 17, y: 18, type: "商品近傍" },
+          ],
+          sub_passages: [],
+          visiting_order: ["P001", "P002"],
+          unreachable: [],
+          total_distance: 32,
+        },
+      })),
+      route("GET", "/api/store-map/1", () => ({ body: STORE_MAP_FLOOR_1 })),
+      route("GET", "/api/products/P001", () => ({ body: product("P001", "ナチュラルソファ", 17, 18) })),
+      route("GET", "/api/products/P002", () => ({ body: product("P002", "同じ棚のクッション", 17, 18) })),
+    ]);
+
+    renderRoutePage("/route?to_product=P001&to_product=P002");
+
+    expect(await screen.findByTestId("visiting-order-item-P001")).toBeInTheDocument();
+    expect(screen.getByTestId("visiting-order-item-P002")).toBeInTheDocument();
+    expect(await screen.findByTestId("route-destination-P001")).toBeInTheDocument();
+    expect(screen.queryByTestId("route-destination-P002")).not.toBeInTheDocument();
+    expect(screen.getByText("ナチュラルソファ ほか1点")).toBeInTheDocument();
   });
 
   it("有効なセッションが無い場合は来店ロックUIになり、routeAPIは呼ばれない（AC-5）", async () => {
