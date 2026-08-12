@@ -39,3 +39,6 @@ frontend/ios/
 logs
 *.log
 npm-debug.log*
+
+# --- Windows ワンクリックデモ起動時のPID・ログ ---
+.room-harmony-demo/
