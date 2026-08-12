@@ -91,6 +91,9 @@ room-harmony/
 ├─ data/             # サンプルデータ（products/co_purchase/coordinates/store_map/qr_codes/aggregates ほか）
 ├─ docs/             # DESIGN / CHATBOT_REQUIREMENTS / CHATBOT_AUDIT / 完成版SVG・PDF / openapi.json
 ├─ harness/          # QAゲートのレポート・証跡
+├─ demo-launcher/    # Windowsワンクリック起動／停止の内部PowerShellスクリプト
+├─ start-demo.cmd    # ダブルクリックで依存確認→前後端起動→商品QRデモを開く
+├─ stop-demo.cmd     # 起動器が開始した前後端サービスを安全に停止
 ├─ .env.example
 └─ README.md
 ```
@@ -124,7 +127,38 @@ Copy-Item frontend\.env.example frontend\.env
 
 ## 7. セットアップ・起動
 
-### 7.1 バックエンド（Python + FastAPI）
+### 7.1 Windowsワンクリック起動（デモ推奨）
+
+GitHubのWeb画面上では実行できないため、リポジトリをWindows PCへダウンロードまたはcloneした後、ルート直下の次のファイルをダブルクリックする。
+
+```text
+start-demo.cmd
+```
+
+起動器は以下を順番に自動実行する。
+
+1. Python・Node.js・npmとプロジェクト構成を確認する
+2. 初回のみ `backend/.venv` を作成し、Python依存関係をインストールする
+3. 初回のみ `frontend/node_modules` を作成し、Node.js依存関係をインストールする
+4. デモ用に `EXPERIMENT_GROUP_RATIO=1.0` をバックエンド子プロセスへ設定する
+5. FastAPI（8000）とReact/Vite（5173）をバックグラウンドで起動する
+6. 両方の応答を確認後、Chromeのアプリウィンドウまたは既定ブラウザで次の画面を開く
+
+```text
+http://localhost:5173/s/QR-PRODUCT-01-02-01-0799
+```
+
+初回だけ依存関係の取得にインターネット接続と数分を要する場合がある。2回目以降はインストール済み環境を再利用するため、通常は起動待ちだけでよい。起動器が設定するtreatment比率は子プロセス限定であり、PCの永続的な環境変数や `.env` は変更しない。
+
+終了時はルート直下の次のファイルをダブルクリックする。
+
+```text
+stop-demo.cmd
+```
+
+実行中のPID・起動時刻・ログはGit管理対象外の `.room-harmony-demo/` に保存される。停止時はこれらを照合し、この起動器が開始したRoom Harmonyプロセスだけを停止する。8000または5173を別のアプリが使用中の場合は、誤停止せずエラーを表示する。詳細は [`demo-launcher/README.md`](demo-launcher/README.md)。
+
+### 7.2 バックエンドを手動起動する（Python + FastAPI）
 
 ```powershell
 cd backend
@@ -154,7 +188,7 @@ cd backend
 .venv\Scripts\python -m batch.lift_batch
 ```
 
-### 7.2 フロントエンド（TypeScript + React / Vite）
+### 7.3 フロントエンドを手動起動する（TypeScript + React / Vite）
 
 ```powershell
 cd frontend
