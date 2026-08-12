@@ -63,8 +63,8 @@ Chatbotは新しい商品を勝手に生成しない。既存 `PersonalizedRecom
 ## 4. 前提環境
 
 - OS: Windows（PowerShell / Git Bash いずれでも可）
-- Python: **`py` ランチャ経由**で実行（`python` は Windows Store のスタブで動作しない環境がある）。確認: `py --version`（3.13系）
-- Node.js: v22 系 / npm 10 系。確認: `node -v` / `npm -v`
+- Python: 3.11以上（3.13推奨）。ワンクリック起動器は利用可能な `py` または `python` を自動選択する。確認: `py --version` または `python --version`
+- Node.js: v22系推奨（ワンクリック起動はNode.js 24 / npm 11でも検証済み）。確認: `node -v` / `npm -v`
 - git: 2.x
 
 ---
@@ -139,7 +139,7 @@ start-demo.cmd
 
 1. Python・Node.js・npmとプロジェクト構成を確認する
 2. 初回のみ `backend/.venv` を作成し、Python依存関係をインストールする
-3. 初回のみ `frontend/node_modules` を作成し、Node.js依存関係をインストールする
+3. 初回のみロックファイルに従って `frontend/node_modules` を作成する（npm 11の既知peer依存判定にも対応）
 4. デモ用に `EXPERIMENT_GROUP_RATIO=1.0` をバックエンド子プロセスへ設定する
 5. FastAPI（8000）とReact/Vite（5173）をバックグラウンドで起動する
 6. 両方の応答を確認後、Chromeのアプリウィンドウまたは既定ブラウザで次の画面を開く
@@ -149,6 +149,8 @@ http://localhost:5173/s/QR-PRODUCT-01-02-01-0799
 ```
 
 初回だけ依存関係の取得にインターネット接続と数分を要する場合がある。2回目以降はインストール済み環境を再利用するため、通常は起動待ちだけでよい。起動器が設定するtreatment比率は子プロセス限定であり、PCの永続的な環境変数や `.env` は変更しない。
+
+初回セットアップが通信切断等で中断された場合も、再度 `start-demo.cmd` を実行すれば不足しているPython／Node.js依存関係を検出して修復する。
 
 終了時はルート直下の次のファイルをダブルクリックする。
 
@@ -192,7 +194,7 @@ cd backend
 
 ```powershell
 cd frontend
-npm install
+npm ci --legacy-peer-deps
 npm run gen:api      # docs/openapi.json から src/api/schema.ts を生成
 npm run dev          # http://localhost:5173
 ```

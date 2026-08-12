@@ -44,6 +44,24 @@ function Test-FrontendReady {
     }
 }
 
+function Test-BackendDependencies([string]$PythonPath) {
+    if (-not (Test-Path $PythonPath)) {
+        return $false
+    }
+    & $PythonPath -c "import fastapi, uvicorn, httpx, pytest, pandas, networkx" 2>$null
+    return $LASTEXITCODE -eq 0
+}
+
+function Test-FrontendDependencies {
+    $RequiredPaths = @(
+        "node_modules\vite\bin\vite.js",
+        "node_modules\react\package.json",
+        "node_modules\typescript\bin\tsc",
+        "node_modules\vitest\vitest.mjs"
+    )
+    return $null -eq ($RequiredPaths | Where-Object { -not (Test-Path (Join-Path $FrontendDir $_)) } | Select-Object -First 1)
+}
+
 function Get-PortOwner([int]$Port) {
     return Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
         Select-Object -First 1
@@ -115,6 +133,9 @@ try {
     Write-Host " Room Harmony ワンクリックデモ起動" -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor DarkGray
 
+    New-Item -ItemType Directory -Force -Path $RuntimeDir | Out-Null
+    Remove-Item -LiteralPath $LauncherErrorFile -Force -ErrorAction SilentlyContinue
+
     Write-Step "実行環境を確認しています"
     if (-not (Test-Path (Join-Path $BackendDir "requirements.txt"))) {
         throw "backend/requirements.txt が見つかりません。リポジトリのルートから実行してください。"
@@ -127,23 +148,61 @@ try {
     }
 
     $VenvPython = Join-Path $BackendDir ".venv\Scripts\python.exe"
+    $CreatedVenv = $false
     if (-not (Test-Path $VenvPython)) {
-        if (-not (Test-Command "py.exe")) {
-            throw "Python の py ランチャーが見つかりません。Python 3.13系をインストールしてください。"
+        $PythonCandidates = [System.Collections.Generic.List[string]]::new()
+        foreach ($commandName in @("py.exe", "python.exe")) {
+            foreach ($command in @(Get-Command $commandName -All -ErrorAction SilentlyContinue)) {
+                if ($null -ne $command -and -not $PythonCandidates.Contains($command.Source)) {
+                    $PythonCandidates.Add($command.Source)
+                }
+            }
         }
+
+        $BootstrapPython = $null
+        $BootstrapVersion = $null
+        foreach ($candidate in $PythonCandidates) {
+            try {
+                $versionText = (& $candidate -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}')" 2>$null | Select-Object -First 1)
+                if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($versionText)) {
+                    continue
+                }
+                $version = [version]$versionText.Trim()
+                if ($version.Major -eq 3 -and $version.Minor -ge 11) {
+                    $BootstrapPython = $candidate
+                    $BootstrapVersion = $version
+                    break
+                }
+            }
+            catch {
+                # Windows Storeのスタブ等、実行できない候補は次へ進む。
+            }
+        }
+        if ($null -eq $BootstrapPython) {
+            throw "Python 3.11以上が見つかりません。Pythonをインストールし、py または python コマンドを利用可能にしてください。"
+        }
+        Write-Host "Python: $BootstrapVersion ($BootstrapPython)" -ForegroundColor DarkGreen
         Write-Step "初回セットアップ: Python仮想環境を作成しています"
-        & py.exe -m venv (Join-Path $BackendDir ".venv")
+        & $BootstrapPython -m venv (Join-Path $BackendDir ".venv")
         if ($LASTEXITCODE -ne 0) {
             throw "Python仮想環境の作成に失敗しました。"
         }
+        $CreatedVenv = $true
+    }
 
-        Write-Step "初回セットアップ: Python依存関係をインストールしています"
-        & $VenvPython -m pip install --upgrade pip
-        if ($LASTEXITCODE -ne 0) {
-            throw "pip の更新に失敗しました。"
+    if ($CreatedVenv -or -not (Test-BackendDependencies $VenvPython)) {
+        if ($CreatedVenv) {
+            Write-Step "初回セットアップ: Python依存関係をインストールしています"
+            & $VenvPython -m pip install --upgrade pip
+            if ($LASTEXITCODE -ne 0) {
+                throw "pip の更新に失敗しました。"
+            }
+        }
+        else {
+            Write-Step "Python依存関係の不足を修復しています"
         }
         & $VenvPython -m pip install -r (Join-Path $BackendDir "requirements.txt")
-        if ($LASTEXITCODE -ne 0) {
+        if ($LASTEXITCODE -ne 0 -or -not (Test-BackendDependencies $VenvPython)) {
             throw "Python依存関係のインストールに失敗しました。"
         }
     }
@@ -151,11 +210,10 @@ try {
         Write-Host "Python依存関係: 準備済み" -ForegroundColor DarkGreen
     }
 
-    $ViteCommand = Join-Path $FrontendDir "node_modules\.bin\vite.cmd"
-    if (-not (Test-Path $ViteCommand)) {
+    if (-not (Test-FrontendDependencies)) {
         Write-Step "初回セットアップ: フロントエンド依存関係をインストールしています"
-        & npm.cmd install --prefix $FrontendDir
-        if ($LASTEXITCODE -ne 0) {
+        & npm.cmd ci --legacy-peer-deps --prefix $FrontendDir
+        if ($LASTEXITCODE -ne 0 -or -not (Test-FrontendDependencies)) {
             throw "フロントエンド依存関係のインストールに失敗しました。"
         }
     }
@@ -163,8 +221,6 @@ try {
         Write-Host "フロントエンド依存関係: 準備済み" -ForegroundColor DarkGreen
     }
 
-    New-Item -ItemType Directory -Force -Path $RuntimeDir | Out-Null
-    Remove-Item -LiteralPath $LauncherErrorFile -Force -ErrorAction SilentlyContinue
     $RuntimeEntries = [System.Collections.Generic.List[object]]::new()
     if (Test-Path $RuntimeFile) {
         try {
