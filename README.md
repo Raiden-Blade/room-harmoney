@@ -11,7 +11,7 @@
 
 ![Room Harmony ガイド型チャット統合フロー](docs/assets/room-harmony-chatbot-flow.svg)
 
-白い太線は来店客の主導線、細い実線は現在実装済みのシステム連携、破線は将来のニトリ既存Chatbot接続または人手承認後の更新を示す。図はSVGのため、GitHub上でも拡大して確認できる。
+白い太線は来店客の主導線、細い実線は現在実装済みのシステム連携、破線は将来のニトリ既存Chatbot接続または人手承認後の更新を示す。図はSVGのため、GitHub上でも拡大して確認できる。発表資料や印刷には、同じ内容を保持した[ベクターPDF版](docs/assets/room-harmony-chatbot-flow.pdf)を利用できる。
 
 主導線は次の通りである。
 
@@ -89,7 +89,7 @@ room-harmony/
 │  ├─ scripts/       # export_openapi.py（docs/openapi.json 出力）
 │  └─ tests/         # unit（G1）/ integration（G2）
 ├─ data/             # サンプルデータ（products/co_purchase/coordinates/store_map/qr_codes/aggregates ほか）
-├─ docs/             # DESIGN / CHATBOT_REQUIREMENTS / CHATBOT_AUDIT / 完成版SVG / openapi.json
+├─ docs/             # DESIGN / CHATBOT_REQUIREMENTS / CHATBOT_AUDIT / 完成版SVG・PDF / openapi.json
 ├─ harness/          # QAゲートのレポート・証跡
 ├─ .env.example
 └─ README.md
@@ -272,6 +272,7 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 | 実ブラウザ統合 | 商品QR→探索回答→再推薦→4商品ルート、ローカルAPI 14件すべて200 |
 | レスポンシブ | 1280px／390pxで横方向のはみ出しなし |
 | 完成版SVG | 2400×1350で再レンダリングし、文字切れ・重なり・線・余白を目視確認 |
+| ベクターPDF | 16:9・1ページ、画像埋め込みなし、抽出可能テキストを確認後、PNG再レンダリングで目視確認 |
 
 既知の警告は、FastAPI TestClientが依存するStarletteの `httpx` 非推奨警告1件であり、今回の機能失敗ではない。またヘッドレスChromeではニトリ外部画像CDNが失敗する場合があるため、画面は既存フォールバックを表示する。本番前には承認済み画像の自社配信が必要である。
 
