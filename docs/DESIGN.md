@@ -129,7 +129,7 @@ REST / JSON。OpenAPI スキーマを出力しフロントTS型を生成。
 | `GET /api/recommendations` | 関連商品＋コーデ | `product_id`（＋`session_id`） | `related[]（リフト順）, coordinates[]` |
 | `POST /api/chat/turn` | 商品文脈付きガイド型チャット | `product_id, action, mode, state`（＋`session_id`） | `message, question, state, recommendations, route_product_ids` |
 | `GET /api/coordinates/{coordinate_id}` | コーデ詳細 | — | 構成商品・完成画像・合計金額目安 |
-| `GET /api/route` | 簡易ルート | `from_qr, to_product`（複数可） | ウェイポイント座標列・経由サブ通路・巡回順 |
+| `GET /api/route` | 簡易ルート | `from_qr, to_product`（複数可） | ウェイポイント座標列・経由サブ通路・巡回順。同一ノードの商品は全件保持し、経路上は1回訪問 |
 | `GET /api/store-map/{floor}` | フロアマップ | — | フロアプラン・ゾーン・ウェイポイント |
 | `POST /api/events` | 効果ログ記録 | `session_id, event_type, payload` | 記録結果 |
 
@@ -147,7 +147,7 @@ REST / JSON。OpenAPI スキーマを出力しフロントTS型を生成。
 | S2 | 商品詳細 | 商品情報＋関連商品＋コーデ＋最大3問のガイド型チャット | `GET /products/{id}`, `GET /recommendations`, `POST /chat/turn` | related_view, related_tap, chatbot_* |
 | S3 | コーデ詳細 | 完成イメージ大・構成商品・合計金額・「揃える/場所を見る」 | `GET /coordinates/{id}` | coordinate_view, coordinate_tap |
 | S4 | マップ・ルート | 起点→目的商品の簡易ルート、経由サブ通路、複数目的地の巡回順、フロア切替 | `GET /route`, `GET /store-map/{floor}` | route_view |
-| S5 | ガイド型チャット／外部Bot導線 | treatment群は商品ページ内で質問・再推薦。control群は既存外部リンクを維持 | `POST /chat/turn`／外部 | chatbot_open, chatbot_answer, chatbot_recommendation_tap, chatbot_finish |
+| S5 | ガイド型チャット／外部Bot導線 | treatment群は商品ページ内で質問・再推薦。control群の外部リンクは正式URL設定時だけ有効化 | `POST /chat/turn`／外部 | chatbot_open, chatbot_answer, chatbot_recommendation_tap, chatbot_finish |
 
 **UXフロー（ハッピーパス）**
 ```

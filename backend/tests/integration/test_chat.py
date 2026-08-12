@@ -1,6 +1,8 @@
 """商品文脈付きガイド型チャットAPIの結合テスト。"""
 from __future__ import annotations
 
+import pytest
+
 
 def _start_payload(product_id: str = "P027") -> dict:
     return {
@@ -154,7 +156,10 @@ def test_chat_completes_in_at_most_three_questions_and_logs_automatic_finish(
     )
 
 
-def test_category_answer_moves_selected_category_to_top(client, active_session) -> None:
+@pytest.mark.parametrize("focus", ["relevance", "discovery"])
+def test_category_answer_moves_selected_category_to_top(
+    client, active_session, focus: str
+) -> None:
     url = f"/api/chat/turn?session_id={active_session['session_id']}"
     first = client.post(url, json=_start_payload()).json()
     second = client.post(
@@ -163,7 +168,7 @@ def test_category_answer_moves_selected_category_to_top(client, active_session) 
             "product_id": "P027",
             "action": "answer",
             "question_id": "focus",
-            "answer_id": "relevance",
+            "answer_id": focus,
             "state": first["state"],
         },
     ).json()

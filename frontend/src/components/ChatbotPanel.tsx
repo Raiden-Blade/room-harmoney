@@ -177,36 +177,6 @@ export function ChatbotPanel({ productId, sessionId }: { productId: string; sess
             <p>{response.message}</p>
           </div>
 
-          {response.recommendations.length > 0 && (
-            <div className="chatbot-results">
-              <h3>現在のおすすめ</h3>
-              <ul className="chatbot-product-list">
-                {response.recommendations.slice(0, 3).map((item) => (
-                  <li key={item.product.product_id}>
-                    <ImageWithFallback
-                      src={item.product.image_url}
-                      alt={item.product.name}
-                      width={72}
-                      height={72}
-                    />
-                    <div>
-                      <strong>{item.product.name}</strong>
-                      <p className="price">¥{item.product.price.toLocaleString("ja-JP")}</p>
-                      <p className="chatbot-reason">{item.reasons.slice(0, 2).join("／")}</p>
-                      <button
-                        type="button"
-                        className="chatbot-text-button"
-                        onClick={() => openRoute([item.product.product_id])}
-                      >
-                        この売場を見る
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
           {response.question && !response.completed && (
             <div className="chatbot-question" data-testid="chatbot-question">
               <p className="chatbot-progress">
@@ -261,6 +231,36 @@ export function ChatbotPanel({ productId, sessionId }: { productId: string; sess
                   ここで候補を見る
                 </button>
               </div>
+            </div>
+          )}
+
+          {response.recommendations.length > 0 && (
+            <div className="chatbot-results">
+              <h3>{response.completed ? "現在のおすすめ" : "現在の候補（回答するたびに更新）"}</h3>
+              <ul className="chatbot-product-list">
+                {response.recommendations.slice(0, 3).map((item) => (
+                  <li key={item.product.product_id}>
+                    <ImageWithFallback
+                      src={item.product.image_url}
+                      alt={item.product.name}
+                      width={72}
+                      height={72}
+                    />
+                    <div>
+                      <strong>{item.product.name}</strong>
+                      <p className="price">¥{item.product.price.toLocaleString("ja-JP")}</p>
+                      <p className="chatbot-reason">{item.reasons.slice(0, 2).join("／")}</p>
+                      <button
+                        type="button"
+                        className="chatbot-text-button"
+                        onClick={() => openRoute([item.product.product_id])}
+                      >
+                        この売場を見る
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

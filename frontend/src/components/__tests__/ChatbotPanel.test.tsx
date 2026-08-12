@@ -96,6 +96,12 @@ describe("ChatbotPanel", () => {
     const question = await screen.findByTestId("chatbot-question");
     expect(within(question).getByText("何を優先しますか？")).toBeInTheDocument();
     expect(screen.getByText("収納ボックス")).toBeInTheDocument();
+    const candidatesHeading = screen.getByRole("heading", {
+      name: "現在の候補（回答するたびに更新）",
+    });
+    expect(
+      question.compareDocumentPosition(candidatesHeading) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
 
     fireEvent.click(within(question).getByText("価格"));
     await screen.findByText("回答を反映しました。");

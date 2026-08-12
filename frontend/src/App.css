@@ -286,6 +286,20 @@
   background: var(--rh-surface-alt);
 }
 
+.chatbot-link-unavailable {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--rh-tap-min);
+  color: var(--rh-text-muted);
+  font-size: 0.85rem;
+}
+
+.chatbot-link-unavailable::before {
+  content: "\1F4AC";
+  margin-right: 0.4rem;
+}
+
 .related-list-toggle {
   margin-top: var(--rh-space-2);
   border: 0;

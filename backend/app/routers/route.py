@@ -51,9 +51,12 @@ def get_route(
             message=f"起点QR（floor={qr['floor']}）に対応する経路ノードが見つかりません。",
         ) from exc
 
+    # 同じ売場ノードに複数商品が置かれる実データを考慮し、経路計算上の目的地は
+    # ノード単位で一度だけ訪問しつつ、表示上はそのノードの商品をすべて残す。
+    requested_product_ids = list(dict.fromkeys(to_product))
     destination_ids: list[str] = []
-    node_id_to_product_id: dict[str, str] = {}
-    for product_id in to_product:
+    node_id_to_product_ids: dict[str, list[str]] = {}
+    for product_id in requested_product_ids:
         product = product_repo.get(product_id)
         if product is None:
             raise ApiError(
@@ -72,8 +75,10 @@ def get_route(
                 code="ROUTE_NOT_FOUND",
                 message=f"product_id={product_id} への経路ノードが見つかりません。",
             ) from exc
-        destination_ids.append(node_id)
-        node_id_to_product_id[node_id] = product_id
+        if node_id not in node_id_to_product_ids:
+            destination_ids.append(node_id)
+            node_id_to_product_ids[node_id] = []
+        node_id_to_product_ids[node_id].append(product_id)
 
     multi_result = route_builder.multi_destination_route(start_id, destination_ids)
 
@@ -94,9 +99,15 @@ def get_route(
         for w in multi_result.all_waypoints
         if w.type == "サブ通路"
     ]
-    visiting_order = [node_id_to_product_id[node_id] for node_id in multi_result.order]
+    visiting_order = [
+        product_id
+        for node_id in multi_result.order
+        for product_id in node_id_to_product_ids[node_id]
+    ]
     unreachable_product_ids = [
-        node_id_to_product_id[node_id] for node_id in multi_result.unreachable
+        product_id
+        for node_id in multi_result.unreachable
+        for product_id in node_id_to_product_ids[node_id]
     ]
 
     # 10章 計測: route_view（起点・目的地・経由サブ通路）
@@ -108,7 +119,7 @@ def get_route(
         event_type="route_view",
         payload={
             "from_qr": from_qr,
-            "to_product": to_product,
+            "to_product": requested_product_ids,
             "visiting_order": visiting_order,
             "sub_passage_count": len(sub_passages),
             "via_sub_passage": bool(sub_passages),

@@ -93,6 +93,13 @@ class GuidedReranker:
 
         result.sort(
             key=lambda guided: (
+                # 商品種類を明示した回答は「探索したい」という一般的な傾向より強い意図として扱う。
+                # スコア加点だけでは discovery の高リフト候補に負けるため、カテゴリ一致を
+                # 第1ソートキーにして、一致商品の中で従来の品質・リフト順を維持する。
+                bool(
+                    preferences.get("category")
+                    and guided.item.cat_mid != preferences["category"]
+                ),
                 -guided.guided_score,
                 -guided.item.score,
                 -guided.item.lift,

@@ -45,7 +45,7 @@ Chatbotは新しい商品を勝手に生成しない。既存 `PersonalizedRecom
 
 ### 2.4 ニトリ既存Chatbotとの将来接続
 
-現行の応答生成は `ResponseComposer` 境界の `TemplateResponseComposer` である。正式な接続仕様・認証方式・データ取り扱い条件が提供された後は、この応答生成部分を既存Bot向けアダプタへ差し替えられる。公開する `/api/chat/turn`、質問状態、推薦器、フロント画面は維持する設計である。従来の外部ディープリンク `ChatbotLink` もcontrol群・既存連携用に残している。
+現行の応答生成は `ResponseComposer` 境界の `TemplateResponseComposer` である。正式な接続仕様・認証方式・データ取り扱い条件が提供された後は、この応答生成部分を既存Bot向けアダプタへ差し替えられる。公開する `/api/chat/turn`、質問状態、推薦器、フロント画面は維持する設計である。従来の外部ディープリンク `ChatbotLink` もcontrol群・既存連携用に残しているが、実在する `VITE_CHATBOT_BASE_URL` が無い状態では「接続準備中」と表示し、ダミーURLへは遷移させない。
 
 ## 3. データの出所と限界
 
@@ -104,12 +104,12 @@ room-harmony/
 | 変数 | 用途 |
 |---|---|
 | `DATABASE_URL` | セッション/イベントログの保存先。開発は SQLite（既定 `sqlite:///./data/room_harmony.db`）。本番は PostgreSQL 等に差し替え |
-| `CHATBOT_BASE_URL` | 将来またはcontrol群で使う既存チャットボットの外部リンク。統合ガイド型チャットには不要 |
+| `CHATBOT_BASE_URL` | バックエンド側に残す将来接続用の予約設定。現在の外部リンクUIはこの値を直接参照しない |
 | `STORE_ID` | 対象店舗ID（サンプルは目黒通り店ベースの4フロア、既定 `meguro-dori`） |
 | `EXPERIMENT_GROUP_MODE` / `EXPERIMENT_GROUP_RATIO` | 実験群（A/B）割付の方式・比率（既定 random / 0.5） |
 | `CORS_ALLOW_ORIGINS` | バックエンドCORS許可オリジン（カンマ区切り。既定に dev 5173 / preview 4173 を含む） |
 | `VITE_API_BASE_URL` | フロントから参照するバックエンドAPIのベースURL（既定 `http://localhost:8000`） |
-| `VITE_CHATBOT_BASE_URL` | 外部ChatbotLinkの遷移先。統合ガイド型チャットのAPI接続には使わない |
+| `VITE_CHATBOT_BASE_URL` | 外部ChatbotLinkの遷移先。未設定・不正・`example.invalid` では非リンク表示。統合ガイド型チャットのAPI接続には使わない |
 
 ```powershell
 # バックエンドの上書き例（現在のPowerShellセッションにだけ適用）
@@ -265,12 +265,12 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 
 | 対象 | 結果 |
 |---|---|
-| Python構文・バックエンド単体／結合 | `234 passed` |
+| Python構文・バックエンド単体／結合 | `236 passed` |
 | フロント静的検査 | `oxlint` 警告・エラーなし |
-| フロントコンポーネント／結合 | `10 files / 59 tests passed` |
+| フロントコンポーネント／結合 | `10 files / 61 tests passed` |
 | TypeScript・本番ビルド | `tsc -b && vite build` 成功 |
-| 実ブラウザ統合 | 商品QR→探索回答→再推薦→4商品ルート、ローカルAPI 14件すべて200 |
-| レスポンシブ | 1280px／390pxで横方向のはみ出しなし |
+| 実ブラウザ統合 | 正式ビルドで商品QR→探索→カテゴリ指定→4商品ルート。同一売場ノードの複数商品も全件保持 |
+| レスポンシブ | 390pxで横方向のはみ出しなし。質問を候補カードより前に表示し、第一問を初期ビューポート内に配置 |
 | 完成版SVG | 2400×1350で再レンダリングし、文字切れ・重なり・線・余白を目視確認 |
 | ベクターPDF | 16:9・1ページ、画像埋め込みなし、抽出可能テキストを確認後、PNG再レンダリングで目視確認 |
 

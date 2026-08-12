@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { installFetchMock, route } from "../../test/mockFetch";
 import { saveSession } from "../../state/session";
@@ -11,6 +11,11 @@ import { ChatbotLink } from "../ChatbotLink";
  */
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+});
+
+beforeEach(() => {
+  vi.stubEnv("VITE_CHATBOT_BASE_URL", "https://chatbot.example.com");
 });
 
 function withSession() {
@@ -23,6 +28,16 @@ function withSession() {
 }
 
 describe("ChatbotLink", () => {
+  it("接続先が未設定の場合は無効なリンクを出さず、接続準備中と表示する", () => {
+    vi.stubEnv("VITE_CHATBOT_BASE_URL", "https://example.invalid/chatbot");
+    render(<ChatbotLink productId="P001" screen="product_detail" />);
+
+    expect(screen.getByTestId("chatbot-link-unavailable")).toHaveTextContent(
+      "既存チャットボットは接続準備中です",
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
   it("outboundリンクのhrefに product_id/screen のディープリンクパラメータが付与される", () => {
     render(<ChatbotLink productId="P001" screen="product_detail" />);
     const link = screen.getByTestId("chatbot-link") as HTMLAnchorElement;
