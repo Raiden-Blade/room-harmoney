@@ -1,7 +1,8 @@
 /**
  * バックエンドAPI（17章）向けの薄いfetchラッパ。
  *
- * - ベースURLは `VITE_API_BASE_URL`（既定 http://localhost:8000）。
+ * - 開発時は `VITE_API_BASE_URL`（未設定なら http://localhost:8000）へ接続する。
+ * - 配布版は同じFastAPIプロセスが画面とAPIを配信するため、未設定なら同一オリジンを使う。
  * - エラー時はバックエンド共通フォーマット（`backend/app/errors.py`）の
  *   `{ code, message }` を持つ `ApiError` を投げる。フロントは `code` で機械的に分岐できる
  *   （例: `VISIT_LOCK_REQUIRED` → 来店ロックUI）。
@@ -22,7 +23,8 @@ import type {
 } from "./types";
 
 export const API_BASE_URL: string =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://localhost:8000";
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  (import.meta.env.DEV ? "http://localhost:8000" : "");
 
 export class ApiError extends Error {
   readonly status: number;

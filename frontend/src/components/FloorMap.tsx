@@ -9,6 +9,7 @@
  * `products.json` の売場座標（0-100想定のフロア内相対座標）をそのままSVG座標として使う。
  */
 import type { MapWaypoint, RouteSubPassagePoint, RouteWaypoint, StoreMapFloor } from "../api/types";
+import { getDestinationLabelLayout } from "./floorMapLayout";
 
 export interface RouteDestinationPin {
   productId: string;
@@ -27,6 +28,7 @@ export interface FloorMapProps {
 }
 
 const STAIR_EV_TYPES = new Set(["階段", "EV"]);
+const DESTINATION_LABEL_FONT_SIZE = 5;
 
 function isStairOrEv(wp: MapWaypoint): boolean {
   return STAIR_EV_TYPES.has(wp.type);
@@ -66,25 +68,15 @@ export function FloorMap({
             fill={z.zone === "SUB" ? "#fff1e8" : "#f5f5f5"}
             stroke={z.zone === "SUB" ? "#c05621" : "#e1e1e1"}
           />
-          <text x={z.x + 4} y={z.y + 14} fontSize="6" fill="#333333">
-            {z.zone === "SUB" ? "サブ通路" : `ゾーン${z.zone}`}
-          </text>
-        </g>
-      ))}
-
-      {/* 階段/EV（複数フロア接続点） */}
-      {stairEvWaypoints.map((wp) => (
-        <g key={wp.id}>
-          <rect
-            x={wp.x - 3}
-            y={wp.y - 3}
-            width={6}
-            height={6}
-            data-testid={`waypoint-${wp.type}`}
-            fill="#6d6d6d"
-          />
-          <text x={wp.x + 4} y={wp.y + 3} fontSize="5" fill="#6d6d6d">
-            {wp.type}
+          <text
+            x={z.zone === "SUB" ? z.x + z.w / 2 : z.x + 3}
+            y={z.y + 8}
+            fontSize={z.zone === "SUB" ? "3.5" : "4"}
+            fontWeight="600"
+            textAnchor={z.zone === "SUB" ? "middle" : "start"}
+            fill="#5f6368"
+          >
+            {z.zone === "SUB" ? "サブ" : `ゾーン${z.zone}`}
           </text>
         </g>
       ))}
@@ -101,6 +93,39 @@ export function FloorMap({
           strokeLinejoin="round"
         />
       )}
+
+      {/* 階段/EVはルートより手前に描き、近接する2ラベルを左右へ分離する。 */}
+      {stairEvWaypoints.map((wp) => {
+        const placeOnLeft = wp.type === "階段";
+        return (
+          <g key={wp.id} data-testid={`waypoint-group-${wp.type}`}>
+            <rect
+              x={wp.x - 3}
+              y={wp.y - 3}
+              width={6}
+              height={6}
+              data-testid={`waypoint-${wp.type}`}
+              fill="#6d6d6d"
+              stroke="#ffffff"
+              strokeWidth={1}
+            />
+            <text
+              x={wp.x + (placeOnLeft ? -5 : 5)}
+              y={wp.y - 5}
+              fontSize="5"
+              fontWeight="700"
+              textAnchor={placeOnLeft ? "end" : "start"}
+              fill="#4f4f4f"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              paintOrder="stroke"
+            >
+              {wp.type}
+            </text>
+          </g>
+        );
+      })}
 
       {/* 経由サブ通路ピン: 淡色＋破線（--rh-badge-bg/--rh-badge-text） */}
       {subPassagePoints.map((p, i) => (
@@ -129,23 +154,44 @@ export function FloorMap({
       )}
 
       {/* 目的商品ピン（巡回順の番号付き）: --rh-price */}
-      {destinations.map((d) => (
-        <g key={d.productId}>
-          <circle
-            cx={d.x}
-            cy={d.y}
-            r={3.5}
-            data-testid={`route-destination-${d.productId}`}
-            fill="#e8352a"
-          />
-          <text x={d.x} y={d.y + 1.5} fontSize="4.5" fill="#fff" textAnchor="middle">
-            {d.order}
-          </text>
-          <text x={d.x + 5} y={d.y - 3} fontSize="5" fill="#e8352a">
-            {d.name}
-          </text>
-        </g>
-      ))}
+      {destinations.map((d) => {
+        const containingZone = zonesRect.find(
+          (zone) => d.x >= zone.x && d.x <= zone.x + zone.w && d.y >= zone.y && d.y <= zone.y + zone.h,
+        );
+        const label = getDestinationLabelLayout(d, width, height, containingZone);
+        return (
+          <g key={d.productId} aria-label={`${d.order}. ${d.name}`}>
+            <title>{`${d.order}. ${d.name}`}</title>
+            <circle
+              cx={d.x}
+              cy={d.y}
+              r={3.5}
+              data-testid={`route-destination-${d.productId}`}
+              fill="#e8352a"
+              stroke="#ffffff"
+              strokeWidth={1}
+            />
+            <text x={d.x} y={d.y + 1.5} fontSize="4.5" fill="#fff" textAnchor="middle">
+              {d.order}
+            </text>
+            <text
+              x={label.x}
+              y={label.y}
+              data-testid={`route-destination-label-${d.productId}`}
+              fontSize={DESTINATION_LABEL_FONT_SIZE}
+              fontWeight="700"
+              fill="#c62820"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              paintOrder="stroke"
+              textAnchor={label.textAnchor}
+            >
+              {label.text}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }

@@ -48,7 +48,7 @@ function Test-BackendDependencies([string]$PythonPath) {
     if (-not (Test-Path $PythonPath)) {
         return $false
     }
-    & $PythonPath -c "import fastapi, uvicorn, httpx, pytest, pandas, networkx" 2>$null
+    & $PythonPath -c "import fastapi, uvicorn, httpx2, pytest, pandas, networkx" 2>$null
     return $LASTEXITCODE -eq 0
 }
 

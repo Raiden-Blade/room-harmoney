@@ -106,8 +106,8 @@ describe("RoutePage (S4)", () => {
     // 巡回順（visiting_order）通りに表示される。
     const visitingOrder = screen.getByTestId("visiting-order");
     const orderedItems = visitingOrder.querySelectorAll("li");
-    expect(orderedItems[0]).toHaveTextContent("1. ナチュラルソファ");
-    expect(orderedItems[1]).toHaveTextContent("2. ブラックソファ");
+    expect(orderedItems[0]).toHaveTextContent("ナチュラルソファ");
+    expect(orderedItems[1]).toHaveTextContent("ブラックソファ");
 
     // 単一フロアの経路ではフロア切替UI・乗換表示は出さない（フェーズ2-C）。
     expect(screen.queryByTestId("floor-switch")).not.toBeInTheDocument();
@@ -152,7 +152,7 @@ describe("RoutePage (S4)", () => {
     expect(screen.getByTestId("visiting-order-item-P002")).toBeInTheDocument();
     expect(await screen.findByTestId("route-destination-P001")).toBeInTheDocument();
     expect(screen.queryByTestId("route-destination-P002")).not.toBeInTheDocument();
-    expect(screen.getByText("ナチュラルソファ ほか1点")).toBeInTheDocument();
+    expect(screen.getByLabelText("1. ナチュラルソファ ほか1点")).toBeInTheDocument();
   });
 
   it("有効なセッションが無い場合は来店ロックUIになり、routeAPIは呼ばれない（AC-5）", async () => {
