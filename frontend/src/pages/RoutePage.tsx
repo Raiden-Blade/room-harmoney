@@ -196,9 +196,9 @@ export function RoutePage() {
       )}
 
       <ol className="visiting-order" data-testid="visiting-order">
-        {route.visiting_order.map((id, index) => (
+        {route.visiting_order.map((id) => (
           <li key={id} data-testid={`visiting-order-item-${id}`}>
-            {index + 1}. {products[id]?.name ?? id}
+            {products[id]?.name ?? id}
           </li>
         ))}
       </ol>

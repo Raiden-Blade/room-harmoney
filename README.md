@@ -5,6 +5,25 @@
 
 > ステータス: **ガイド型チャット統合版**。既存の推薦・QR・コーディネート・ルート機能を維持したまま、Python中心の質問制御、説明可能な後段再ランキング、キーボード／音声入力、スタッフ向け根拠表示、匿名KPIを追加した。
 
+## 非開発者向けデスクトップ配布版
+
+GitHubの緑色の「Code → Download ZIP」は**開発用ソースコード**であり、PythonとNode.jsを含まない。非開発者へ渡す場合は、GitHub ReleasesまたはActionsの `Desktop release` からOSに合う次の自己完結ZIPを使う。
+
+- `RoomHarmony-Windows-x64.zip`: 解凍後 `RoomHarmony.exe` を起動
+- `RoomHarmony-macOS-arm64.zip`: Apple Silicon（M1以降）向け `Room Harmony.app`
+- `RoomHarmony-macOS-x64.zip`: Intel Mac向け `Room Harmony.app`
+
+署名資格情報を使わない内部検証ビルドはファイル名に `-unsigned` が付き、公開Release工程はそれを正式配布物として公開することを拒否する。
+
+これらの配布版はPython・Node.js・npmの事前インストールを要求しない。起動時に同梱データを厳格検査し、空いているloopbackポートでFastAPIと構築済みReact画面を一つのプロセスから配信し、実際の `/health` と画面応答を確認してからブラウザを開く。実行時DB・ログ・診断情報は、プログラム本体ではなく次へ保存する。
+
+- Windows: `%LOCALAPPDATA%\RoomHarmony`
+- macOS: `~/Library/Application Support/RoomHarmony`
+
+起動後の小さな管理画面からデモを再度開く、診断情報を確認する、安全に終了する、の三操作ができる。8000番ポートが他のアプリに使われていても、他プロセスを停止せず空きポートへ切り替える。
+
+> 署名上の注意: 自己完結化とOSの配布元信頼は別問題である。未署名の試作成果物ではWindows SmartScreenまたはmacOS Gatekeeperの警告が出る。一般配布を「警告なしのダブルクリック」にするには、Windowsコード署名証明書、およびApple Developer ID署名・notarizationをリリース工程へ設定する必要がある。資格情報を持たないローカル/CIビルドを正式配布物と誤認しないこと。詳細は [`packaging/README.md`](packaging/README.md)。
+
 ---
 
 ## 1. 完成版の全体フロー
@@ -60,12 +79,14 @@ Chatbotは新しい商品を勝手に生成しない。既存 `PersonalizedRecom
 
 各商品には取得元 `source_url` を保持している。一方、併売率・座標・コーディネートまでニトリ公式サイトから得たものではない。この区別を崩すと、デモデータを「実績」と誤認するため注意する。詳細は `data/README.md` を参照。
 
-## 4. 前提環境
+## 4. 開発用ソースコードの前提環境
 
-- OS: Windows（PowerShell / Git Bash いずれでも可）
+- OS: Windows（既存 `start-demo.cmd`）またはmacOS（手動開発起動）
 - Python: 3.11以上（3.13推奨）。ワンクリック起動器は利用可能な `py` または `python` を自動選択する。確認: `py --version` または `python --version`
 - Node.js: v22系推奨（ワンクリック起動はNode.js 24 / npm 11でも検証済み）。確認: `node -v` / `npm -v`
 - git: 2.x
+
+ここに挙げた環境はソースコードから開発・テストする人向けであり、上記のデスクトップ配布版利用者には不要である。
 
 ---
 
@@ -92,6 +113,8 @@ room-harmony/
 ├─ docs/             # DESIGN / CHATBOT_REQUIREMENTS / CHATBOT_AUDIT / 完成版SVG・PDF / openapi.json
 ├─ harness/          # QAゲートのレポート・証跡
 ├─ demo-launcher/    # Windowsワンクリック起動／停止の内部PowerShellスクリプト
+├─ packaging/        # PyInstaller仕様・Windows/macOS配布版ビルド・漏洩監査
+├─ .github/workflows/# 3 OS/CPU向けビルド・テスト・タグRelease公開
 ├─ start-demo.cmd    # ダブルクリックで依存確認→前後端起動→商品QRデモを開く
 ├─ stop-demo.cmd     # 起動器が開始した前後端サービスを安全に停止
 ├─ .env.example
@@ -301,16 +324,17 @@ npm run test:e2e     # Playwright（URL直リンク経由のハッピーパス�
 
 | 対象 | 結果 |
 |---|---|
-| Python構文・バックエンド単体／結合 | `236 passed` |
+| Python構文・バックエンド単体／結合 | `245 passed` |
 | フロント静的検査 | `oxlint` 警告・エラーなし |
-| フロントコンポーネント／結合 | `10 files / 61 tests passed` |
+| フロントコンポーネント／結合 | `11 files / 63 tests passed` |
 | TypeScript・本番ビルド | `tsc -b && vite build` 成功 |
+| Windows自己完結版 | Python/Node未要求のone-folder EXEを生成し、同梱物漏洩監査後、QR Session→既存推薦→Guided Chat→ルートをパッケージ実HTTPで確認 |
 | 実ブラウザ統合 | 正式ビルドで商品QR→探索→カテゴリ指定→4商品ルート。同一売場ノードの複数商品も全件保持 |
 | レスポンシブ | 390pxで横方向のはみ出しなし。質問を候補カードより前に表示し、第一問を初期ビューポート内に配置 |
 | 完成版SVG | 2400×1350で再レンダリングし、文字切れ・重なり・線・余白を目視確認 |
 | ベクターPDF | 16:9・1ページ、画像埋め込みなし、抽出可能テキストを確認後、PNG再レンダリングで目視確認 |
 
-既知の警告は、FastAPI TestClientが依存するStarletteの `httpx` 非推奨警告1件であり、今回の機能失敗ではない。またヘッドレスChromeではニトリ外部画像CDNが失敗する場合があるため、画面は既存フォールバックを表示する。本番前には承認済み画像の自社配信が必要である。
+Starlette TestClientは現行推奨の `httpx2` へ移行し、従来の非推奨警告を解消した。ヘッドレスChromeではニトリ外部画像CDNが失敗する場合があるため、画面は既存フォールバックを表示する。本番前には承認済み画像の自社配信が必要である。
 
 ## 12. 現時点のステータス
 

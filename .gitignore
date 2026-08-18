@@ -11,6 +11,10 @@ dist/
 dist-ssr/
 *.local
 
+# --- Desktop release build outputs ---
+build/
+release/
+
 # --- Capacitor（ネイティブラッパ生成物。フェーズ3-C: 本環境では未生成。
 #     `npx cap add android/ios` を実行する別環境向けに事前に除外しておく） ---
 frontend/android/

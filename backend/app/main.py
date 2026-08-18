@@ -4,11 +4,14 @@ RESTエンドポイントを `app/routers/` に分割して結線する（G2 API
 推薦（B1 HybridRecommender）・経路（B2 RouteGraphBuilder）・データ層（dataio/ 経由の
 リポジトリ）は `app/dependencies.py` の `Depends` を通じて注入し、差し替え可能にする。
 """
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
 from .errors import register_exception_handlers
+from .frontend import mount_bundled_frontend
 from .routers import (
     admin,
     chat,
@@ -63,4 +66,12 @@ app.include_router(admin.router)
 @app.get("/health")
 def health() -> dict:
     """ヘルスチェック。デプロイ/起動確認用の最小エンドポイント。"""
-    return {"status": "ok"}
+    result = {"status": "ok"}
+    instance_id = os.environ.get("ROOM_HARMONY_INSTANCE_ID")
+    if instance_id:
+        result["instance_id"] = instance_id
+    return result
+
+
+# 画面用のcatch-allは明示的なAPI・docs・healthより後ろに置く必要がある。
+mount_bundled_frontend(app)
